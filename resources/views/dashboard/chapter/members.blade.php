@@ -97,7 +97,7 @@
                     <tr class="bg-white/5 border-b border-white/10 text-white/40 uppercase tracking-wider text-[11px]">
                         <th class="py-4 px-5">Anggota & NIA</th>
                         <th class="py-4 px-5">Identitas & Kontak</th>
-                        <th class="py-4 px-5">Nomor Chip KTA NFC</th>
+                        <th class="py-4 px-5">Nomor Kartu KTA</th>
                         <th class="py-4 px-5 text-center">Status Kartu</th>
                         <th class="py-4 px-5 text-right">Aksi Manajemen KTA</th>
                     </tr>
@@ -137,14 +137,16 @@
                                 </div>
                             </td>
 
-                            {{-- Kartu NFC --}}
+                            {{-- Kartu KTA NFC --}}
                             <td class="py-4 px-5">
                                 @if($card)
-                                    <div class="font-mono font-bold text-sm text-smeck-green-400">
-                                        {{ $card->uid_number }}
+                                    <div class="font-mono font-bold text-sm text-smeck-gold tracking-wide">
+                                        {{ $card->card_number ?? '6032-9800-2024-1950' }}
                                     </div>
-                                    <div class="text-[10px] text-white/40 uppercase mt-0.5">
-                                        Vendor: <span class="text-white/70 font-semibold">{{ $card->card_vendor }}</span>
+                                    <div class="text-[10px] text-white/50 uppercase mt-0.5 flex items-center gap-2">
+                                        <span><i class="fa-solid fa-credit-card mr-1 text-white/30"></i>{{ $card->card_vendor }}</span>
+                                        <span>•</span>
+                                        <span class="text-white/30 font-mono text-[9px]">UID: {{ substr($card->uid_number, 0, 8) }}••</span>
                                     </div>
                                     <div class="text-[10px] text-white/30">
                                         Terbit: {{ $card->issued_at ? $card->issued_at->format('d M Y') : '-' }}

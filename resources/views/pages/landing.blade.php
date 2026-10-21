@@ -311,8 +311,8 @@
                     <div class="mt-4 pt-4 border-t border-white/5">
                         <div class="text-[11px] text-white/40 mb-2 font-semibold">Coba Sampel Data Suporter:</div>
                         <div class="flex flex-wrap gap-2">
-                            <button onclick="checkSample('04:A2:8B:1A:F3:60:80')" class="px-2.5 py-1 rounded-lg bg-white/5 hover:bg-white/10 text-white/70 hover:text-white border border-white/10 text-[11px] font-mono transition-colors">
-                                🟢 Muhammad Syafiq (UID)
+                            <button onclick="checkSample('6032-9800-2024-1950')" class="px-2.5 py-1 rounded-lg bg-white/5 hover:bg-white/10 text-white/70 hover:text-white border border-white/10 text-[11px] font-mono transition-colors">
+                                🟢 Muhammad Syafiq (No. KTA)
                             </button>
                             <button onclick="checkSample('SMCK-2015-0245')" class="px-2.5 py-1 rounded-lg bg-white/5 hover:bg-white/10 text-white/70 hover:text-white border border-white/10 text-[11px] font-mono transition-colors">
                                 🟡 Korwil Tembung (NIA)
@@ -385,7 +385,7 @@
 
                         {{-- Card Body: Chip Graphic + Supporter Details --}}
                         <div class="space-y-5 relative z-10">
-                            {{-- Chip EMV & Vendor --}}
+                            {{-- Chip EMV & Card Number --}}
                             <div class="flex items-center justify-between">
                                 {{-- Realistic EMV Gold Smart Chip --}}
                                 <div class="w-12 h-9 rounded-lg bg-gradient-to-br from-amber-200 via-amber-400 to-yellow-600 border border-amber-300/80 shadow-md flex items-center justify-center p-1 relative">
@@ -394,8 +394,9 @@
                                         <div class="w-full h-px bg-amber-800/40"></div>
                                     </div>
                                 </div>
-                                <div class="text-right font-mono text-[11px] text-white/50">
-                                    <span>CHIP UID: </span><span id="res-uid" class="text-smeck-green-400 font-bold"></span>
+                                <div class="text-right font-mono text-xs text-white/70">
+                                    <span class="text-white/40 text-[10px] uppercase block">Nomor Kartu KTA:</span>
+                                    <span id="res-card-number" class="text-smeck-gold font-bold tracking-widest text-sm"></span>
                                 </div>
                             </div>
 
@@ -501,7 +502,7 @@
         document.getElementById('res-chapter-address').innerText = data.chapter_address;
         document.getElementById('res-chapter-code').innerText = data.chapter_code;
         document.getElementById('res-chapter-leader').innerText = data.chapter_leader;
-        document.getElementById('res-uid').innerText = data.uid_number;
+        document.getElementById('res-card-number').innerText = data.card_number_masked;
         document.getElementById('res-blood').innerText = data.blood_type;
         document.getElementById('res-shirt').innerText = data.shirt_size;
         document.getElementById('res-joined').innerText = data.joined_date;

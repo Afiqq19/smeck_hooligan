@@ -97,9 +97,13 @@
     <div class="grid grid-cols-1 lg:grid-cols-12 gap-8">
         
         {{-- Chapter Distribution Progress Bars --}}
+        {{-- Chapter Distribution Progress Bars --}}
         <div class="lg:col-span-6 p-6 sm:p-8 rounded-3xl bg-smeck-dark-900 border border-white/10 space-y-4">
             <div class="flex items-center justify-between mb-2">
-                <h3 class="font-display font-bold text-lg text-white">Distribusi Anggota per Chapter</h3>
+                <div>
+                    <h3 class="font-display font-bold text-lg text-white">Distribusi Anggota per Basis</h3>
+                    <p class="text-xs text-white/40">Peringkat chapter berdasarkan anggota terverifikasi</p>
+                </div>
                 <a href="{{ route('superadmin.chapters') }}" class="text-xs text-red-400 font-bold hover:underline">Kelola Basis →</a>
             </div>
 
@@ -107,48 +111,124 @@
                 @foreach($chapters as $ch)
                     <div>
                         <div class="flex items-center justify-between text-xs mb-1">
-                            <span class="font-semibold text-white">{{ $ch->name }}</span>
+                            <span class="font-semibold text-white flex items-center gap-1.5">
+                                <i class="fa-solid fa-location-dot text-red-400 text-[10px]"></i>
+                                {{ $ch->name }}
+                            </span>
                             <span class="text-white/60 font-mono">{{ $ch->users_count }} Anggota</span>
                         </div>
                         <div class="w-full h-2 rounded-full bg-white/10 overflow-hidden">
-                            <div class="h-full bg-gradient-to-r from-smeck-green-600 to-smeck-green-400 rounded-full" style="width: {{ min(100, max(15, ($ch->users_count / max(1, $totalMembers)) * 100)) }}%"></div>
+                            <div class="h-full bg-gradient-to-r from-smeck-green-600 via-emerald-400 to-smeck-gold rounded-full" style="width: {{ min(100, max(15, ($ch->users_count / max(1, $totalMembers)) * 100)) }}%"></div>
                         </div>
                     </div>
                 @endforeach
             </div>
         </div>
 
-        {{-- Recent Member Registrations --}}
+        {{-- Kesiapsiagaan Medis Tribun (Golongan Darah Nasional) --}}
         <div class="lg:col-span-6 p-6 sm:p-8 rounded-3xl bg-smeck-dark-900 border border-white/10 space-y-4">
             <div class="flex items-center justify-between mb-2">
-                <h3 class="font-display font-bold text-lg text-white">Anggota Baru Terverifikasi</h3>
-                <span class="text-xs text-white/40">Database Nasional</span>
+                <div>
+                    <h3 class="font-display font-bold text-lg text-white flex items-center gap-2">
+                        <i class="fa-solid fa-droplet text-red-500"></i>
+                        <span>Kesiapsiagaan Medis Tribun</span>
+                    </h3>
+                    <p class="text-xs text-white/40">Komposisi golongan darah anggota untuk tanggap darurat laga</p>
+                </div>
+                <span class="px-2 py-0.5 rounded-full text-[10px] font-bold bg-red-500/20 text-red-300">Darurat Medis</span>
             </div>
 
-            <div class="space-y-3">
-                @forelse($recentMembers as $m)
-                    <div class="p-3.5 rounded-2xl bg-white/[0.03] border border-white/5 flex items-center justify-between">
-                        <div class="flex items-center gap-3">
-                            <div class="w-10 h-10 rounded-xl bg-smeck-green-600 flex items-center justify-center font-display font-black text-white text-sm">
-                                {{ strtoupper(substr($m->name, 0, 1)) }}
+            <div class="grid grid-cols-2 sm:grid-cols-4 gap-3">
+                <div class="p-4 rounded-2xl bg-white/[0.03] border border-white/5 text-center">
+                    <div class="text-xs text-white/40 font-bold uppercase">Gol. A</div>
+                    <div class="font-display font-black text-2xl text-red-400 mt-1">{{ $bloodTypeStats['A'] ?? 0 }}</div>
+                    <div class="text-[10px] text-white/40">Suporter</div>
+                </div>
+                <div class="p-4 rounded-2xl bg-white/[0.03] border border-white/5 text-center">
+                    <div class="text-xs text-white/40 font-bold uppercase">Gol. B</div>
+                    <div class="font-display font-black text-2xl text-amber-400 mt-1">{{ $bloodTypeStats['B'] ?? 0 }}</div>
+                    <div class="text-[10px] text-white/40">Suporter</div>
+                </div>
+                <div class="p-4 rounded-2xl bg-white/[0.03] border border-white/5 text-center">
+                    <div class="text-xs text-white/40 font-bold uppercase">Gol. AB</div>
+                    <div class="font-display font-black text-2xl text-emerald-400 mt-1">{{ $bloodTypeStats['AB'] ?? 0 }}</div>
+                    <div class="text-[10px] text-white/40">Suporter</div>
+                </div>
+                <div class="p-4 rounded-2xl bg-white/[0.03] border border-white/5 text-center">
+                    <div class="text-xs text-white/40 font-bold uppercase">Gol. O</div>
+                    <div class="font-display font-black text-2xl text-blue-400 mt-1">{{ $bloodTypeStats['O'] ?? 0 }}</div>
+                    <div class="text-[10px] text-white/40">Suporter</div>
+                </div>
+            </div>
+
+            {{-- Recent Member Registrations --}}
+            <div class="pt-2">
+                <div class="flex items-center justify-between mb-3">
+                    <span class="text-xs font-bold uppercase text-white/60">Pendaftaran Terbaru</span>
+                    <a href="{{ route('superadmin.members') }}" class="text-xs text-red-400 hover:underline">Semua Anggota →</a>
+                </div>
+                <div class="space-y-2.5">
+                    @forelse($recentMembers as $m)
+                        <div class="p-2.5 rounded-xl bg-white/[0.02] border border-white/5 flex items-center justify-between">
+                            <div class="flex items-center gap-2.5 min-w-0">
+                                <div class="w-8 h-8 rounded-lg bg-smeck-green-600 flex items-center justify-center font-display font-black text-white text-xs shrink-0">
+                                    {{ strtoupper(substr($m->name, 0, 1)) }}
+                                </div>
+                                <div class="min-w-0">
+                                    <div class="text-xs font-bold text-white truncate">{{ $m->name }}</div>
+                                    <div class="text-[10px] text-white/40 truncate">{{ $m->chapter?->name ?? 'Pusat' }} • <span class="text-smeck-gold">{{ $m->profile?->nia ?? '-' }}</span></div>
+                                </div>
                             </div>
-                            <div>
-                                <div class="text-xs font-bold text-white">{{ $m->name }}</div>
-                                <div class="text-[11px] text-white/40">{{ $m->chapter?->name ?? 'Chapter Medan' }} • NIA: {{ $m->profile?->nia ?? '-' }}</div>
-                            </div>
-                        </div>
-                        <div class="text-right">
-                            <span class="px-2 py-0.5 rounded text-[10px] font-bold uppercase {{ $m->nfcCard ? 'bg-smeck-green-500/20 text-smeck-green-400' : 'bg-white/10 text-white/50' }}">
-                                {{ $m->nfcCard ? 'NFC READY' : 'BELUM NFC' }}
+                            <span class="px-2 py-0.5 rounded text-[9px] font-bold uppercase {{ $m->nfcCard ? 'bg-smeck-green-500/20 text-smeck-green-400' : 'bg-white/10 text-white/40' }}">
+                                {{ $m->nfcCard ? 'KTA AKTIF' : 'BELUM KTA' }}
                             </span>
                         </div>
-                    </div>
-                @empty
-                    <div class="text-center py-6 text-white/40 text-xs">Belum ada anggota terdaftar.</div>
-                @endforelse
+                    @empty
+                        <div class="text-center py-4 text-white/40 text-xs">Belum ada anggota terdaftar.</div>
+                    @endforelse
+                </div>
             </div>
         </div>
 
+    </div>
+
+    {{-- Live NFC Tap Attendance Feed --}}
+    <div class="p-6 sm:p-8 rounded-3xl bg-smeck-dark-900 border border-white/10">
+        <div class="flex items-center justify-between mb-4">
+            <div>
+                <h3 class="font-display font-bold text-lg text-white flex items-center gap-2">
+                    <span class="w-2.5 h-2.5 rounded-full bg-smeck-green-400 animate-pulse"></span>
+                    <span>Live Tap NFC Gate & Kehadiran Laga</span>
+                </h3>
+                <p class="text-xs text-white/40">Log kehadiran fisik suporter yang melakukan tap KTA di gerbang stadion & acara resmi</p>
+            </div>
+            <a href="{{ route('superadmin.nfc') }}" class="text-xs font-bold text-red-400 hover:underline">Kelola KTA NFC →</a>
+        </div>
+
+        <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
+            @forelse($recentAttendances as $att)
+                <div class="p-3.5 rounded-2xl bg-white/[0.02] border border-white/5 flex items-center justify-between">
+                    <div class="flex items-center gap-3 min-w-0">
+                        <div class="w-9 h-9 rounded-xl bg-smeck-gold/20 text-smeck-gold flex items-center justify-center font-bold text-xs shrink-0">
+                            <i class="fa-solid fa-tower-broadcast"></i>
+                        </div>
+                        <div class="min-w-0">
+                            <div class="text-xs font-bold text-white truncate">{{ $att->user?->name ?? 'Suporter' }}</div>
+                            <div class="text-[10px] text-white/40 truncate">{{ $att->event_name }}</div>
+                            <div class="text-[9px] text-smeck-green-400 font-mono">{{ $att->scanned_at ? $att->scanned_at->diffForHumans() : 'Baru saja' }}</div>
+                        </div>
+                    </div>
+                    <span class="px-2 py-0.5 rounded text-[9px] font-bold bg-smeck-green-500/20 text-smeck-green-400 shrink-0">
+                        VERIFIED
+                    </span>
+                </div>
+            @empty
+                <div class="col-span-full py-8 text-center text-white/40 text-xs">
+                    <i class="fa-solid fa-wifi text-2xl mb-2 text-white/20 block"></i>
+                    Belum ada riwayat tap NFC hari ini. Data akan muncul otomatis saat gate stadion beroperasi.
+                </div>
+            @endforelse
+        </div>
     </div>
 
 </div>

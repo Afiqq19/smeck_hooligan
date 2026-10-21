@@ -194,7 +194,8 @@ class ChapterDashboardController extends Controller
                             ->orWhere('phone_number', 'like', "%{$search}%");
                     })
                     ->orWhereHas('nfcCard', function ($cq) use ($search) {
-                        $cq->where('uid_number', 'like', "%{$search}%");
+                        $cq->where('uid_number', 'like', "%{$search}%")
+                            ->orWhere('card_number', 'like', "%{$search}%");
                     });
             });
         }
@@ -272,9 +273,11 @@ class ChapterDashboardController extends Controller
 
         // Tautkan kartu fisik NFC jika UID diisi
         if (! empty($validated['uid_number'])) {
+            $cardNumber = sprintf('6032-%04d-%04d-%04d', rand(1000, 9999), rand(1000, 9999), rand(1000, 9999));
             NfcCard::create([
                 'user_id' => $user->id,
                 'uid_number' => strtoupper(trim($validated['uid_number'])),
+                'card_number' => $cardNumber,
                 'card_vendor' => $validated['card_vendor'] ?? 'emoney',
                 'status' => 'active',
                 'issued_at' => now(),
@@ -321,15 +324,17 @@ class ChapterDashboardController extends Controller
         // Blokir kartu lama jika ada
         NfcCard::where('user_id', $user->id)->update(['status' => 'blocked']);
 
-        // Terbitkan kartu NFC baru
+        // Terbitkan kartu NFC baru dengan nomor kartu resmi
+        $cardNumber = sprintf('6032-%04d-%04d-%04d', rand(1000, 9999), rand(1000, 9999), rand(1000, 9999));
         $newCard = NfcCard::create([
             'user_id' => $user->id,
             'uid_number' => strtoupper(trim($validated['uid_number'])),
+            'card_number' => $cardNumber,
             'card_vendor' => $validated['card_vendor'],
             'status' => 'active',
             'issued_at' => now(),
         ]);
 
-        return back()->with('success', "Kartu KTA fisik baru UID {$newCard->uid_number} berhasil diterbitkan untuk {$user->name}. Kartu lama telah diblokir.");
+        return back()->with('success', "Kartu KTA fisik baru Nomor {$cardNumber} (UID: {$newCard->uid_number}) berhasil diterbitkan untuk {$user->name}. Kartu lama telah diblokir.");
     }
 }

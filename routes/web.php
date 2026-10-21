@@ -102,22 +102,49 @@ Route::middleware(['auth', 'role:admin_chapter,super_admin'])->prefix('chapter')
 // =========================================================================
 // Prefix: /superadmin | Middleware: auth, role:super_admin
 Route::middleware(['auth', 'role:super_admin'])->prefix('superadmin')->name('superadmin.')->group(function () {
-    // Menu Utama Pengurus Pusat
+    // 1. Dashboard Utama Pusat
     Route::get('/dashboard', [SuperAdminDashboardController::class, 'index'])->name('dashboard');
+
+    // 2. Direktori Anggota Nasional
+    Route::get('/members', [SuperAdminDashboardController::class, 'members'])->name('members');
+    Route::post('/members/{id}/role', [SuperAdminDashboardController::class, 'updateMemberRole'])->name('members.role');
+    Route::post('/members/{id}/status', [SuperAdminDashboardController::class, 'toggleMemberStatus'])->name('members.status');
+
+    // 3. Master Chapter Wilayah
     Route::get('/chapters', [SuperAdminDashboardController::class, 'chapters'])->name('chapters');
     Route::post('/chapters', [SuperAdminDashboardController::class, 'storeChapter'])->name('chapters.store');
+
+    // 4. KTA NFC Issuing & Batch Print Preview
     Route::get('/nfc-activation', [SuperAdminDashboardController::class, 'nfcActivation'])->name('nfc');
     Route::post('/nfc-activation/link', [SuperAdminDashboardController::class, 'linkNfcCard'])->name('nfc.link');
     Route::post('/nfc/toggle/{cardId}', [SuperAdminDashboardController::class, 'toggleCardStatus'])->name('nfc.toggle');
     Route::post('/nfc/replace/{userId}', [SuperAdminDashboardController::class, 'replaceCard'])->name('nfc.replace');
-    Route::get('/broadcast', [SuperAdminDashboardController::class, 'broadcast'])->name('broadcast');
-    Route::post('/broadcast/send', [SuperAdminDashboardController::class, 'sendBroadcast'])->name('broadcast.send');
 
-    // Menu Ekstra Budaya Tribun (Prompt 6)
+    // 5. Tiket Pertandingan & Alokasi Quota
     Route::get('/tickets', [SuperAdminDashboardController::class, 'ticketDistribution'])->name('tickets');
+    Route::post('/tickets/match', [SuperAdminDashboardController::class, 'storeMatch'])->name('tickets.match');
     Route::post('/tickets/allocate', [SuperAdminDashboardController::class, 'storeTicketAllocation'])->name('tickets.allocate');
+
+    // 6. Galeri Koreo & Dokumentasi Nasional
+    Route::get('/documentations', [SuperAdminDashboardController::class, 'documentations'])->name('documentations');
+    Route::post('/documentations', [SuperAdminDashboardController::class, 'storeDocumentation'])->name('documentations.store');
+
+    // 7. Pustaka Chant & Lagu Tribun
+    Route::get('/chants', [SuperAdminDashboardController::class, 'chants'])->name('chants');
+    Route::post('/chants', [SuperAdminDashboardController::class, 'storeChant'])->name('chants.store');
+    Route::post('/chants/{id}/featured', [SuperAdminDashboardController::class, 'toggleChantFeatured'])->name('chants.featured');
+
+    // 8. Kas & Donasi Koreo Nasional
+    Route::get('/finance', [SuperAdminDashboardController::class, 'finance'])->name('finance');
+
+    // 9. Mitra SMeCK Partner
     Route::get('/partners', [SuperAdminDashboardController::class, 'partners'])->name('partners');
     Route::post('/partners', [SuperAdminDashboardController::class, 'storePartner'])->name('partners.store');
+    Route::post('/partners/{id}/toggle', [SuperAdminDashboardController::class, 'togglePartner'])->name('partners.toggle');
+
+    // 10. Maklumat & Broadcast Pengumuman DPP
+    Route::get('/broadcast', [SuperAdminDashboardController::class, 'broadcast'])->name('broadcast');
+    Route::post('/broadcast/send', [SuperAdminDashboardController::class, 'sendBroadcast'])->name('broadcast.send');
 });
 
 // =========================================================================

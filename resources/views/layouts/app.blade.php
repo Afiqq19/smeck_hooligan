@@ -199,44 +199,69 @@
             {{-- ====================================================== --}}
             @if(auth()->user()->role === 'super_admin')
                 <div>
-                    <div class="px-3 mb-2 text-[10px] font-bold uppercase tracking-wider text-red-400">
-                        Pengurus Pusat (Pusat SMeCK)
+                    <div class="px-3 mb-2 text-[10px] font-bold uppercase tracking-wider text-red-400 flex items-center justify-between">
+                        <span>Pusat SMeCK (DPP)</span>
+                        <span class="px-1.5 py-0.5 rounded text-[9px] bg-red-500/20 text-red-300 font-mono">PUSAT</span>
                     </div>
                     <nav class="space-y-1">
-                        {{-- 1. Dashboard Utama --}}
-                        <a href="{{ route('superadmin.dashboard') }}" class="flex items-center gap-3 px-3.5 py-2.5 rounded-xl text-sm font-semibold transition-all {{ request()->routeIs('superadmin.dashboard') ? 'bg-red-600 text-white shadow-lg shadow-red-700/30' : 'text-white/70 hover:text-white hover:bg-white/5' }}">
-                            <i class="fa-solid fa-globe w-5 text-center text-red-400 {{ request()->routeIs('superadmin.dashboard') ? 'text-white' : '' }}"></i>
-                            <span>Dashboard Utama Pusat</span>
+                        {{-- 1. Dashboard Utama Pusat --}}
+                        <a href="{{ route('superadmin.dashboard') }}" class="flex items-center gap-3 px-3.5 py-2 rounded-xl text-xs font-semibold transition-all {{ request()->routeIs('superadmin.dashboard') ? 'bg-red-600 text-white shadow-lg shadow-red-700/30' : 'text-white/70 hover:text-white hover:bg-white/5' }}">
+                            <i class="fa-solid fa-chart-line w-5 text-center text-red-400 {{ request()->routeIs('superadmin.dashboard') ? 'text-white' : '' }}"></i>
+                            <span>1. Dashboard Utama</span>
                         </a>
 
-                        {{-- 2. Master Chapter --}}
-                        <a href="{{ route('superadmin.chapters') }}" class="flex items-center gap-3 px-3.5 py-2.5 rounded-xl text-sm font-semibold transition-all {{ request()->routeIs('superadmin.chapters*') ? 'bg-red-600 text-white shadow-lg shadow-red-700/30' : 'text-white/70 hover:text-white hover:bg-white/5' }}">
+                        {{-- 2. Direktori Anggota Nasional --}}
+                        <a href="{{ route('superadmin.members') }}" class="flex items-center gap-3 px-3.5 py-2 rounded-xl text-xs font-semibold transition-all {{ request()->routeIs('superadmin.members*') ? 'bg-red-600 text-white shadow-lg shadow-red-700/30' : 'text-white/70 hover:text-white hover:bg-white/5' }}">
+                            <i class="fa-solid fa-users w-5 text-center text-red-400 {{ request()->routeIs('superadmin.members*') ? 'text-white' : '' }}"></i>
+                            <span>2. Anggota Nasional</span>
+                        </a>
+
+                        {{-- 3. Master Chapter --}}
+                        <a href="{{ route('superadmin.chapters') }}" class="flex items-center gap-3 px-3.5 py-2 rounded-xl text-xs font-semibold transition-all {{ request()->routeIs('superadmin.chapters*') ? 'bg-red-600 text-white shadow-lg shadow-red-700/30' : 'text-white/70 hover:text-white hover:bg-white/5' }}">
                             <i class="fa-solid fa-sitemap w-5 text-center text-red-400 {{ request()->routeIs('superadmin.chapters*') ? 'text-white' : '' }}"></i>
-                            <span>Master Chapter Wilayah</span>
+                            <span>3. Master Chapter</span>
                         </a>
 
-                        {{-- 3. Cetak & Aktivasi Kartu NFC --}}
-                        <a href="{{ route('superadmin.nfc') }}" class="flex items-center gap-3 px-3.5 py-2.5 rounded-xl text-sm font-semibold transition-all {{ request()->routeIs('superadmin.nfc*') ? 'bg-red-600 text-white shadow-lg shadow-red-700/30' : 'text-white/70 hover:text-white hover:bg-white/5' }}">
+                        {{-- 4. Cetak & Aktivasi Kartu NFC --}}
+                        <a href="{{ route('superadmin.nfc') }}" class="flex items-center gap-3 px-3.5 py-2 rounded-xl text-xs font-semibold transition-all {{ request()->routeIs('superadmin.nfc*') ? 'bg-red-600 text-white shadow-lg shadow-red-700/30' : 'text-white/70 hover:text-white hover:bg-white/5' }}">
                             <i class="fa-solid fa-credit-card w-5 text-center text-red-400 {{ request()->routeIs('superadmin.nfc*') ? 'text-white' : '' }}"></i>
-                            <span>Cetak & Aktivasi NFC</span>
+                            <span>4. KTA NFC & Cetak</span>
                         </a>
 
-                        {{-- 4. Broadcast Pengumuman --}}
-                        <a href="{{ route('superadmin.broadcast') }}" class="flex items-center gap-3 px-3.5 py-2.5 rounded-xl text-sm font-semibold transition-all {{ request()->routeIs('superadmin.broadcast*') ? 'bg-red-600 text-white shadow-lg shadow-red-700/30' : 'text-white/70 hover:text-white hover:bg-white/5' }}">
-                            <i class="fa-solid fa-bullhorn w-5 text-center text-red-400 {{ request()->routeIs('superadmin.broadcast*') ? 'text-white' : '' }}"></i>
-                            <span>Broadcast Pengumuman</span>
-                        </a>
-
-                        {{-- [Prompt 6] 1. Distribusi Tiket --}}
-                        <a href="{{ route('superadmin.tickets') }}" class="flex items-center gap-3 px-3.5 py-2.5 rounded-xl text-sm font-semibold transition-all {{ request()->routeIs('superadmin.tickets*') ? 'bg-red-600 text-white shadow-lg shadow-red-700/30' : 'text-white/70 hover:text-white hover:bg-white/5' }}">
+                        {{-- 5. Distribusi Tiket & Awaydays --}}
+                        <a href="{{ route('superadmin.tickets') }}" class="flex items-center gap-3 px-3.5 py-2 rounded-xl text-xs font-semibold transition-all {{ request()->routeIs('superadmin.tickets*') ? 'bg-red-600 text-white shadow-lg shadow-red-700/30' : 'text-white/70 hover:text-white hover:bg-white/5' }}">
                             <i class="fa-solid fa-ticket-simple w-5 text-center text-red-400 {{ request()->routeIs('superadmin.tickets*') ? 'text-white' : '' }}"></i>
-                            <span>Distribusi Tiket</span>
+                            <span>5. Tiket & Kuota Laga</span>
                         </a>
 
-                        {{-- [Prompt 6] 2. SMeCK Partner --}}
-                        <a href="{{ route('superadmin.partners') }}" class="flex items-center gap-3 px-3.5 py-2.5 rounded-xl text-sm font-semibold transition-all {{ request()->routeIs('superadmin.partners*') ? 'bg-red-600 text-white shadow-lg shadow-red-700/30' : 'text-white/70 hover:text-white hover:bg-white/5' }}">
+                        {{-- 6. Galeri Koreo & Dokumentasi --}}
+                        <a href="{{ route('superadmin.documentations') }}" class="flex items-center gap-3 px-3.5 py-2 rounded-xl text-xs font-semibold transition-all {{ request()->routeIs('superadmin.documentations*') ? 'bg-red-600 text-white shadow-lg shadow-red-700/30' : 'text-white/70 hover:text-white hover:bg-white/5' }}">
+                            <i class="fa-solid fa-camera-retro w-5 text-center text-red-400 {{ request()->routeIs('superadmin.documentations*') ? 'text-white' : '' }}"></i>
+                            <span>6. Galeri & Koreo</span>
+                        </a>
+
+                        {{-- 7. Pustaka Chant SMeCK --}}
+                        <a href="{{ route('superadmin.chants') }}" class="flex items-center gap-3 px-3.5 py-2 rounded-xl text-xs font-semibold transition-all {{ request()->routeIs('superadmin.chants*') ? 'bg-red-600 text-white shadow-lg shadow-red-700/30' : 'text-white/70 hover:text-white hover:bg-white/5' }}">
+                            <i class="fa-solid fa-music w-5 text-center text-red-400 {{ request()->routeIs('superadmin.chants*') ? 'text-white' : '' }}"></i>
+                            <span>7. Pustaka Chant</span>
+                        </a>
+
+                        {{-- 8. Kas & Donasi Koreo Nasional --}}
+                        <a href="{{ route('superadmin.finance') }}" class="flex items-center gap-3 px-3.5 py-2 rounded-xl text-xs font-semibold transition-all {{ request()->routeIs('superadmin.finance*') ? 'bg-red-600 text-white shadow-lg shadow-red-700/30' : 'text-white/70 hover:text-white hover:bg-white/5' }}">
+                            <i class="fa-solid fa-wallet w-5 text-center text-red-400 {{ request()->routeIs('superadmin.finance*') ? 'text-white' : '' }}"></i>
+                            <span>8. Kas & Keuangan</span>
+                        </a>
+
+                        {{-- 9. SMeCK Partner Merchants --}}
+                        <a href="{{ route('superadmin.partners') }}" class="flex items-center gap-3 px-3.5 py-2 rounded-xl text-xs font-semibold transition-all {{ request()->routeIs('superadmin.partners*') ? 'bg-red-600 text-white shadow-lg shadow-red-700/30' : 'text-white/70 hover:text-white hover:bg-white/5' }}">
                             <i class="fa-solid fa-handshake w-5 text-center text-red-400 {{ request()->routeIs('superadmin.partners*') ? 'text-white' : '' }}"></i>
-                            <span>SMeCK Partner</span>
+                            <span>9. SMeCK Partner</span>
+                        </a>
+
+                        {{-- 10. Broadcast Pengumuman DPP --}}
+                        <a href="{{ route('superadmin.broadcast') }}" class="flex items-center gap-3 px-3.5 py-2 rounded-xl text-xs font-semibold transition-all {{ request()->routeIs('superadmin.broadcast*') ? 'bg-red-600 text-white shadow-lg shadow-red-700/30' : 'text-white/70 hover:text-white hover:bg-white/5' }}">
+                            <i class="fa-solid fa-bullhorn w-5 text-center text-red-400 {{ request()->routeIs('superadmin.broadcast*') ? 'text-white' : '' }}"></i>
+                            <span>10. Broadcast Maklumat</span>
                         </a>
                     </nav>
                 </div>

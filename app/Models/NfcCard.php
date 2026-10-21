@@ -13,6 +13,7 @@ class NfcCard extends Model
     protected $fillable = [
         'user_id',
         'uid_number',
+        'card_number',
         'card_vendor',
         'status',
         'issued_at',

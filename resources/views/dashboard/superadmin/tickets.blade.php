@@ -7,6 +7,63 @@
 @section('content')
 <div class="max-w-7xl mx-auto space-y-8">
 
+    {{-- Section 1: Tambah Jadwal Laga PSMS Medan / Awaydays --}}
+    <div class="p-6 sm:p-8 rounded-3xl bg-smeck-dark-900 border border-white/10">
+        <div class="flex items-center justify-between mb-4">
+            <div>
+                <h3 class="font-display font-bold text-lg text-white flex items-center gap-2">
+                    <i class="fa-solid fa-futbol text-red-400"></i>
+                    <span>Tambah Jadwal Pertandingan PSMS Medan / Awaydays</span>
+                </h3>
+                <p class="text-xs text-white/50">Daftarkan laga baru agar kuota tiket dapat dialokasikan ke chapter dan dipesan oleh anggota.</p>
+            </div>
+        </div>
+
+        <form action="{{ route('superadmin.tickets.match') }}" method="POST" class="space-y-4">
+            @csrf
+            <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4">
+                <div class="lg:col-span-2">
+                    <label class="block text-xs font-bold uppercase text-white/60 mb-1.5">Judul Laga / Pertandingan <span class="text-red-400">*</span></label>
+                    <input type="text" name="match_title" required placeholder="Contoh: PSMS Medan vs Sriwijaya FC" class="w-full px-4 py-2.5 bg-white/5 border border-white/10 rounded-xl text-white text-xs focus:border-red-400 focus:outline-none">
+                </div>
+                <div>
+                    <label class="block text-xs font-bold uppercase text-white/60 mb-1.5">Waktu Kick-Off <span class="text-red-400">*</span></label>
+                    <input type="datetime-local" name="match_time" required class="w-full px-4 py-2.5 bg-white/5 border border-white/10 rounded-xl text-white text-xs focus:border-red-400 focus:outline-none">
+                </div>
+                <div>
+                    <label class="block text-xs font-bold uppercase text-white/60 mb-1.5">Stadion / Venue <span class="text-red-400">*</span></label>
+                    <input type="text" name="stadium" required value="Stadion Teladan Medan" class="w-full px-4 py-2.5 bg-white/5 border border-white/10 rounded-xl text-white text-xs focus:border-red-400 focus:outline-none">
+                </div>
+                <div>
+                    <label class="block text-xs font-bold uppercase text-white/60 mb-1.5">Tipe Laga <span class="text-red-400">*</span></label>
+                    <select name="type" required class="w-full px-4 py-2.5 bg-white/5 border border-white/10 rounded-xl text-white text-xs focus:border-red-400 focus:outline-none">
+                        <option value="home" class="bg-smeck-dark-900">Home (Kandang Teladan)</option>
+                        <option value="away" class="bg-smeck-dark-900">Awaydays (Tandang Luar Kota)</option>
+                    </select>
+                </div>
+                <div>
+                    <label class="block text-xs font-bold uppercase text-white/60 mb-1.5">Harga Tiket (Rp) <span class="text-red-400">*</span></label>
+                    <input type="number" name="price" required min="0" step="5000" placeholder="50000" class="w-full px-4 py-2.5 bg-white/5 border border-white/10 rounded-xl text-white font-mono text-xs focus:border-red-400 focus:outline-none">
+                </div>
+                <div>
+                    <label class="block text-xs font-bold uppercase text-white/60 mb-1.5">Total Kuota Tiket <span class="text-red-400">*</span></label>
+                    <input type="number" name="total_quota" required min="10" placeholder="1000" class="w-full px-4 py-2.5 bg-white/5 border border-white/10 rounded-xl text-white font-mono text-xs focus:border-red-400 focus:outline-none">
+                </div>
+                <div>
+                    <label class="block text-xs font-bold uppercase text-white/60 mb-1.5">Info Transportasi / Bus (Away)</label>
+                    <input type="text" name="bus_transport_info" placeholder="Bus Pariwisata Seat 2-2 AC" class="w-full px-4 py-2.5 bg-white/5 border border-white/10 rounded-xl text-white text-xs focus:border-red-400 focus:outline-none">
+                </div>
+            </div>
+
+            <div class="pt-2">
+                <button type="submit" class="px-5 py-2.5 rounded-xl bg-red-600 hover:bg-red-500 text-white font-bold text-xs shadow-lg transition-colors flex items-center gap-2">
+                    <i class="fa-solid fa-plus"></i>
+                    <span>Tambah Jadwal Laga PSMS</span>
+                </button>
+            </div>
+        </form>
+    </div>
+
     {{-- Form Alokasi Tiket --}}
     <div class="p-6 sm:p-8 rounded-3xl bg-smeck-dark-900 border border-white/10">
         <h3 class="font-display font-bold text-lg text-white mb-2">Alokasi Jatah Tiket ke Chapter</h3>

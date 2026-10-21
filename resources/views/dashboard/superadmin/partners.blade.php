@@ -75,12 +75,20 @@
                 </div>
 
                 <div class="pt-3 border-t border-white/10 flex items-center justify-between text-xs text-white/40">
-                    <span>PJ: {{ $partner->contact_person ?? 'Owner' }}</span>
-                    <span class="font-mono text-smeck-green-400">{{ $partner->phone_number ?? '-' }}</span>
+                    <div>
+                        <span>PJ: {{ $partner->contact_person ?? 'Owner' }}</span>
+                        <div class="font-mono text-smeck-green-400 text-[11px]">{{ $partner->phone_number ?? '-' }}</div>
+                    </div>
+                    <form action="{{ route('superadmin.partners.toggle', $partner->id) }}" method="POST">
+                        @csrf
+                        <button type="submit" class="px-2.5 py-1 rounded-lg {{ $partner->is_active ? 'bg-red-500/10 hover:bg-red-500 text-red-400 hover:text-white' : 'bg-smeck-green-500/10 hover:bg-smeck-green-500 text-smeck-green-400 hover:text-white' }} font-semibold text-[11px] transition-colors">
+                            {{ $partner->is_active ? 'Nonaktifkan' : 'Aktifkan' }}
+                        </button>
+                    </form>
                 </div>
             </div>
         @empty
-            <div class="col-span-3 text-center py-12 text-white/40">Belum ada mitra SMeCK Partner yang terdaftar.</div>
+            <div class="col-span-full text-center py-12 text-white/40">Belum ada mitra SMeCK Partner yang terdaftar.</div>
         @endforelse
     </div>
 

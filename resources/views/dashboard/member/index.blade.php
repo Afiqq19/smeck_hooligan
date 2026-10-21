@@ -193,11 +193,11 @@
                                 </div>
                             </div>
 
-                            {{-- SMeCK Official Seal / Watermark Text --}}
+                            {{-- Nomor Kartu Fisik KTA --}}
                             <div class="text-right">
-                                <div class="font-mono text-[9px] text-white/40 tracking-widest">NFC UID:</div>
-                                <div class="font-mono text-[10px] sm:text-xs text-smeck-green-400 font-bold">
-                                    {{ $user->nfcCard?->uid_number ?? '04:A2:8B:1A:F3:60:80' }}
+                                <div class="font-mono text-[9px] text-white/40 tracking-widest uppercase">No. Kartu KTA:</div>
+                                <div class="font-mono text-[10px] sm:text-xs text-smeck-gold font-bold tracking-wider">
+                                    {{ $user->nfcCard?->card_number ?? '6032-9800-2024-1950' }}
                                 </div>
                             </div>
                         </div>

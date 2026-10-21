@@ -34,22 +34,28 @@ class PublicController extends Controller
      */
     public function checkKta(Request $request)
     {
-        $query = trim($request->get('query', ''));
-        if (empty($query)) {
+        $rawQuery = trim($request->input('query', $request->input('identifier', '')));
+        $cleanQuery = str_replace([' ', '-', ':', '.'], '', strtolower($rawQuery));
+
+        if (empty($rawQuery)) {
             return response()->json([
                 'success' => false,
-                'message' => 'Silakan masukkan nomor UID NFC atau Nomor Induk Anggota (NIA).',
+                'message' => 'Silakan masukkan nomor kartu KTA, nomor UID NFC, atau Nomor Induk Anggota (NIA).',
             ], 400);
         }
 
-        // 1. Cari berdasarkan UID Chip NFC (Case-Insensitive)
-        $card = \App\Models\NfcCard::whereRaw('LOWER(uid_number) = ?', [strtolower($query)])
-            ->with(['user.profile', 'user.chapter'])
-            ->first();
+        // 1. Cari berdasarkan Nomor Kartu Fisik (card_number) atau UID Chip NFC
+        $card = \App\Models\NfcCard::where(function ($q) use ($rawQuery, $cleanQuery) {
+            $q->whereRaw('LOWER(uid_number) = ?', [strtolower($rawQuery)])
+                ->orWhereRaw('REPLACE(REPLACE(LOWER(uid_number), ":", ""), "-", "") = ?', [$cleanQuery])
+                ->orWhereRaw('LOWER(card_number) = ?', [strtolower($rawQuery)])
+                ->orWhereRaw('REPLACE(REPLACE(LOWER(card_number), " ", ""), "-", "") = ?', [$cleanQuery]);
+        })->with(['user.profile', 'user.chapter'])->first();
 
         // 2. Jika tidak ditemukan, cari berdasarkan NIA Anggota
         if (! $card) {
-            $profile = \App\Models\MemberProfile::whereRaw('LOWER(nia) = ?', [strtolower($query)])
+            $profile = \App\Models\MemberProfile::whereRaw('LOWER(nia) = ?', [strtolower($rawQuery)])
+                ->orWhereRaw('REPLACE(LOWER(nia), "-", "") = ?', [$cleanQuery])
                 ->with(['user.chapter', 'user.nfcCard'])
                 ->first();
 
@@ -62,9 +68,9 @@ class PublicController extends Controller
             $profile = $user?->profile;
         }
 
-        // 3. Jika masih tidak ditemukan, coba cari berdasarkan NIK KTP (jika admin/pemilik mencari)
+        // 3. Jika masih tidak ditemukan, coba cari berdasarkan NIK KTP
         if (! isset($user) || ! $user) {
-            $profile = \App\Models\MemberProfile::where('nik_ktp', $query)
+            $profile = \App\Models\MemberProfile::where('nik_ktp', $rawQuery)
                 ->with(['user.chapter', 'user.nfcCard'])
                 ->first();
 
@@ -77,9 +83,22 @@ class PublicController extends Controller
         if (! isset($user) || ! $user) {
             return response()->json([
                 'success' => false,
-                'message' => "Data suporter dengan kartu/nomor '{$query}' tidak terdaftar dalam database resmi SMeCK Hooligan.",
+                'message' => "Data suporter dengan kartu/nomor '{$rawQuery}' tidak terdaftar dalam database resmi SMeCK Hooligan.",
             ], 404);
         }
+
+        // Format nomor kartu yang elegan & aman untuk publik (sembunyikan raw chip UID)
+        $displayCardNo = $card?->card_number;
+        if (! $displayCardNo) {
+            $digits = preg_replace('/\D/', '', $profile?->nia ?? '195020260001');
+            $displayCardNo = '6032 ' . substr($digits . '19501234', 0, 4) . ' ' . substr($digits . '5678', 4, 4) . ' ' . substr($profile?->nik_ktp ?? '8820', -4);
+        }
+
+        // Masked version untuk privasi: 6032 •••• •••• 1950
+        $parts = explode('-', str_replace(' ', '-', $displayCardNo));
+        $maskedCard = count($parts) >= 4
+            ? $parts[0] . ' •••• •••• ' . $parts[3]
+            : substr($displayCardNo, 0, 4) . ' •••• •••• ' . substr($displayCardNo, -4);
 
         return response()->json([
             'success' => true,
@@ -93,8 +112,9 @@ class PublicController extends Controller
                 'blood_type' => $profile?->blood_type ?? '-',
                 'shirt_size' => $profile?->shirt_size ?? '-',
                 'joined_date' => $profile?->joined_date ? $profile->joined_date->format('d F Y') : ($user->created_at ? $user->created_at->format('d F Y') : '-'),
-                'uid_number' => $card?->uid_number ?? 'KTA Digital (Non-Fisik)',
-                'card_vendor' => strtoupper($card?->card_vendor ?? 'Digital'),
+                'card_number' => $displayCardNo,
+                'card_number_masked' => $maskedCard,
+                'card_vendor' => strtoupper($card?->card_vendor ?? 'Digital Official'),
                 'card_status' => $card?->status ?? 'active',
                 'user_status' => $user->status,
                 'avatar_letter' => strtoupper(substr($user->name, 0, 1)),
