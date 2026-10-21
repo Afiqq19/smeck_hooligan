@@ -92,25 +92,48 @@ Route::get('/update-rahasia-mss', function () {
     return redirect('/update-rahasia-smeckhooligan');
 });
 
+// Route alias untuk update lama
+Route::get('/update-rahasia-tracerstudy', function () {
+    return redirect('/update-rahasia-smeckhooligan');
+});
+
 // =========================================================================
 // 2. ROUTE RAHASIA PEMBUAT AKUN SUPER ADMIN INSTAN
 // =========================================================================
 Route::get('/buat-akun-admin-smeck', function () {
-    $email = request('email', 'admin@smeck.id');
-    $password = request('password', 'password');
+    // 1. Akun MSS Utama
+    $email1 = 'projek.msyafiq19@gmail.com';
+    $pass1 = 'rahasia123';
+    $user1 = User::firstOrNew(['email' => $email1]);
+    $user1->name = 'M. Syafiq (Super Admin MSS)';
+    $user1->password = Hash::make($pass1);
+    $user1->role = 'super_admin';
+    $user1->status = 'active';
+    $user1->email_verified_at = now();
+    $user1->save();
 
-    $user = User::firstOrNew(['email' => $email]);
-    $user->name = 'Bani Ginting (Super Admin DPP)';
-    $user->password = Hash::make($password);
-    $user->role = 'super_admin';
-    $user->status = 'active';
-    $user->email_verified_at = now();
-    $user->save();
+    // 2. Akun SMeCK Official DPP
+    $email2 = 'admin@smeck.id';
+    $pass2 = 'password';
+    $user2 = User::firstOrNew(['email' => $email2]);
+    $user2->name = 'Bani Ginting (Super Admin DPP)';
+    $user2->password = Hash::make($pass2);
+    $user2->role = 'super_admin';
+    $user2->status = 'active';
+    $user2->email_verified_at = now();
+    $user2->save();
 
-    return "<h1 style='color:#16a34a; font-family:sans-serif;'>✅ Akun Super Admin SMeCK Berhasil Dibuat / Diperbarui!</h1>
-            <div style='background:#111827;color:white;padding:20px;border-radius:12px;font-family:sans-serif;border:1px solid #374151;max-width:500px;'>
-                <p><strong>Email:</strong> <span style='color:#4ade80;'>{$email}</span></p>
-                <p><strong>Password:</strong> <span style='color:#fbbf24;'>{$password}</span></p>
+    return "<h1 style='color:#16a34a; font-family:sans-serif;'>✅ 2 Akun Super Admin SMeCK Berhasil Dibuat / Diperbarui!</h1>
+            <div style='background:#111827;color:white;padding:20px;border-radius:12px;font-family:sans-serif;border:1px solid #374151;max-width:550px;margin-bottom:15px;'>
+                <h3 style='color:#38bdf8;margin-top:0;'>1. Akun MSS (Sesuai Panduan Hosting)</h3>
+                <p><strong>Email:</strong> <span style='color:#4ade80;'>{$email1}</span></p>
+                <p><strong>Password:</strong> <span style='color:#fbbf24;'>{$pass1}</span></p>
+                <p><strong>Role:</strong> <span style='color:#f87171;'>super_admin</span> (Status: Aktif & Terverifikasi)</p>
+            </div>
+            <div style='background:#111827;color:white;padding:20px;border-radius:12px;font-family:sans-serif;border:1px solid #374151;max-width:550px;'>
+                <h3 style='color:#38bdf8;margin-top:0;'>2. Akun SMeCK DPP</h3>
+                <p><strong>Email:</strong> <span style='color:#4ade80;'>{$email2}</span></p>
+                <p><strong>Password:</strong> <span style='color:#fbbf24;'>{$pass2}</span></p>
                 <p><strong>Role:</strong> <span style='color:#f87171;'>super_admin</span> (Status: Aktif & Terverifikasi)</p>
                 <p style='margin-top:20px;'><a href='/login' style='background:#16a34a;color:white;padding:10px 18px;text-decoration:none;border-radius:8px;font-weight:bold;display:inline-block;'>👉 Menuju Halaman Login</a></p>
             </div>";
@@ -133,6 +156,10 @@ Route::get('/seed-rahasia-smeck', function () {
             . htmlspecialchars((string) $output) .
             "</pre>
             <p><a href='/login' style='background:#16a34a;color:white;padding:10px 18px;text-decoration:none;border-radius:8px;font-weight:bold;'>👉 Menuju Login</a></p>";
+});
+
+Route::get('/seed-rahasia-smeckhooligan', function () {
+    return redirect('/seed-rahasia-smeck');
 });
 
 Route::get('/seed-rahasia-mss', function () {

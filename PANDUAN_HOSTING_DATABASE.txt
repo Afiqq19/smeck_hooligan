@@ -1,0 +1,139 @@
+========================================================================
+PANDUAN LENGKAP HOSTING PROYEK (MODE DOCKER) & KONEKSI DATABASE MSS SERVER
+========================================================================
+Diperbarui untuk: SMeCK Hooligan - Port 9005 & Database mss-db
+
+Panduan ini mencakup langkah demi langkah meng-hosting proyek Laravel dari GitHub
+(https://github.com/Afiqq19/smeck_hooligan.git) ke server Linux Toshiba menggunakan DOCKER,
+terhubung ke Database Panel (mss-db), dan di-onlinekan via Cloudflare Tunnel.
+
+------------------------------------------------------------------------
+LANGKAH 1: SIAPKAN DATABASE KOSONG DI PANEL
+------------------------------------------------------------------------
+1. Buka MSS Server Panel di browser:
+   https://panel.xie.my.id
+2. Masuk ke menu "Database Manager" di sebelah kiri.
+3. Di tab "Visual Explorer", klik tombol bulat warna biru dengan tanda Plus (+).
+4. Masukkan nama database untuk SMeCK Hooligan:
+   Nama DB: db_smeckhooligan
+5. Pada pilihan Mesin Database, pilih wadah:
+   Mesin: mss-db
+6. Selesai! Database kosong db_smeckhooligan sudah siap digunakan.
+
+------------------------------------------------------------------------
+LANGKAH 2: MASUK KE SERVER & CLONE PROYEK
+------------------------------------------------------------------------
+1. Masuk via SSH ke server Linux Toshiba Anda:
+   mss@servermss:~$
+2. Masuk ke direktori web server:
+   cd /var/www/
+3. Unduh repositori dari GitHub:
+   git clone https://github.com/Afiqq19/smeck_hooligan.git
+4. Masuk ke folder proyek:
+   cd smeck_hooligan
+
+------------------------------------------------------------------------
+LANGKAH 3: KONFIGURASI DOCKER (DOCKERFILE & DOCKER-COMPOSE)
+------------------------------------------------------------------------
+(CATATAN: File Dockerfile dan docker-compose.yml SUDAH DISEDIAKAN langsung di dalam repositori GitHub, jadi Anda tidak perlu membuatnya manual lagi!)
+
+1. File `Dockerfile`:
+   PHP 8.3 Apache + Ekstensi MySQL, PgSQL, GD, Zip + Composer.
+
+2. File `docker-compose.yml`:
+   Mengarahkan Port 9005 host ke Port 80 Apache container:
+   - Container Name: web_smeckhooligan
+   - Port: 9005:80
+   - Volume: ./:/var/www/html
+
+------------------------------------------------------------------------
+LANGKAH 4: HUBUNGKAN KONEKSI DATABASE (.ENV)
+------------------------------------------------------------------------
+1. Buat file .env dari template:
+   cp .env.example .env
+2. Edit file .env:
+   nano .env
+3. Sesuaikan konfigurasi database agar terhubung langsung ke wadah mss-db:
+
+   APP_NAME="SMeCK Hooligan Official"
+   APP_ENV=production
+   APP_DEBUG=false
+   APP_URL=https://projek1.xie.my.id
+   APP_TIMEZONE=Asia/Jakarta
+
+   DB_CONNECTION=mysql
+   DB_HOST=mss-db
+   DB_PORT=3306
+   DB_DATABASE=db_smeckhooligan
+   DB_USERNAME=root
+   DB_PASSWORD=root_secret_pass
+
+   (Catatan: Password "root_secret_pass" sudah sesuai dengan password default container mss-db pada server MSS Anda!)
+4. Simpan perubahan: Tekan CTRL+O, Enter, lalu CTRL+X.
+
+------------------------------------------------------------------------
+LANGKAH 5: JALANKAN DOCKER, KUNCI AKSES, & MIGRATE + SEED
+------------------------------------------------------------------------
+1. Bangun dan hidupkan container Docker:
+   docker compose up -d --build
+
+2. Gabungkan jaringan container ke jaringan panel MSS (agar container mss-db terbaca):
+   docker network connect mss-server-panel_mss-network web_smeckhooligan
+
+3. Berikan hak akses file .env dan storage agar tidak permission denied:
+   docker exec -u root -it web_smeckhooligan chown -R www-data:www-data /var/www/html
+   docker exec -u root -it web_smeckhooligan chmod 777 /var/www/html/.env
+   docker exec -u root -it web_smeckhooligan chmod -R 777 /var/www/html/storage /var/www/html/bootstrap/cache
+
+4. Jalankan dependensi, pembuatan App Key, migrasi database, dan seeder:
+   docker exec -it web_smeckhooligan composer install --no-interaction --prefer-dist --optimize-autoloader
+   docker exec -it web_smeckhooligan php artisan key:generate
+   docker exec -it web_smeckhooligan php artisan config:clear
+   docker exec -it web_smeckhooligan php artisan migrate --force
+   docker exec -it web_smeckhooligan php artisan db:seed --force
+   docker exec -it web_smeckhooligan php artisan storage:link
+
+------------------------------------------------------------------------
+LANGKAH 6: AKSES WEBSITE (LOKAL & DOMAIN ONLINE)
+------------------------------------------------------------------------
+1. Akses Lokal Server:
+   Buka browser di jaringan lokal / WiFi yang sama:
+   http://192.168.1.100:9005
+
+2. Online ke Domain Publik (via Cloudflare Zero Trust Tunnel):
+   - Buka Cloudflare Zero Trust Dashboard (Networks > Tunnels).
+   - Masuk ke tunnel server Toshiba Anda.
+   - Tambahkan Public Hostname baru:
+       Domain: projek1.xie.my.id
+       Service Type: HTTP
+       URL: 192.168.1.100:9005
+   - Klik Save Hostname.
+   - Website Anda langsung online di: https://projek1.xie.my.id !
+
+------------------------------------------------------------------------
+LANGKAH 7: FITUR SAKTI DI ROUTES/DEPLOY.PHP (AUTO-DEPLOY, ADMIN, & SEEDER)
+------------------------------------------------------------------------
+(CATATAN: Semua fitur di bawah ini SUDAH TERPASANG langsung di dalam file routes/deploy.php repositori!)
+
+A. AUTO-DEPLOY WEBHOOK (Update website otomatis lewat browser tanpa SSH):
+   Tinggal buka link ini di browser setelah Anda push kode baru ke GitHub:
+   👉 https://projek1.xie.my.id/update-rahasia-smeckhooligan
+   (atau https://projek1.xie.my.id/update-rahasia-smeck)
+   Server akan otomatis fetch git terbaru, reset ke origin/main, install composer, migrate, dan bersihkan cache!
+
+B. TOMBOL RAHASIA PEMBUAT AKUN ADMIN INSTAN:
+   Jika baru pertama kali install dan ingin membuat akun admin otomatis:
+   👉 https://projek1.xie.my.id/buat-akun-admin-smeck
+   (atau https://projek1.xie.my.id/buat-akun-admin-mss)
+   - Akun 1: projek.msyafiq19@gmail.com / rahasia123 (Super Admin MSS)
+   - Akun 2: admin@smeck.id / password (Super Admin DPP)
+   (Kedua akun langsung aktif & terverifikasi otomatis)
+
+C. TOMBOL RAHASIA SEED DATABASE:
+   Jika ingin menjalankan ulang seeder data master:
+   👉 https://projek1.xie.my.id/seed-rahasia-smeckhooligan
+   (atau https://projek1.xie.my.id/seed-rahasia-smeck)
+
+========================================================================
+SELESAI! SMeCK Hooligan sudah siap online, aman, dan mudah di-update selamanya!
+========================================================================

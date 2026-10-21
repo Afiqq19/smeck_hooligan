@@ -1,0 +1,16 @@
+version: '3.8'
+
+services:
+  web_smeckhooligan:
+    build:
+      context: .
+      dockerfile: Dockerfile
+    container_name: web_smeckhooligan
+    restart: unless-stopped
+    ports:
+      - "9005:80"
+    volumes:
+      - ./:/var/www/html
+      - /var/www/html/vendor
+    environment:
+      - APACHE_DOCUMENT_ROOT=/var/www/html/public
