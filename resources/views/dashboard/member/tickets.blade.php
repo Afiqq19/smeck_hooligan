@@ -43,10 +43,14 @@
                                 Rp {{ number_format($m->price, 0, ',', '.') }}
                             </span>
                         </div>
-                        <button type="button" onclick="alert('Tiket berhasil dipesan secara kolektif melalui Chapter Anda!')" class="px-6 py-3 rounded-xl bg-smeck-green-600 hover:bg-smeck-green-500 text-white font-bold text-xs shadow-lg transition-all flex items-center gap-2">
-                            <i class="fa-solid fa-ticket"></i>
-                            <span>{{ $m->type === 'away' ? 'Daftar & Pilih Kursi Bus' : 'Pesan Tiket Masuk' }}</span>
-                        </button>
+                        <form action="{{ route('member.tickets.order') }}" method="POST">
+                            @csrf
+                            <input type="hidden" name="match_ticket_id" value="{{ $m->id }}">
+                            <button type="submit" onclick="return confirm('Pesan tiket {{ addslashes($m->match_title) }} seharga Rp {{ number_format($m->price, 0, ',', '.') }}?')" class="px-6 py-3 rounded-xl bg-smeck-green-600 hover:bg-smeck-green-500 text-white font-bold text-xs shadow-lg transition-all flex items-center gap-2">
+                                <i class="fa-solid fa-ticket"></i>
+                                <span>{{ $m->type === 'away' ? 'Daftar & Pilih Kursi Bus' : 'Pesan Tiket Masuk' }}</span>
+                            </button>
+                        </form>
                     </div>
 
                 </div>
@@ -55,6 +59,32 @@
             <div class="text-center py-12 text-white/40">Belum ada jadwal pertandingan yang dibuka.</div>
         @endforelse
     </div>
+
+    {{-- Riwayat Pemesanan Tiket Member --}}
+    @if(isset($myOrders) && $myOrders->isNotEmpty())
+        <div class="p-6 sm:p-8 rounded-3xl bg-smeck-dark-900 border border-white/10 shadow-xl">
+            <h4 class="font-display font-bold text-lg text-white mb-4 flex items-center gap-2">
+                <i class="fa-solid fa-receipt text-smeck-gold"></i>
+                <span>Tiket Pertandingan yang Telah Saya Pesan</span>
+            </h4>
+            <div class="divide-y divide-white/5">
+                @foreach($myOrders as $order)
+                    <div class="py-3.5 flex items-center justify-between">
+                        <div>
+                            <div class="font-bold text-white text-sm">{{ $order->matchTicket?->match_title ?? 'Tiket PSMS' }}</div>
+                            <div class="text-xs text-white/40">{{ $order->matchTicket?->stadium }} • {{ $order->created_at->format('d M Y H:i') }}</div>
+                        </div>
+                        <div class="text-right">
+                            <span class="px-2.5 py-0.5 rounded-full text-[10px] font-bold bg-smeck-green-500/20 text-smeck-green-400">
+                                TERPESAN
+                            </span>
+                            <div class="font-mono text-smeck-gold text-xs font-bold mt-1">Rp {{ number_format($order->total_amount, 0, ',', '.') }}</div>
+                        </div>
+                    </div>
+                @endforeach
+            </div>
+        </div>
+    @endif
 
 </div>
 @endsection

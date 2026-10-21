@@ -13,7 +13,11 @@
             <h2 class="font-display font-black text-xl sm:text-2xl text-white">Database Anggota & Kartu KTA NFC</h2>
             <p class="text-xs text-white/50">Basis Wilayah: <span class="text-smeck-green-400 font-semibold">{{ $chapter->name ?? 'Chapter' }}</span></p>
         </div>
-        <div class="flex items-center gap-3">
+        <div class="flex flex-wrap items-center gap-2.5">
+            <button onclick="openPrintRosterModal()" class="px-4 py-2.5 rounded-xl bg-white/10 hover:bg-white/20 text-white font-bold text-xs border border-white/10 transition-all flex items-center gap-2">
+                <i class="fa-solid fa-print text-amber-400"></i>
+                <span>Cetak Roster (A4)</span>
+            </button>
             <button onclick="openAddMemberModal()" class="px-5 py-2.5 rounded-xl bg-smeck-green-600 hover:bg-smeck-green-500 text-white font-bold text-xs shadow-lg shadow-smeck-green-700/30 transition-all flex items-center gap-2">
                 <i class="fa-solid fa-user-plus"></i>
                 <span>+ Tambah Anggota Basis</span>
@@ -96,7 +100,7 @@
                 <thead>
                     <tr class="bg-white/5 border-b border-white/10 text-white/40 uppercase tracking-wider text-[11px]">
                         <th class="py-4 px-5">Anggota & NIA</th>
-                        <th class="py-4 px-5">Identitas & Kontak</th>
+                        <th class="py-4 px-5">Identitas Medis & Kontak</th>
                         <th class="py-4 px-5">Nomor Kartu KTA</th>
                         <th class="py-4 px-5 text-center">Status Kartu</th>
                         <th class="py-4 px-5 text-right">Aksi Manajemen KTA</th>
@@ -106,6 +110,27 @@
                     @forelse($members as $m)
                         @php
                             $card = $m->nfcCard;
+                            $memberJson = json_encode([
+                                'id' => $m->id,
+                                'name' => $m->name,
+                                'email' => $m->email,
+                                'nia' => $m->profile?->nia ?? 'Belum ada NIA',
+                                'nik' => $m->profile?->nik_ktp ?? '-',
+                                'phone' => $m->profile?->phone_number ?? '-',
+                                'blood_type' => $m->profile?->blood_type ?? '-',
+                                'shirt_size' => $m->profile?->shirt_size ?? '-',
+                                'gender' => $m->profile?->gender == 'L' ? 'Laki-laki' : ($m->profile?->gender == 'P' ? 'Perempuan' : '-'),
+                                'birth' => ($m->profile?->place_of_birth ?? '-') . ', ' . ($m->profile?->date_of_birth ? $m->profile->date_of_birth->format('d M Y') : '-'),
+                                'address' => $m->profile?->address ?? '-',
+                                'emergency_name' => $m->profile?->emergency_contact_name ?? '-',
+                                'emergency_phone' => $m->profile?->emergency_contact_number ?? '-',
+                                'emergency_rel' => $m->profile?->emergency_contact_relation ?? '-',
+                                'card_number' => $card ? $card->card_number : 'Belum Ada',
+                                'card_uid' => $card ? $card->uid_number : 'Belum Ada',
+                                'card_vendor' => $card ? strtoupper($card->card_vendor) : '-',
+                                'card_status' => $card ? $card->status : 'none',
+                                'joined' => $m->created_at ? $m->created_at->format('d M Y') : '-'
+                            ], JSON_HEX_TAG | JSON_HEX_APOS | JSON_HEX_QUOT | JSON_HEX_AMP);
                         @endphp
                         <tr class="hover:bg-white/[0.02] transition-colors">
                             {{-- Info Anggota --}}
@@ -115,7 +140,12 @@
                                         {{ strtoupper(substr($m->name, 0, 1)) }}
                                     </div>
                                     <div class="min-w-0">
-                                        <div class="font-bold text-white text-sm truncate">{{ $m->name }}</div>
+                                        <div class="font-bold text-white text-sm truncate flex items-center gap-1.5">
+                                            <span>{{ $m->name }}</span>
+                                            <button type="button" onclick='showMemberDetail({!! $memberJson !!})' class="text-amber-400 hover:text-amber-300 text-[11px]" title="Lihat Profil Lengkap">
+                                                <i class="fa-solid fa-circle-info"></i>
+                                            </button>
+                                        </div>
                                         <div class="text-[11px] text-white/40 truncate">{{ $m->email }}</div>
                                         <div class="font-mono text-[10px] text-smeck-gold mt-0.5">
                                             <i class="fa-solid fa-id-badge text-[9px] mr-1"></i>{{ $m->profile?->nia ?? 'Belum ada NIA' }}
@@ -132,8 +162,9 @@
                                 <div class="text-white/40 text-[11px] mt-0.5">
                                     NIK: <span class="font-mono">{{ $m->profile?->nik_ktp ?? '-' }}</span>
                                 </div>
-                                <div class="text-[10px] text-amber-400/80 mt-0.5">
-                                    Gol. Darah: <span class="font-bold">{{ $m->profile?->blood_type ?? '-' }}</span> • Ukuran: <span class="font-bold">{{ $m->profile?->shirt_size ?? '-' }}</span>
+                                <div class="text-[10px] text-amber-400/90 mt-0.5 flex items-center gap-2">
+                                    <span class="px-1.5 py-0.5 rounded bg-amber-400/10 text-amber-300 font-bold">Gol: {{ $m->profile?->blood_type ?? '-' }}</span>
+                                    <span class="px-1.5 py-0.5 rounded bg-white/10 text-white/70 font-bold">Size: {{ $m->profile?->shirt_size ?? '-' }}</span>
                                 </div>
                             </td>
 
@@ -146,7 +177,7 @@
                                     <div class="text-[10px] text-white/50 uppercase mt-0.5 flex items-center gap-2">
                                         <span><i class="fa-solid fa-credit-card mr-1 text-white/30"></i>{{ $card->card_vendor }}</span>
                                         <span>•</span>
-                                        <span class="text-white/30 font-mono text-[9px]">UID: {{ substr($card->uid_number, 0, 8) }}••</span>
+                                        <span class="text-white/40 font-mono text-[9px]">UID: {{ substr($card->uid_number, 0, 8) }}••</span>
                                     </div>
                                     <div class="text-[10px] text-white/30">
                                         Terbit: {{ $card->issued_at ? $card->issued_at->format('d M Y') : '-' }}
@@ -179,12 +210,17 @@
 
                             {{-- Aksi Manajemen KTA NFC --}}
                             <td class="py-4 px-5 text-right">
-                                <div class="flex items-center justify-end gap-2">
+                                <div class="flex items-center justify-end gap-1.5">
+                                    {{-- Tombol Detail Profil --}}
+                                    <button type="button" onclick='showMemberDetail({!! $memberJson !!})' class="px-2.5 py-1.5 rounded-lg bg-white/5 hover:bg-white/15 text-white/70 hover:text-white text-[11px] font-semibold transition-colors" title="Lihat Profil">
+                                        <i class="fa-regular fa-eye"></i>
+                                    </button>
+
                                     {{-- Jika Belum Punya Kartu: Tombol Terbitkan --}}
                                     @if(!$card)
                                         <button onclick="openReplaceModal({{ $m->id }}, '{{ addslashes($m->name) }}', 'Terbitkan KTA Baru')" class="px-3 py-1.5 rounded-lg bg-smeck-green-600 hover:bg-smeck-green-500 text-white font-semibold text-[11px] shadow transition-colors flex items-center gap-1.5">
                                             <i class="fa-solid fa-plus"></i>
-                                            <span>Terbitkan Kartu</span>
+                                            <span>Terbitkan KTA</span>
                                         </button>
                                     @else
                                         {{-- Jika Kartu Aktif: Tombol Blokir (Hilang/Dicuri) --}}
@@ -193,7 +229,7 @@
                                                 @csrf
                                                 <button type="submit" class="px-2.5 py-1.5 rounded-lg bg-red-500/10 hover:bg-red-500 text-red-400 hover:text-white border border-red-500/20 font-semibold text-[11px] transition-colors flex items-center gap-1" title="Lapor Kartu Hilang & Blokir">
                                                     <i class="fa-solid fa-ban"></i>
-                                                    <span class="hidden sm:inline">Blokir (Hilang)</span>
+                                                    <span class="hidden sm:inline">Blokir</span>
                                                 </button>
                                             </form>
                                         @else
@@ -202,7 +238,7 @@
                                                 @csrf
                                                 <button type="submit" class="px-2.5 py-1.5 rounded-lg bg-smeck-green-500/10 hover:bg-smeck-green-600 text-smeck-green-400 hover:text-white border border-smeck-green-500/20 font-semibold text-[11px] transition-colors flex items-center gap-1" title="Buka Blokir Kartu">
                                                     <i class="fa-solid fa-unlock"></i>
-                                                    <span class="hidden sm:inline">Buka Blokir</span>
+                                                    <span class="hidden sm:inline">Buka</span>
                                                 </button>
                                             </form>
                                         @endif
@@ -210,7 +246,7 @@
                                         {{-- Tombol Ganti Kartu Baru (Re-Issue) --}}
                                         <button onclick="openReplaceModal({{ $m->id }}, '{{ addslashes($m->name) }}', 'Ganti Kartu KTA Fisik Baru')" class="px-2.5 py-1.5 rounded-lg bg-amber-500/10 hover:bg-amber-600 text-amber-400 hover:text-white border border-amber-500/20 font-semibold text-[11px] transition-colors flex items-center gap-1" title="Ganti Kartu Baru">
                                             <i class="fa-solid fa-arrows-rotate"></i>
-                                            <span class="hidden sm:inline">Ganti Kartu</span>
+                                            <span class="hidden sm:inline">Ganti</span>
                                         </button>
                                     @endif
                                 </div>
@@ -227,6 +263,14 @@
                 </tbody>
             </table>
         </div>
+
+        {{-- Pagination --}}
+        @if($members->hasPages())
+            <div class="p-4 border-t border-white/5 bg-white/[0.01]">
+                {{ $members->links() }}
+            </div>
+        @endif
+    </div>
 
         {{-- Pagination --}}
         @if($members->hasPages())
@@ -439,6 +483,224 @@
     </div>
 </div>
 
+{{-- ========================================================================= --}}
+{{-- MODAL 3: DETAIL PROFIL LENGKAP SUPORTER --}}
+{{-- ========================================================================= --}}
+<div id="modalMemberDetail" class="fixed inset-0 z-50 bg-black/85 backdrop-blur-md hidden flex items-center justify-center p-4 overflow-y-auto">
+    <div class="bg-smeck-dark-900 border border-white/10 rounded-3xl max-w-xl w-full p-6 sm:p-8 shadow-2xl relative my-8">
+        <button onclick="closeMemberDetail()" class="absolute top-6 right-6 text-white/40 hover:text-white text-lg">
+            <i class="fa-solid fa-xmark"></i>
+        </button>
+
+        <div class="flex items-center gap-4 mb-6">
+            <div id="detailAvatar" class="w-14 h-14 rounded-2xl bg-smeck-green-600/30 border border-smeck-green-500/40 text-smeck-green-400 flex items-center justify-center font-display font-black text-2xl shrink-0">
+                A
+            </div>
+            <div>
+                <h3 id="detailName" class="font-display font-black text-xl text-white">Nama Suporter</h3>
+                <div class="flex items-center gap-2 mt-1">
+                    <span id="detailNia" class="px-2 py-0.5 rounded bg-smeck-gold/20 text-smeck-gold font-mono text-xs font-bold">NIA: -</span>
+                    <span id="detailStatus" class="px-2 py-0.5 rounded bg-smeck-green-500/20 text-smeck-green-400 text-[11px] font-bold uppercase">Aktif</span>
+                </div>
+            </div>
+        </div>
+
+        {{-- Detail Grid --}}
+        <div class="space-y-4 text-xs">
+            {{-- Info KTA NFC --}}
+            <div class="p-4 rounded-2xl bg-white/[0.03] border border-white/5 space-y-2">
+                <div class="text-[11px] uppercase tracking-wider font-bold text-smeck-gold flex items-center gap-1.5">
+                    <i class="fa-solid fa-credit-card"></i>
+                    <span>Informasi KTA NFC Fisik</span>
+                </div>
+                <div class="grid grid-cols-2 gap-3 pt-1">
+                    <div>
+                        <span class="text-white/40 block">Nomor Kartu:</span>
+                        <span id="detailCardNumber" class="font-mono font-bold text-white text-sm">6032-XXXX-XXXX-XXXX</span>
+                    </div>
+                    <div>
+                        <span class="text-white/40 block">Chip UID:</span>
+                        <span id="detailCardUid" class="font-mono text-white/80">04:XX:XX:XX:XX</span>
+                    </div>
+                    <div>
+                        <span class="text-white/40 block">Vendor Fisik:</span>
+                        <span id="detailCardVendor" class="text-white/80 font-semibold">MANDIRI E-MONEY</span>
+                    </div>
+                    <div>
+                        <span class="text-white/40 block">Status KTA:</span>
+                        <span id="detailCardStatus" class="font-bold text-smeck-green-400">AKTIF</span>
+                    </div>
+                </div>
+            </div>
+
+            {{-- Info Pribadi & Medis --}}
+            <div class="p-4 rounded-2xl bg-white/[0.03] border border-white/5 space-y-2">
+                <div class="text-[11px] uppercase tracking-wider font-bold text-amber-400 flex items-center gap-1.5">
+                    <i class="fa-solid fa-notes-medical"></i>
+                    <span>Data Medis & Pribadi</span>
+                </div>
+                <div class="grid grid-cols-2 sm:grid-cols-3 gap-3 pt-1">
+                    <div>
+                        <span class="text-white/40 block">Golongan Darah:</span>
+                        <span id="detailBloodType" class="text-amber-300 font-bold text-sm">O</span>
+                    </div>
+                    <div>
+                        <span class="text-white/40 block">Ukuran Kaos:</span>
+                        <span id="detailShirtSize" class="text-white font-bold text-sm">XL</span>
+                    </div>
+                    <div>
+                        <span class="text-white/40 block">Jenis Kelamin:</span>
+                        <span id="detailGender" class="text-white/80">Laki-laki</span>
+                    </div>
+                    <div class="col-span-2 sm:col-span-3">
+                        <span class="text-white/40 block">NIK KTP:</span>
+                        <span id="detailNik" class="font-mono text-white">1271xxxxxxxxxxxx</span>
+                    </div>
+                    <div class="col-span-2 sm:col-span-3">
+                        <span class="text-white/40 block">Tempat, Tanggal Lahir:</span>
+                        <span id="detailBirth" class="text-white/80">Medan, 17 Agustus 1998</span>
+                    </div>
+                    <div class="col-span-2 sm:col-span-3">
+                        <span class="text-white/40 block">Alamat Domisili:</span>
+                        <span id="detailAddress" class="text-white/80 leading-relaxed">-</span>
+                    </div>
+                </div>
+            </div>
+
+            {{-- Kontak Darurat --}}
+            <div class="p-4 rounded-2xl bg-white/[0.03] border border-white/5 space-y-2">
+                <div class="text-[11px] uppercase tracking-wider font-bold text-red-400 flex items-center gap-1.5">
+                    <i class="fa-solid fa-phone-volume"></i>
+                    <span>Kontak Darurat (Emergency Awaydays)</span>
+                </div>
+                <div class="grid grid-cols-2 gap-3 pt-1">
+                    <div>
+                        <span class="text-white/40 block">Nama Kontak:</span>
+                        <span id="detailEmergencyName" class="text-white font-semibold">-</span>
+                    </div>
+                    <div>
+                        <span class="text-white/40 block">Hubungan:</span>
+                        <span id="detailEmergencyRel" class="text-white/80">-</span>
+                    </div>
+                    <div class="col-span-2">
+                        <span class="text-white/40 block">Nomor Telepon:</span>
+                        <span id="detailEmergencyPhone" class="font-mono text-amber-400 font-bold">-</span>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <div class="mt-6 flex items-center justify-end">
+            <button type="button" onclick="closeMemberDetail()" class="px-5 py-2 rounded-xl bg-white/10 hover:bg-white/20 text-white text-xs font-semibold transition-colors">
+                Tutup
+            </button>
+        </div>
+    </div>
+</div>
+
+{{-- ========================================================================= --}}
+{{-- MODAL 4: CETAK ROSTER ANGGOTA BASIS (A4 PRINT PREVIEW) --}}
+{{-- ========================================================================= --}}
+<div id="modalPrintRoster" class="fixed inset-0 z-50 bg-black/90 backdrop-blur-md hidden flex items-center justify-center p-4 overflow-y-auto">
+    <div class="bg-white text-slate-900 rounded-2xl max-w-4xl w-full p-6 sm:p-8 shadow-2xl relative my-8 print:p-0 print:m-0 print:shadow-none print:w-full">
+        {{-- Tombol Tutup & Cetak (Sembunyi saat di-print) --}}
+        <div class="flex items-center justify-between pb-4 border-b border-slate-200 mb-6 print:hidden">
+            <div>
+                <h4 class="font-bold text-base text-slate-800">Preview Dokumen Roster Anggota Basis</h4>
+                <p class="text-xs text-slate-500">Format siap cetak A4 untuk keperluan surat jalan tur awaydays atau kepolisian.</p>
+            </div>
+            <div class="flex items-center gap-2">
+                <button onclick="window.print()" class="px-4 py-2 rounded-xl bg-emerald-700 hover:bg-emerald-800 text-white font-bold text-xs shadow flex items-center gap-2">
+                    <i class="fa-solid fa-print"></i>
+                    <span>Cetak Sekarang (Print)</span>
+                </button>
+                <button onclick="closePrintRosterModal()" class="px-3 py-2 rounded-xl bg-slate-100 hover:bg-slate-200 text-slate-700 font-bold text-xs">
+                    Tutup
+                </button>
+            </div>
+        </div>
+
+        {{-- Printable Paper Area --}}
+        <div id="printableArea" class="font-sans">
+            {{-- Kop Surat Resmi --}}
+            <div class="flex items-center justify-between pb-4 border-b-2 border-slate-900 mb-4">
+                <div class="flex items-center gap-3">
+                    <div class="w-12 h-12 rounded-xl bg-emerald-800 text-amber-400 flex items-center justify-center text-xl font-black">
+                        SM
+                    </div>
+                    <div>
+                        <h2 class="font-black text-lg text-slate-900 tracking-wider">SUPORTER MEDAN CINTA KINANTAN (SMeCK)</h2>
+                        <h3 class="font-bold text-xs text-emerald-800 uppercase tracking-widest">PENGURUS BASIS: {{ strtoupper($chapter->name ?? 'CHAPTER') }}</h3>
+                        <p class="text-[10px] text-slate-500">Sekretariat / Basecamp Basis SMeCK Hooligan • Kontak Darurat: 0812-6000-1950</p>
+                    </div>
+                </div>
+                <div class="text-right text-[11px] text-slate-600">
+                    <div>Dicetak: {{ now()->format('d/m/Y H:i') }} WIB</div>
+                    <div>Dokumen Resmi Basis</div>
+                </div>
+            </div>
+
+            <div class="text-center my-4">
+                <h3 class="font-black text-sm uppercase underline tracking-wider">ROSTER RESMI ANGGOTA BASIS</h3>
+                <p class="text-[11px] text-slate-600 mt-0.5">Daftar Anggota Sah Terdaftar dengan KTA NFC & Rekam Medis Darurat</p>
+            </div>
+
+            <table class="w-full text-left text-[11px] border border-slate-300 border-collapse">
+                <thead>
+                    <tr class="bg-slate-100 border-b border-slate-300 text-slate-700 font-bold uppercase text-[10px]">
+                        <th class="py-2 px-2.5 border-r border-slate-300 w-8 text-center">No</th>
+                        <th class="py-2 px-2.5 border-r border-slate-300">NIA Resmi</th>
+                        <th class="py-2 px-2.5 border-r border-slate-300">Nama Lengkap</th>
+                        <th class="py-2 px-2.5 border-r border-slate-300 text-center">Gol</th>
+                        <th class="py-2 px-2.5 border-r border-slate-300 text-center">Size</th>
+                        <th class="py-2 px-2.5 border-r border-slate-300">No. WhatsApp</th>
+                        <th class="py-2 px-2.5 border-r border-slate-300">Nomor Kartu KTA</th>
+                        <th class="py-2 px-2.5">Kontak Darurat</th>
+                    </tr>
+                </thead>
+                <tbody class="divide-y divide-slate-200">
+                    @forelse($members as $index => $m)
+                        <tr class="text-slate-800">
+                            <td class="py-1.5 px-2 border-r border-slate-300 text-center font-mono">{{ $index + 1 }}</td>
+                            <td class="py-1.5 px-2.5 border-r border-slate-300 font-mono font-bold">{{ $m->profile?->nia ?? '-' }}</td>
+                            <td class="py-1.5 px-2.5 border-r border-slate-300 font-semibold">{{ $m->name }}</td>
+                            <td class="py-1.5 px-2 border-r border-slate-300 text-center font-bold">{{ $m->profile?->blood_type ?? '-' }}</td>
+                            <td class="py-1.5 px-2 border-r border-slate-300 text-center">{{ $m->profile?->shirt_size ?? '-' }}</td>
+                            <td class="py-1.5 px-2.5 border-r border-slate-300 font-mono">{{ $m->profile?->phone_number ?? '-' }}</td>
+                            <td class="py-1.5 px-2.5 border-r border-slate-300 font-mono text-[10px]">{{ $m->nfcCard?->card_number ?? 'Belum Terbit' }}</td>
+                            <td class="py-1.5 px-2.5 text-[10px]">
+                                {{ $m->profile?->emergency_contact_name ?? '-' }} ({{ $m->profile?->emergency_contact_number ?? '-' }})
+                            </td>
+                        </tr>
+                    @empty
+                        <tr>
+                            <td colspan="8" class="py-6 text-center text-slate-400">Tidak ada data anggota.</td>
+                        </tr>
+                    @endforelse
+                </tbody>
+            </table>
+
+            {{-- Tanda Tangan Pengurus --}}
+            <div class="mt-8 pt-4 flex items-center justify-between text-xs text-slate-800">
+                <div class="text-center w-48">
+                    <div>Mengetahui,</div>
+                    <div class="font-bold">Ketua Basis SMeCK</div>
+                    <div class="h-16"></div>
+                    <div class="font-bold underline">({{ auth()->user()->name }})</div>
+                    <div class="text-[10px] text-slate-500">Ketua Chapter {{ $chapter->name ?? '' }}</div>
+                </div>
+                <div class="text-center w-48">
+                    <div>Medan, {{ now()->format('d M Y') }}</div>
+                    <div class="font-bold">Sekretaris Basis</div>
+                    <div class="h-16"></div>
+                    <div class="font-bold underline">(...................................)</div>
+                    <div class="text-[10px] text-slate-500">SMeCK Hooligan</div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
 <script>
     function openAddMemberModal() {
         document.getElementById('modalAddMember').classList.remove('hidden');
@@ -458,5 +720,42 @@
     function closeReplaceModal() {
         document.getElementById('modalReplaceCard').classList.add('hidden');
     }
+
+    function showMemberDetail(data) {
+        document.getElementById('detailAvatar').innerText = data.name.charAt(0).toUpperCase();
+        document.getElementById('detailName').innerText = data.name;
+        document.getElementById('detailNia').innerText = 'NIA: ' + data.nia;
+        document.getElementById('detailCardNumber').innerText = data.card_number;
+        document.getElementById('detailCardUid').innerText = data.card_uid;
+        document.getElementById('detailCardVendor').innerText = data.card_vendor;
+        document.getElementById('detailCardStatus').innerText = data.card_status === 'active' ? 'AKTIF' : (data.card_status === 'blocked' ? 'DIBLOKIR / HILANG' : 'BELUM DITERBITKAN');
+        document.getElementById('detailCardStatus').className = data.card_status === 'active' ? 'font-bold text-smeck-green-400' : 'font-bold text-red-400';
+        
+        document.getElementById('detailBloodType').innerText = data.blood_type;
+        document.getElementById('detailShirtSize').innerText = data.shirt_size;
+        document.getElementById('detailGender').innerText = data.gender;
+        document.getElementById('detailNik').innerText = data.nik;
+        document.getElementById('detailBirth').innerText = data.birth;
+        document.getElementById('detailAddress').innerText = data.address;
+
+        document.getElementById('detailEmergencyName').innerText = data.emergency_name;
+        document.getElementById('detailEmergencyRel').innerText = data.emergency_rel;
+        document.getElementById('detailEmergencyPhone').innerText = data.emergency_phone;
+
+        document.getElementById('modalMemberDetail').classList.remove('hidden');
+    }
+
+    function closeMemberDetail() {
+        document.getElementById('modalMemberDetail').classList.add('hidden');
+    }
+
+    function openPrintRosterModal() {
+        document.getElementById('modalPrintRoster').classList.remove('hidden');
+    }
+
+    function closePrintRosterModal() {
+        document.getElementById('modalPrintRoster').classList.add('hidden');
+    }
 </script>
 @endsection
+

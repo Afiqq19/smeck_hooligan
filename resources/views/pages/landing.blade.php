@@ -527,6 +527,16 @@
         }
 
         showKtaState('result');
+
+        // Otomatis langsung scroll ke tampilan identitas KTA suporter tanpa perlu scroll manual
+        setTimeout(() => {
+            const cardEl = document.getElementById('kta-result-card');
+            if (cardEl) {
+                cardEl.scrollIntoView({ behavior: 'smooth', block: 'center' });
+                cardEl.classList.add('ring-4', 'ring-smeck-green-400/60', 'transition-all');
+                setTimeout(() => cardEl.classList.remove('ring-4', 'ring-smeck-green-400/60'), 1500);
+            }
+        }, 100);
     }
 
     // Switch Tampilan State
@@ -537,9 +547,20 @@
         document.getElementById('kta-error').classList.add('hidden');
 
         if (state === 'placeholder') document.getElementById('kta-placeholder').classList.remove('hidden');
-        if (state === 'loading') document.getElementById('kta-loading').classList.remove('hidden');
+        if (state === 'loading') {
+            document.getElementById('kta-loading').classList.remove('hidden');
+            // Jika di mobile, scroll juga ke loading box
+            if (window.innerWidth < 1024) {
+                document.getElementById('kta-loading').scrollIntoView({ behavior: 'smooth', block: 'center' });
+            }
+        }
         if (state === 'result') document.getElementById('kta-result-card').classList.remove('hidden');
-        if (state === 'error') document.getElementById('kta-error').classList.remove('hidden');
+        if (state === 'error') {
+            document.getElementById('kta-error').classList.remove('hidden');
+            if (window.innerWidth < 1024) {
+                document.getElementById('kta-error').scrollIntoView({ behavior: 'smooth', block: 'center' });
+            }
+        }
     }
 
     function showKtaError(msg) {

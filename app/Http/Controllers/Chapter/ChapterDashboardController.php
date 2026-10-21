@@ -9,6 +9,7 @@ use App\Models\EventAttendance;
 use App\Models\MemberProfile;
 use App\Models\NfcCard;
 use App\Models\TicketAllocation;
+use App\Models\TicketOrder;
 use App\Models\User;
 use App\Models\VoluntaryDue;
 use Illuminate\Http\RedirectResponse;
@@ -30,9 +31,42 @@ class ChapterDashboardController extends Controller
         $totalMembers = User::where('chapter_id', $chapterId)->where('role', 'member')->count();
         $pendingMembers = User::where('chapter_id', $chapterId)->where('status', 'pending_approval')->count();
         $totalKas = VoluntaryDue::where('chapter_id', $chapterId)->where('status', 'verified')->sum('amount');
-        $recentAttendances = EventAttendance::where('chapter_id', $chapterId)->with('user.profile')->latest()->take(5)->get();
+        $pendingKas = VoluntaryDue::where('chapter_id', $chapterId)->where('status', 'pending')->sum('amount');
+        $recentAttendances = EventAttendance::where('chapter_id', $chapterId)->with('user.profile')->latest()->take(6)->get();
 
-        return view('dashboard.chapter.index', compact('chapter', 'totalMembers', 'pendingMembers', 'totalKas', 'recentAttendances'));
+        // Kesiapsiagaan Medis Rombongan Tribun Basis: Golongan Darah
+        $memberIds = User::where('chapter_id', $chapterId)->pluck('id');
+        $bloodTypeStats = [
+            'A' => MemberProfile::whereIn('user_id', $memberIds)->where('blood_type', 'A')->count(),
+            'B' => MemberProfile::whereIn('user_id', $memberIds)->where('blood_type', 'B')->count(),
+            'AB' => MemberProfile::whereIn('user_id', $memberIds)->where('blood_type', 'AB')->count(),
+            'O' => MemberProfile::whereIn('user_id', $memberIds)->where('blood_type', 'O')->count(),
+        ];
+
+        // Komposisi Ukuran Baju Jersey Kebanggaan Chapter (S - 3XL)
+        $shirtSizeStats = [
+            'S' => MemberProfile::whereIn('user_id', $memberIds)->where('shirt_size', 'S')->count(),
+            'M' => MemberProfile::whereIn('user_id', $memberIds)->where('shirt_size', 'M')->count(),
+            'L' => MemberProfile::whereIn('user_id', $memberIds)->where('shirt_size', 'L')->count(),
+            'XL' => MemberProfile::whereIn('user_id', $memberIds)->where('shirt_size', 'XL')->count(),
+            'XXL' => MemberProfile::whereIn('user_id', $memberIds)->where('shirt_size', 'XXL')->count(),
+            '3XL' => MemberProfile::whereIn('user_id', $memberIds)->where('shirt_size', '3XL')->count(),
+        ];
+
+        // Alokasi Tiket Stadion dari DPP Pusat
+        $allocations = TicketAllocation::where('chapter_id', $chapterId)->with('matchTicket')->latest()->get();
+
+        return view('dashboard.chapter.index', compact(
+            'chapter',
+            'totalMembers',
+            'pendingMembers',
+            'totalKas',
+            'pendingKas',
+            'recentAttendances',
+            'bloodTypeStats',
+            'shirtSizeStats',
+            'allocations'
+        ));
     }
 
     /**
@@ -42,6 +76,7 @@ class ChapterDashboardController extends Controller
     {
         $chapterId = $request->user()->chapter_id ?? 1;
         $pendingUsers = User::where('chapter_id', $chapterId)
+            ->where('status', 'pending_approval')
             ->with('profile')
             ->latest()
             ->paginate(15);
@@ -57,7 +92,26 @@ class ChapterDashboardController extends Controller
         $user = User::findOrFail($id);
         $user->update(['status' => 'active']);
 
-        return back()->with('success', "Anggota {$user->name} berhasil diverifikasi & diaktifkan!");
+        // Pastikan punya NIA
+        if ($user->profile && empty($user->profile->nia)) {
+            $year = date('Y');
+            $user->profile->update([
+                'nia' => sprintf('SMCK-%s-%04d', $year, $user->id),
+            ]);
+        }
+
+        return back()->with('success', "Anggota {$user->name} berhasil diverifikasi & diaktifkan status keanggotaannya!");
+    }
+
+    /**
+     * Tolak Pendaftaran Anggota Baru / Minta Revisi.
+     */
+    public function rejectMember(Request $request, int $id): RedirectResponse
+    {
+        $user = User::findOrFail($id);
+        $user->update(['status' => 'suspended']);
+
+        return back()->with('success', "Pendaftaran {$user->name} telah ditolak / ditangguhkan untuk revisi berkas.");
     }
 
     /**
@@ -66,13 +120,13 @@ class ChapterDashboardController extends Controller
     public function nfcScanner(Request $request): View
     {
         $chapterId = $request->user()->chapter_id ?? 1;
-        $recentScans = EventAttendance::where('chapter_id', $chapterId)->with('user.profile')->latest()->take(10)->get();
+        $recentScans = EventAttendance::where('chapter_id', $chapterId)->with('user.profile')->latest()->take(15)->get();
 
         return view('dashboard.chapter.scanner', compact('recentScans'));
     }
 
     /**
-     * Proses Input Tap NFC.
+     * Proses Input Tap NFC (Mendukung UID Chip, Nomor Kartu KTA, atau NIA).
      */
     public function processScan(Request $request): RedirectResponse
     {
@@ -81,14 +135,33 @@ class ChapterDashboardController extends Controller
             'event_name' => ['required', 'string'],
         ]);
 
-        $card = NfcCard::where('uid_number', $validated['uid_number'])->first();
+        $rawInput = trim($validated['uid_number']);
+        $cleanInput = str_replace([' ', '-', ':', '.'], '', strtolower($rawInput));
+
+        // 1. Cari via UID Chip atau Nomor Kartu Fisik
+        $card = NfcCard::where(function ($q) use ($rawInput, $cleanInput) {
+            $q->whereRaw('LOWER(uid_number) = ?', [strtolower($rawInput)])
+                ->orWhereRaw('REPLACE(REPLACE(LOWER(uid_number), ":", ""), "-", "") = ?', [$cleanInput])
+                ->orWhereRaw('LOWER(card_number) = ?', [strtolower($rawInput)])
+                ->orWhereRaw('REPLACE(REPLACE(LOWER(card_number), " ", ""), "-", "") = ?', [$cleanInput]);
+        })->with('user.profile')->first();
+
+        // 2. Fallback via NIA suporter
+        if (! $card) {
+            $profile = MemberProfile::whereRaw('LOWER(nia) = ?', [strtolower($rawInput)])
+                ->orWhereRaw('REPLACE(LOWER(nia), "-", "") = ?', [$cleanInput])
+                ->first();
+            if ($profile) {
+                $card = NfcCard::where('user_id', $profile->user_id)->first();
+            }
+        }
 
         if (! $card) {
-            return back()->with('error', "UID NFC '{$validated['uid_number']}' tidak terdaftar dalam database anggota SMeCK!");
+            return back()->with('error', "Identitas '{$validated['uid_number']}' tidak terdaftar dalam database anggota SMeCK!");
         }
 
         if ($card->status === 'blocked') {
-            return back()->with('error', "PERINGATAN: Kartu ini dilaporkan HILANG / DIBLOKIR!");
+            return back()->with('error', "PERINGATAN DARURAT: Kartu ini dilaporkan HILANG / DIBLOKIR!");
         }
 
         EventAttendance::create([
@@ -109,14 +182,43 @@ class ChapterDashboardController extends Controller
     public function dues(Request $request): View
     {
         $chapterId = $request->user()->chapter_id ?? 1;
-        $dues = VoluntaryDue::where('chapter_id', $chapterId)->with('user')->latest()->get();
+        $dues = VoluntaryDue::where('chapter_id', $chapterId)->with('user')->latest()->paginate(15);
         $totalAmount = VoluntaryDue::where('chapter_id', $chapterId)->where('status', 'verified')->sum('amount');
+        $pendingAmount = VoluntaryDue::where('chapter_id', $chapterId)->where('status', 'pending')->sum('amount');
 
-        return view('dashboard.chapter.dues', compact('dues', 'totalAmount'));
+        // Daftar anggota untuk input iuran tunai di basecamp
+        $chapterMembers = User::where('chapter_id', $chapterId)->where('role', 'member')->orderBy('name')->get();
+
+        return view('dashboard.chapter.dues', compact('dues', 'totalAmount', 'pendingAmount', 'chapterMembers'));
     }
 
     /**
-     * Verifikasi Status Iuran Kas.
+     * Catat Iuran Kas Tunai (Cash) di Basecamp / Kopdar.
+     */
+    public function storeCashDue(Request $request): RedirectResponse
+    {
+        $chapterId = $request->user()->chapter_id ?? 1;
+        $validated = $request->validate([
+            'user_id' => ['required', 'exists:users,id'],
+            'amount' => ['required', 'numeric', 'min:5000'],
+            'notes' => ['nullable', 'string', 'max:255'],
+        ]);
+
+        VoluntaryDue::create([
+            'user_id' => $validated['user_id'],
+            'chapter_id' => $chapterId,
+            'amount' => $validated['amount'],
+            'status' => 'verified', // Langsung verified karena diterima tunai di tangan
+            'notes' => ($validated['notes'] ? $validated['notes'] . ' ' : '') . '(Diterima Tunai di Basecamp)',
+        ]);
+
+        $member = User::find($validated['user_id']);
+
+        return back()->with('success', 'Iuran tunai Rp ' . number_format($validated['amount'], 0, ',', '.') . " dari {$member->name} berhasil dicatat & masuk kas chapter!");
+    }
+
+    /**
+     * Verifikasi Status Iuran Kas Online.
      */
     public function verifyDue(Request $request, int $id): RedirectResponse
     {
@@ -127,14 +229,15 @@ class ChapterDashboardController extends Controller
     }
 
     /**
-     * [Prompt 6] Kuota Tiket Chapter.
+     * [Prompt 6] Kuota Tiket Chapter & Manifest Pemesan.
      */
     public function ticketQuota(Request $request): View
     {
         $chapterId = $request->user()->chapter_id ?? 1;
         $allocations = TicketAllocation::where('chapter_id', $chapterId)->with('matchTicket')->latest()->get();
+        $orders = TicketOrder::where('chapter_id', $chapterId)->with('matchTicket', 'user.profile')->latest()->get();
 
-        return view('dashboard.chapter.tickets', compact('allocations'));
+        return view('dashboard.chapter.tickets', compact('allocations', 'orders'));
     }
 
     /**

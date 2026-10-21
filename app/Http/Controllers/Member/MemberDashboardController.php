@@ -118,8 +118,41 @@ class MemberDashboardController extends Controller
     public function tickets(): View
     {
         $matches = MatchTicket::where('status', 'open')->orderBy('match_time', 'asc')->get();
+        $myOrders = \App\Models\TicketOrder::where('user_id', auth()->id())->with('matchTicket')->latest()->get();
 
-        return view('dashboard.member.tickets', compact('matches'));
+        return view('dashboard.member.tickets', compact('matches', 'myOrders'));
+    }
+
+    /**
+     * Pesan Tiket Pertandingan PSMS (Home maupun Away).
+     */
+    public function orderTicket(Request $request): RedirectResponse
+    {
+        $validated = $request->validate([
+            'match_ticket_id' => ['required', 'exists:match_tickets,id'],
+            'quantity' => ['nullable', 'integer', 'min:1', 'max:5'],
+        ]);
+
+        $match = MatchTicket::findOrFail($validated['match_ticket_id']);
+
+        if ($match->remaining_quota < 1) {
+            return back()->with('error', 'Maaf, kuota tiket laga ini sudah habis.');
+        }
+
+        $qty = $validated['quantity'] ?? 1;
+        $totalAmount = $match->price * $qty;
+
+        \App\Models\TicketOrder::create([
+            'match_ticket_id' => $match->id,
+            'user_id' => $request->user()->id,
+            'chapter_id' => $request->user()->chapter_id ?? 1,
+            'total_amount' => $totalAmount,
+            'payment_status' => 'paid',
+        ]);
+
+        $match->decrement('remaining_quota', $qty);
+
+        return back()->with('success', "Tiket untuk '{$match->match_title}' berhasil dipesan! Tunjukkan KTA fisik Anda di koordinator Chapter saat pengambilan tiket.");
     }
 
     /**

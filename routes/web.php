@@ -67,6 +67,7 @@ Route::middleware(['auth', 'role:member,super_admin,admin_chapter'])->prefix('me
     // Menu Ekstra Budaya Tribun (Prompt 6)
     Route::get('/chants', [MemberDashboardController::class, 'chants'])->name('chants');
     Route::get('/tickets', [MemberDashboardController::class, 'tickets'])->name('tickets');
+    Route::post('/tickets/order', [MemberDashboardController::class, 'orderTicket'])->name('tickets.order');
     Route::get('/store', [MemberDashboardController::class, 'store'])->name('store');
 });
 
@@ -79,9 +80,11 @@ Route::middleware(['auth', 'role:admin_chapter,super_admin'])->prefix('chapter')
     Route::get('/dashboard', [ChapterDashboardController::class, 'index'])->name('dashboard');
     Route::get('/verifications', [ChapterDashboardController::class, 'verifications'])->name('verifications');
     Route::post('/verifications/{id}/approve', [ChapterDashboardController::class, 'approveMember'])->name('verifications.approve');
+    Route::post('/verifications/{id}/reject', [ChapterDashboardController::class, 'rejectMember'])->name('verifications.reject');
     Route::get('/nfc-scan', [ChapterDashboardController::class, 'nfcScanner'])->name('scanner');
     Route::post('/nfc-scan/process', [ChapterDashboardController::class, 'processScan'])->name('scanner.process');
     Route::get('/dues', [ChapterDashboardController::class, 'dues'])->name('dues');
+    Route::post('/dues/cash', [ChapterDashboardController::class, 'storeCashDue'])->name('dues.cash');
     Route::post('/dues/{id}/verify', [ChapterDashboardController::class, 'verifyDue'])->name('dues.verify');
 
     // Manajemen Anggota Basis & KTA NFC
