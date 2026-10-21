@@ -1,0 +1,92 @@
+=== PROMPT 1: Setup Layout Utama & Landing Page ===
+composer create-project laravel/laravel smeck_hooligan
+Buatkan saya kode Laravel Blade menggunakan Tailwind CSS untuk 2 file: `resources/views/layouts/guest.blade.php` (sebagai template utama) dan `resources/views/pages/landing.blade.php`.
+
+Konteks & Tema:
+Website suporter PSMS Medan (SMeCK Hooligan). Gunakan kombinasi warna kustom di Tailwind: `smeck-green` (hijau tua/forest green), putih, dan aksen hitam pekat. Tampilan harus sporty, maskulin, dan mobile-responsive.
+
+Spesifikasi guest.blade.php:
+Buat struktur dasar HTML5, muat CDN Tailwind (atau vite directive `@vite('resources/css/app.css')`), buat Navbar transparan di atas yang sticky (Logo di kiri, link 'Berita', 'Jadwal', 'SMeCK Store' di tengah, tombol 'Login' di kanan), dan Footer warna hitam di bawah.
+
+Spesifikasi landing.blade.php:
+1. Hero Section: Background image suporter di stadion (gelap transparan), teks besar 'SALAM SADA ROHA', sub-teks 'Website Resmi SMeCK Hooligan', dan dua tombol berjejer: 'Gabung Sekarang' (hijau solid) & 'Cek Status Anggota' (outline putih).
+2. Section Info: Grid 3 kolom berisi 'Berita Terkini', 'Jadwal Pertandingan', dan 'Klasemen'. Gunakan desain card dengan shadow yang tajam.
+
+
+=== PROMPT 2: Halaman Login & Register (Autentikasi) ===
+Sekarang buatkan saya kode untuk `resources/views/auth/login.blade.php` dan `resources/views/auth/register.blade.php` menggunakan layout `guest.blade.php` yang sudah dibuat sebelumnya.
+
+Spesifikasi login.blade.php:
+Buat desain split-screen (layar terbagi 2 untuk tampilan desktop, dan 1 kolom untuk mobile). Sebelah kiri adalah gambar penuh (cover) suporter/koreografi dengan overlay warna hijau transparan. Sebelah kanan adalah form login minimalis (Email, Password, Checkbox 'Ingat Saya', dan tombol 'Masuk' warna hijau). Berikan link 'Belum punya akun? Daftar di sini'.
+
+Spesifikasi register.blade.php:
+Halaman ini berisi form pendaftaran anggota yang cukup panjang, jadi gunakan layout Card putih besar di tengah dengan background abu-abu terang. Bagi inputan ke dalam Grid (2 kolom untuk desktop, 1 kolom untuk mobile).
+Form harus mencakup: 
+- Nama Lengkap, Email, Password, Konfirmasi Password.
+- NIK KTP (maksimal 16 angka).
+- Golongan Darah (Dropdown: A, B, AB, O).
+- Pilihan Basis/Chapter (Dropdown dengan opsi dari database).
+- Tombol 'Daftar Sekarang' yang lebar di bagian bawah.
+
+
+=== PROMPT 3: Routing & Controller Dasar ===
+Buatkan saya konfigurasi routing dan controller dasar di Laravel 11 untuk menghubungkan halaman yang sudah dibuat.
+
+1. Buatkan kode untuk `routes/web.php` yang berisi rute GET untuk Landing Page (`/`), Halaman Login (`/login`), dan Halaman Register (`/register`).
+2. Buatkan rute grouping untuk Dashboard dengan middleware auth dan role, yang dibagi menjadi 3 prefix: `/superadmin`, `/chapter`, dan `/member`.
+3. Buatkan kode untuk `app/Http/Controllers/PublicController.php` yang berisi method `index()` untuk mengembalikan view `pages.landing`.
+
+Berikan kodenya secara lengkap, bersih, dan berikan komentar penjelasan singkat di atas setiap route group.
+
+=== PROMPT 4: Database Migrations (Struktur Tabel) ===
+Buatkan saya file Migration Laravel yang rapi dan terstruktur (dengan urutan yang benar agar tidak error foreign key) untuk 6 tabel berikut. Gunakan fitur Blueprint standar Laravel:
+
+1. `chapters` (Data Basis/Wilayah): id, name, region_code (unique), leader_name, basecamp_address, is_active (boolean), timestamps.
+2. Modifikasi tabel `users`: Tambahkan foreignId 'chapter_id' (nullable, constrained ke chapters), enum 'role' (super_admin, admin_chapter, member), enum 'status' (active, pending_approval, suspended).
+3. `member_profiles` (Biodata Lengkap): foreignId 'user_id' (cascade delete), nia (unique, nullable), nik_ktp (unique, 16 char), place_of_birth, date_of_birth, gender (L/P), blood_type, address, phone_number, emergency_contact_name, emergency_contact_number, emergency_contact_relation, occupation, shirt_size, ktp_photo_path, profile_photo_path, joined_date, timestamps.
+4. `nfc_cards` (Data Kartu Fisik): foreignId 'user_id' (cascade delete), uid_number (unique), enum 'card_vendor' (emoney, flazz, brizzi), enum 'status' (active, lost, blocked), issued_at (timestamp), timestamps.
+5. `voluntary_dues` (Kas/Donasi): foreignId 'user_id', foreignId 'chapter_id', decimal 'amount', payment_proof_path, enum 'status', notes, timestamps.
+6. `event_attendances` (Presensi Tap NFC): foreignId 'chapter_id', foreignId 'user_id', event_name, scanned_at (timestamp), timestamps.
+
+
+=== PROMPT 5: Layout Dashboard & Menu Multi-Role ===
+Buatkan saya kode untuk file layout dashboard utama `resources/views/layouts/app.blade.php` dan file view dashboard untuk 3 role berbeda menggunakan Tailwind CSS.
+
+Spesifikasi `app.blade.php`:
+Buat layout dengan struktur Sidebar di sebelah kiri (fixed) dan Topbar (dengan profil user) di atas. Sidebar ini harus dinamis menampilkan menu berdasarkan role user yang sedang login (gunakan directive @if(auth()->user()->role === '...')). Gunakan ikon SVG sederhana atau Heroicons untuk tiap menu.
+
+Menu Sidebar untuk Role 'member' (Anggota):
+1. Dashboard (Tampilkan visual KTA Digital & QR Code/Status NFC).
+2. Profil Saya (Edit kelengkapan biodata).
+3. Iuran & Kas Suka Rela (Form upload bukti transfer).
+4. Lapor Kartu Darurat (Tombol untuk blokir NFC jika kartu hilang).
+
+Menu Sidebar untuk Role 'admin_chapter' (Pengurus Wilayah):
+1. Dashboard Chapter (Statistik anggota wilayah tersebut).
+2. Verifikasi Anggota Baru (List pendaftar yang butuh di-approve KTP-nya).
+3. Scan Presensi NFC (Halaman khusus berisi inputan untuk menangkap hasil scan dari HP NFC panitia saat nobar).
+4. Kas Chapter (Tabel rekapitulasi uang masuk anggota chapter).
+
+Menu Sidebar untuk Role 'super_admin' (Pusat):
+1. Dashboard Utama (Grafik statistik anggota se-Indonesia).
+2. Master Chapter (Tambah/Edit data basis wilayah).
+3. Cetak & Aktivasi Kartu NFC (Form untuk menautkan UID kartu fisik baru ke akun anggota).
+4. Broadcast Pengumuman (Kirim notifikasi ke seluruh anggota).
+
+Tolong buatkan kode layout utamanya (`app.blade.php`) secara lengkap, dan berikan satu contoh desain view yang sangat rapi untuk `resources/views/dashboard/member/index.blade.php` (menampilkan UI Kartu Anggota Digital).
+
+=== PROMPT 6: Tambahan Menu Ekstra Budaya Tribun ===
+Tolong tambahkan beberapa menu ekstra ini ke dalam layout sidebar dashboard `app.blade.php` yang sudah dibuat sebelumnya, dan buatkan struktur tabel migration barunya jika diperlukan:
+
+Menu Ekstra untuk Role 'member' (Anggota):
+1. Pustaka Chants: Halaman berisi daftar lirik dan pemutar audio nyanyian tribun SMeCK Hooligan agar anggota baru bisa menghafal sebelum ke stadion.
+2. Tiket & Awaydays: Form pendaftaran tur tandang (away) untuk memilih kursi bus, serta fitur pemesanan tiket kandang (home) secara kolektif.
+3. SMeCK Store: Katalog merchandise resmi (kaos, syal, stiker).
+
+Menu Ekstra untuk Role 'admin_chapter' (Pengurus Wilayah):
+1. Kuota Tiket Chapter: Halaman untuk melihat jatah tiket pertandingan kandang yang diberikan Pusat ke chapter tersebut dan mendistribusikannya ke anggota chapter.
+2. Dokumentasi Kegiatan: Fitur upload foto kopdar, nobar, atau aksi sosial (baksos) sebagai laporan ke Pusat.
+
+Menu Ekstra untuk Role 'super_admin' (Pusat):
+1. Distribusi Tiket: Manajemen alokasi kuota tiket pertandingan kandang ke seluruh chapter aktif.
+2. SMeCK Partner: Database kafe, distro, atau warkop di Medan yang bekerja sama memberikan diskon khusus bagi anggota yang men-tap kartu NFC aktif.
