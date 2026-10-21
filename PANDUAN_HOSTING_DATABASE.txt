@@ -58,7 +58,7 @@ LANGKAH 4: HUBUNGKAN KONEKSI DATABASE (.ENV)
    APP_NAME="SMeCK Hooligan Official"
    APP_ENV=production
    APP_DEBUG=false
-   APP_URL=https://projek1.xie.my.id
+   APP_URL=https://projek2.xie.my.id
    APP_TIMEZONE=Asia/Jakarta
 
    DB_CONNECTION=mysql
@@ -104,11 +104,11 @@ LANGKAH 6: AKSES WEBSITE (LOKAL & DOMAIN ONLINE)
    - Buka Cloudflare Zero Trust Dashboard (Networks > Tunnels).
    - Masuk ke tunnel server Toshiba Anda.
    - Tambahkan Public Hostname baru:
-       Domain: projek1.xie.my.id
+       Domain: projek2.xie.my.id
        Service Type: HTTP
        URL: 192.168.1.100:9005
    - Klik Save Hostname.
-   - Website Anda langsung online di: https://projek1.xie.my.id !
+   - Website Anda langsung online di: https://projek2.xie.my.id !
 
 ------------------------------------------------------------------------
 LANGKAH 7: FITUR SAKTI DI ROUTES/DEPLOY.PHP (AUTO-DEPLOY, ADMIN, & SEEDER)
@@ -117,22 +117,22 @@ LANGKAH 7: FITUR SAKTI DI ROUTES/DEPLOY.PHP (AUTO-DEPLOY, ADMIN, & SEEDER)
 
 A. AUTO-DEPLOY WEBHOOK (Update website otomatis lewat browser tanpa SSH):
    Tinggal buka link ini di browser setelah Anda push kode baru ke GitHub:
-   👉 https://projek1.xie.my.id/update-rahasia-smeckhooligan
-   (atau https://projek1.xie.my.id/update-rahasia-smeck)
+   👉 https://projek2.xie.my.id/update-rahasia-smeckhooligan
+   (atau https://projek2.xie.my.id/update-rahasia-smeck)
    Server akan otomatis fetch git terbaru, reset ke origin/main, install composer, migrate, dan bersihkan cache!
 
 B. TOMBOL RAHASIA PEMBUAT AKUN ADMIN INSTAN:
    Jika baru pertama kali install dan ingin membuat akun admin otomatis:
-   👉 https://projek1.xie.my.id/buat-akun-admin-smeck
-   (atau https://projek1.xie.my.id/buat-akun-admin-mss)
+   👉 https://projek2.xie.my.id/buat-akun-admin-smeck
+   (atau https://projek2.xie.my.id/buat-akun-admin-mss)
    - Akun 1: projek.msyafiq19@gmail.com / rahasia123 (Super Admin MSS)
    - Akun 2: admin@smeck.id / password (Super Admin DPP)
    (Kedua akun langsung aktif & terverifikasi otomatis)
 
 C. TOMBOL RAHASIA SEED DATABASE:
    Jika ingin menjalankan ulang seeder data master:
-   👉 https://projek1.xie.my.id/seed-rahasia-smeckhooligan
-   (atau https://projek1.xie.my.id/seed-rahasia-smeck)
+   👉 https://projek2.xie.my.id/seed-rahasia-smeckhooligan
+   (atau https://projek2.xie.my.id/seed-rahasia-smeck)
 
 ========================================================================
 SELESAI! SMeCK Hooligan sudah siap online, aman, dan mudah di-update selamanya!
