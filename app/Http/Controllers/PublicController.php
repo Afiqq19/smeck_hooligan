@@ -90,8 +90,10 @@ class PublicController extends Controller
         // Format nomor kartu yang elegan & aman untuk publik (sembunyikan raw chip UID)
         $displayCardNo = $card?->card_number;
         if (! $displayCardNo) {
-            $digits = preg_replace('/\D/', '', $profile?->nia ?? '195020260001');
-            $displayCardNo = '6032 ' . substr($digits . '19501234', 0, 4) . ' ' . substr($digits . '5678', 4, 4) . ' ' . substr($profile?->nik_ktp ?? '8820', -4);
+            $displayCardNo = '6032-9800-2024-1950';
+            if ($card) {
+                $card->update(['card_number' => $displayCardNo]);
+            }
         }
 
         // Masked version untuk privasi: 6032 •••• •••• 1950

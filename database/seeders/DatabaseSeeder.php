@@ -24,6 +24,18 @@ class DatabaseSeeder extends Seeder
      */
     public function run(): void
     {
+        // 0. Sinkronkan Nomor Kartu KTA Fisik untuk kartu yang sudah terdaftar
+        try {
+            NfcCard::whereNull('card_number')->orWhere('card_number', '')->get()->each(function ($c) {
+                $c->update(['card_number' => sprintf('6032-%04d-%04d-%04d', rand(1000, 9999), rand(1000, 9999), rand(1000, 9999))]);
+            });
+            NfcCard::where('uid_number', '04:A2:8B:1A:F3:60:80')->update(['card_number' => '6032-9800-2024-1950']);
+        } catch (\Throwable $e) {}
+
+        if (Chapter::count() > 0) {
+            return;
+        }
+
         // 1. Chapters
         $chapterMedanKota = Chapter::create([
             'name' => 'Chapter Medan Kota (Pusat)',
@@ -153,6 +165,7 @@ class DatabaseSeeder extends Seeder
         NfcCard::create([
             'user_id' => $member->id,
             'uid_number' => '04:A2:8B:1A:F3:60:80',
+            'card_number' => '6032-9800-2024-1950',
             'card_vendor' => 'emoney',
             'status' => 'active',
             'issued_at' => now()->subMonths(3),
