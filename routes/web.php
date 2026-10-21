@@ -19,6 +19,8 @@ use Illuminate\Support\Facades\Route;
 // 1. RUTE PUBLIK (DAPAT DIAKSES TANPA LOGIN)
 // =========================================================================
 Route::get('/', [PublicController::class, 'index'])->name('home');
+Route::get('/api/check-kta', [PublicController::class, 'checkKta'])->name('api.check-kta');
+Route::post('/api/check-kta', [PublicController::class, 'checkKta']);
 
 // =========================================================================
 // 2. RUTE AUTENTIKASI (LOGIN & REGISTER)

@@ -46,9 +46,9 @@
                 {{-- Desktop Nav Links --}}
                 <div class="hidden lg:flex items-center gap-1">
                     <a href="{{ url('/') }}" class="nav-link px-4 py-2 rounded-lg text-sm font-medium text-white/80 hover:text-white hover:bg-white/10 transition-all duration-300" id="nav-beranda">Beranda</a>
-                    <a href="#berita" class="nav-link px-4 py-2 rounded-lg text-sm font-medium text-white/80 hover:text-white hover:bg-white/10 transition-all duration-300" id="nav-berita">Berita</a>
+                    <a href="{{ url('/#cek-kta') }}" class="nav-link px-4 py-2 rounded-lg text-sm font-semibold text-smeck-green-400 hover:text-white hover:bg-smeck-green-500/20 transition-all duration-300 flex items-center gap-1.5" id="nav-cek-kta"><i class="fa-solid fa-wifi text-xs"></i><span>Cek KTA NFC</span></a>
+                    <a href="#info" class="nav-link px-4 py-2 rounded-lg text-sm font-medium text-white/80 hover:text-white hover:bg-white/10 transition-all duration-300" id="nav-berita">Informasi</a>
                     <a href="#jadwal" class="nav-link px-4 py-2 rounded-lg text-sm font-medium text-white/80 hover:text-white hover:bg-white/10 transition-all duration-300" id="nav-jadwal">Jadwal</a>
-                    <a href="#" class="nav-link px-4 py-2 rounded-lg text-sm font-medium text-white/80 hover:text-white hover:bg-white/10 transition-all duration-300" id="nav-store">SMeCK Store</a>
                 </div>
 
                 {{-- Auth Buttons --}}
