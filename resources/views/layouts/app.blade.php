@@ -155,7 +155,13 @@
                             <span>Dashboard Chapter</span>
                         </a>
 
-                        {{-- 2. Verifikasi Anggota Baru --}}
+                        {{-- 2. Kelola Anggota & KTA NFC --}}
+                        <a href="{{ route('chapter.members') }}" class="flex items-center gap-3 px-3.5 py-2.5 rounded-xl text-sm font-semibold transition-all {{ request()->routeIs('chapter.members*') ? 'bg-amber-600 text-white shadow-lg shadow-amber-700/30' : 'text-white/70 hover:text-white hover:bg-white/5' }}">
+                            <i class="fa-solid fa-users-gear w-5 text-center text-amber-400 {{ request()->routeIs('chapter.members*') ? 'text-white' : '' }}"></i>
+                            <span>Daftar & Tambah Anggota</span>
+                        </a>
+
+                        {{-- 3. Verifikasi Anggota Baru --}}
                         <a href="{{ route('chapter.verifications') }}" class="flex items-center gap-3 px-3.5 py-2.5 rounded-xl text-sm font-semibold transition-all {{ request()->routeIs('chapter.verifications*') ? 'bg-amber-600 text-white shadow-lg shadow-amber-700/30' : 'text-white/70 hover:text-white hover:bg-white/5' }}">
                             <i class="fa-solid fa-user-check w-5 text-center text-amber-400 {{ request()->routeIs('chapter.verifications*') ? 'text-white' : '' }}"></i>
                             <span>Verifikasi Anggota Baru</span>

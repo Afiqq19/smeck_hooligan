@@ -106,6 +106,47 @@ class SuperAdminDashboardController extends Controller
     }
 
     /**
+     * Ubah Status Kartu NFC (Blokir / Aktifkan Kembali).
+     */
+    public function toggleCardStatus(Request $request, int $cardId): RedirectResponse
+    {
+        $card = NfcCard::findOrFail($cardId);
+        $newStatus = $card->status === 'blocked' ? 'active' : 'blocked';
+        $card->update(['status' => $newStatus]);
+
+        $statusLabel = $newStatus === 'blocked' ? 'DIBLOKIR' : 'DIAKTIFKAN KEMBALI';
+
+        return back()->with('success', "Kartu UID {$card->uid_number} berhasil {$statusLabel}!");
+    }
+
+    /**
+     * Ganti Kartu NFC Anggota (Pusat).
+     */
+    public function replaceCard(Request $request, int $userId): RedirectResponse
+    {
+        $validated = $request->validate([
+            'uid_number' => ['required', 'string', 'unique:nfc_cards,uid_number'],
+            'card_vendor' => ['required', 'in:emoney,flazz,brizzi,tapcash,custom'],
+        ]);
+
+        $user = User::findOrFail($userId);
+
+        // Blokir kartu lama
+        NfcCard::where('user_id', $user->id)->update(['status' => 'blocked']);
+
+        // Buat kartu baru
+        $newCard = NfcCard::create([
+            'user_id' => $user->id,
+            'uid_number' => strtoupper(trim($validated['uid_number'])),
+            'card_vendor' => $validated['card_vendor'],
+            'status' => 'active',
+            'issued_at' => now(),
+        ]);
+
+        return back()->with('success', "Kartu KTA fisik pengganti UID {$newCard->uid_number} berhasil diterbitkan untuk {$user->name}.");
+    }
+
+    /**
      * Broadcast Pengumuman ke Seluruh Anggota.
      */
     public function broadcast(): View

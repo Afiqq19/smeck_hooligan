@@ -6,12 +6,14 @@ use App\Http\Controllers\Controller;
 use App\Models\Chapter;
 use App\Models\ChapterDocumentation;
 use App\Models\EventAttendance;
+use App\Models\MemberProfile;
 use App\Models\NfcCard;
 use App\Models\TicketAllocation;
 use App\Models\User;
 use App\Models\VoluntaryDue;
 use Illuminate\Http\RedirectResponse;
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\Hash;
 use Illuminate\View\View;
 
 class ChapterDashboardController extends Controller
@@ -168,5 +170,166 @@ class ChapterDashboardController extends Controller
         ]);
 
         return back()->with('success', 'Laporan dokumentasi kegiatan berhasil diunggah ke Pusat!');
+    }
+
+    /**
+     * Kelola Anggota Chapter (Daftar, Status KTA & Aksi Kartu).
+     */
+    public function members(Request $request): View
+    {
+        $chapterId = $request->user()->chapter_id ?? 1;
+        $chapter = Chapter::find($chapterId);
+
+        $query = User::where('chapter_id', $chapterId)
+            ->where('role', 'member')
+            ->with(['profile', 'nfcCard']);
+
+        if ($search = $request->get('search')) {
+            $query->where(function ($q) use ($search) {
+                $q->where('name', 'like', "%{$search}%")
+                    ->orWhere('email', 'like', "%{$search}%")
+                    ->orWhereHas('profile', function ($pq) use ($search) {
+                        $pq->where('nia', 'like', "%{$search}%")
+                            ->orWhere('nik_ktp', 'like', "%{$search}%")
+                            ->orWhere('phone_number', 'like', "%{$search}%");
+                    })
+                    ->orWhereHas('nfcCard', function ($cq) use ($search) {
+                        $cq->where('uid_number', 'like', "%{$search}%");
+                    });
+            });
+        }
+
+        $members = $query->latest()->paginate(15);
+
+        return view('dashboard.chapter.members', compact('chapter', 'members'));
+    }
+
+    /**
+     * Tambah Anggota Baru Langsung dari Basis / Chapter.
+     */
+    public function storeMember(Request $request): RedirectResponse
+    {
+        $chapterId = $request->user()->chapter_id ?? 1;
+
+        $validated = $request->validate([
+            'name' => ['required', 'string', 'max:255'],
+            'email' => ['required', 'email', 'max:255', 'unique:users,email'],
+            'password' => ['nullable', 'string', 'min:6'],
+            'nik_ktp' => ['required', 'digits:16', 'unique:member_profiles,nik_ktp'],
+            'phone_number' => ['required', 'string', 'max:20'],
+            'blood_type' => ['required', 'in:A,B,AB,O'],
+            'place_of_birth' => ['required', 'string', 'max:100'],
+            'date_of_birth' => ['required', 'date'],
+            'gender' => ['required', 'in:L,P'],
+            'address' => ['required', 'string'],
+            'emergency_contact_name' => ['nullable', 'string', 'max:100'],
+            'emergency_contact_number' => ['nullable', 'string', 'max:20'],
+            'emergency_contact_relation' => ['nullable', 'string', 'max:50'],
+            'shirt_size' => ['required', 'in:S,M,L,XL,XXL,3XL'],
+            'occupation' => ['nullable', 'string', 'max:100'],
+            // Optional KTA NFC Card
+            'uid_number' => ['nullable', 'string', 'unique:nfc_cards,uid_number'],
+            'card_vendor' => ['nullable', 'in:emoney,flazz,brizzi,tapcash,custom'],
+        ]);
+
+        // Buat User Baru (Langsung Active karena didaftarkan Pengurus Basis)
+        $user = User::create([
+            'name' => $validated['name'],
+            'email' => $validated['email'],
+            'password' => Hash::make($validated['password'] ?: 'smeck1950'),
+            'chapter_id' => $chapterId,
+            'role' => 'member',
+            'status' => 'active',
+        ]);
+
+        // Generate NIA Resmi: SMCK-YYYY-XXXX
+        $year = date('Y');
+        $lastProfile = MemberProfile::where('nia', 'like', "SMCK-{$year}-%")->latest('id')->first();
+        if ($lastProfile && preg_match('/SMCK-\d{4}-(\d+)/', $lastProfile->nia, $matches)) {
+            $nextSequence = (int) $matches[1] + 1;
+        } else {
+            $nextSequence = MemberProfile::count() + 1;
+        }
+        $nia = sprintf('SMCK-%s-%04d', $year, $nextSequence);
+
+        MemberProfile::create([
+            'user_id' => $user->id,
+            'nia' => $nia,
+            'nik_ktp' => $validated['nik_ktp'],
+            'place_of_birth' => $validated['place_of_birth'],
+            'date_of_birth' => $validated['date_of_birth'],
+            'gender' => $validated['gender'],
+            'blood_type' => $validated['blood_type'],
+            'address' => $validated['address'],
+            'phone_number' => $validated['phone_number'],
+            'emergency_contact_name' => $validated['emergency_contact_name'],
+            'emergency_contact_number' => $validated['emergency_contact_number'],
+            'emergency_contact_relation' => $validated['emergency_contact_relation'],
+            'shirt_size' => $validated['shirt_size'],
+            'occupation' => $validated['occupation'],
+            'joined_date' => now(),
+        ]);
+
+        // Tautkan kartu fisik NFC jika UID diisi
+        if (! empty($validated['uid_number'])) {
+            NfcCard::create([
+                'user_id' => $user->id,
+                'uid_number' => strtoupper(trim($validated['uid_number'])),
+                'card_vendor' => $validated['card_vendor'] ?? 'emoney',
+                'status' => 'active',
+                'issued_at' => now(),
+            ]);
+        }
+
+        return back()->with('success', "Anggota baru '{$user->name}' (NIA: {$nia}) berhasil didaftarkan langsung ke Basis!");
+    }
+
+    /**
+     * Blokir Kartu NFC Anggota (Laporan Hilang / Dicuri / Rusak).
+     */
+    public function blockCard(Request $request, int $cardId): RedirectResponse
+    {
+        $card = NfcCard::findOrFail($cardId);
+        $card->update(['status' => 'blocked']);
+
+        return back()->with('success', "Kartu NFC UID {$card->uid_number} milik {$card->user->name} berhasil DIBLOKIR!");
+    }
+
+    /**
+     * Buka Blokir Kartu NFC (Jika kartu ditemukan kembali).
+     */
+    public function unblockCard(Request $request, int $cardId): RedirectResponse
+    {
+        $card = NfcCard::findOrFail($cardId);
+        $card->update(['status' => 'active']);
+
+        return back()->with('success', "Kartu NFC UID {$card->uid_number} milik {$card->user->name} berhasil DIAKTIFKAN kembali!");
+    }
+
+    /**
+     * Ganti Kartu NFC Anggota (Penerbitan Kartu Pengganti).
+     */
+    public function replaceCard(Request $request, int $userId): RedirectResponse
+    {
+        $validated = $request->validate([
+            'uid_number' => ['required', 'string', 'unique:nfc_cards,uid_number'],
+            'card_vendor' => ['required', 'in:emoney,flazz,brizzi,tapcash,custom'],
+        ]);
+
+        $user = User::findOrFail($userId);
+
+        // Blokir kartu lama jika ada
+        NfcCard::where('user_id', $user->id)->update(['status' => 'blocked']);
+
+        // Terbitkan kartu NFC baru
+        $newCard = NfcCard::create([
+            'user_id' => $user->id,
+            'uid_number' => strtoupper(trim($validated['uid_number'])),
+            'card_vendor' => $validated['card_vendor'],
+            'status' => 'active',
+            'issued_at' => now(),
+        ]);
+
+        return back()->with('success', "Kartu KTA fisik baru UID {$newCard->uid_number} berhasil diterbitkan untuk {$user->name}. Kartu lama telah diblokir.");
     }
 }

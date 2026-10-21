@@ -64,6 +64,7 @@
                         <th class="py-3 px-4">Chapter</th>
                         <th class="py-3 px-4">Vendor</th>
                         <th class="py-3 px-4">Status</th>
+                        <th class="py-3 px-4 text-right">Aksi</th>
                     </tr>
                 </thead>
                 <tbody class="divide-y divide-white/5">
@@ -79,10 +80,23 @@
                                     {{ $card->status }}
                                 </span>
                             </td>
+                            <td class="py-3.5 px-4 text-right">
+                                <div class="flex items-center justify-end gap-2">
+                                    <form action="{{ route('superadmin.nfc.toggle', $card->id) }}" method="POST" onsubmit="return confirm('Ubah status kartu UID {{ $card->uid_number }}?')">
+                                        @csrf
+                                        <button type="submit" class="px-2.5 py-1 rounded-lg {{ $card->status === 'active' ? 'bg-red-500/10 hover:bg-red-500 text-red-400 hover:text-white' : 'bg-smeck-green-500/10 hover:bg-smeck-green-500 text-smeck-green-400 hover:text-white' }} font-semibold text-[11px] transition-colors">
+                                            {{ $card->status === 'active' ? 'Blokir' : 'Buka Blokir' }}
+                                        </button>
+                                    </form>
+                                    <button onclick="openReplaceModal({{ $card->user_id }}, '{{ addslashes($card->user->name) }}')" class="px-2.5 py-1 rounded-lg bg-amber-500/10 hover:bg-amber-600 text-amber-400 hover:text-white font-semibold text-[11px] transition-colors">
+                                        Ganti Kartu
+                                    </button>
+                                </div>
+                            </td>
                         </tr>
                     @empty
                         <tr>
-                            <td colspan="6" class="py-6 text-center text-white/40">Belum ada kartu fisik yang ditautkan.</td>
+                            <td colspan="7" class="py-6 text-center text-white/40">Belum ada kartu fisik yang ditautkan.</td>
                         </tr>
                     @endforelse
                 </tbody>
@@ -91,4 +105,53 @@
     </div>
 
 </div>
+
+{{-- Modal Ganti Kartu Super Admin --}}
+<div id="modalReplaceCard" class="fixed inset-0 z-50 bg-black/80 backdrop-blur-md hidden flex items-center justify-center p-4">
+    <div class="bg-smeck-dark-900 border border-white/10 rounded-3xl max-w-md w-full p-6 sm:p-8 shadow-2xl relative">
+        <button onclick="closeReplaceModal()" class="absolute top-6 right-6 text-white/40 hover:text-white text-lg">
+            <i class="fa-solid fa-xmark"></i>
+        </button>
+
+        <div class="mb-5">
+            <h3 class="font-display font-black text-lg text-white">Ganti Kartu KTA NFC Baru</h3>
+            <p class="text-xs text-white/50 mt-1">Pemegang: <strong id="replaceMemberName" class="text-red-400"></strong></p>
+        </div>
+
+        <form id="formReplaceCard" method="POST" class="space-y-4">
+            @csrf
+            <div>
+                <label class="block text-xs font-bold uppercase text-white/60 mb-1.5">Nomor UID Chip Baru <span class="text-red-400">*</span></label>
+                <input type="text" name="uid_number" required placeholder="Contoh: 04:A2:8B:1A:F3:60:80" class="w-full px-4 py-2.5 bg-white/5 border border-white/10 rounded-xl text-white font-mono uppercase text-sm focus:border-red-400 focus:outline-none">
+            </div>
+            <div>
+                <label class="block text-xs font-bold uppercase text-white/60 mb-1.5">Vendor Kartu <span class="text-red-400">*</span></label>
+                <select name="card_vendor" required class="w-full px-4 py-2.5 bg-white/5 border border-white/10 rounded-xl text-white text-sm focus:border-red-400 focus:outline-none">
+                    <option value="emoney" class="bg-smeck-dark-900">Mandiri E-Money Custom SMeCK</option>
+                    <option value="flazz" class="bg-smeck-dark-900">BCA Flazz Gen 2 SMeCK</option>
+                    <option value="brizzi" class="bg-smeck-dark-900">BRIZZI BRI</option>
+                    <option value="tapcash" class="bg-smeck-dark-900">BNI TapCash</option>
+                    <option value="custom" class="bg-smeck-dark-900">RFID PVC Chip 13.56 MHz</option>
+                </select>
+            </div>
+            <div class="pt-3 flex items-center justify-end gap-3">
+                <button type="button" onclick="closeReplaceModal()" class="px-4 py-2 rounded-xl bg-white/5 hover:bg-white/10 text-white text-xs font-semibold">Batal</button>
+                <button type="submit" class="px-5 py-2 rounded-xl bg-red-600 hover:bg-red-500 text-white font-bold text-xs shadow-lg">Terbitkan Pengganti</button>
+            </div>
+        </form>
+    </div>
+</div>
+
+<script>
+    function openReplaceModal(userId, memberName) {
+        document.getElementById('replaceMemberName').innerText = memberName;
+        document.getElementById('formReplaceCard').action = `/superadmin/nfc/replace/${userId}`;
+        document.getElementById('modalReplaceCard').classList.remove('hidden');
+    }
+
+    function closeReplaceModal() {
+        document.getElementById('modalReplaceCard').classList.add('hidden');
+    }
+</script>
 @endsection
+
