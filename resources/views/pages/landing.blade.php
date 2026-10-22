@@ -745,16 +745,20 @@
                         <tr class="transition-colors {{ $isPsms ? 'bg-smeck-green-500/15 border-l-4 border-l-smeck-green-400 font-semibold text-white' : 'hover:bg-white/5 text-white/80' }}">
                             {{-- Rank --}}
                             <td class="py-3 px-3 text-center">
-                                @if($team->position <= 3)
-                                    <span class="w-6 h-6 mx-auto rounded-full bg-emerald-500/20 text-emerald-400 font-black text-xs flex items-center justify-center">
-                                        {{ $team->position }}
+                                @if($team->position === 1)
+                                    <span class="w-6 h-6 mx-auto rounded-full bg-emerald-500/20 text-emerald-400 font-black text-xs flex items-center justify-center ring-1 ring-emerald-400/50" title="Juara Grup: Lolos Langsung Liga 1">
+                                        1
                                     </span>
-                                @elseif($team->position >= 7)
+                                @elseif($team->position === 2)
+                                    <span class="w-6 h-6 mx-auto rounded-full bg-amber-500/20 text-amber-300 font-black text-xs flex items-center justify-center ring-1 ring-amber-400/50" title="Runner-up: Play-Off Promosi Lawan Runner-up Grup Lain">
+                                        2
+                                    </span>
+                                @elseif($team->position >= 8)
                                     <span class="w-6 h-6 mx-auto rounded-full bg-red-500/20 text-red-400 font-black text-xs flex items-center justify-center">
                                         {{ $team->position }}
                                     </span>
                                 @else
-                                    <span class="w-6 h-6 mx-auto rounded-full bg-white/5 text-white/50 text-xs flex items-center justify-center">
+                                    <span class="w-6 h-6 mx-auto rounded-full bg-white/5 text-white/50 text-xs flex items-center justify-center font-bold">
                                         {{ $team->position }}
                                     </span>
                                 @endif
@@ -771,6 +775,19 @@
                                             <span>{{ $team->team_name }}</span>
                                             @if($isPsms)
                                                 <i class="fa-solid fa-star text-smeck-gold text-[10px]"></i>
+                                            @endif
+                                        </div>
+                                        <div class="text-[9px]">
+                                            @if($team->position === 1)
+                                                <span class="text-emerald-400 font-bold">Juara Grup · Lolos Langsung Liga 1</span>
+                                            @elseif($team->position === 2)
+                                                <span class="text-amber-300 font-bold">Runner-up · Play-off Promosi vs Grup B</span>
+                                            @elseif($team->position === 3)
+                                                <span class="text-white/50">Peringkat 3 · Menempel Tiket Playoff</span>
+                                            @elseif($team->position >= 8)
+                                                <span class="text-red-400">Play-off Degradasi</span>
+                                            @else
+                                                <span class="text-white/40">Zona Aman Liga 2</span>
                                             @endif
                                         </div>
                                     </div>
@@ -819,9 +836,10 @@
         {{-- Footer Legend & Attribution --}}
         <div class="mt-6 pt-4 border-t border-white/10 flex flex-col sm:flex-row sm:items-center justify-between gap-3 text-[11px] text-white/50">
             <div class="flex flex-wrap items-center gap-3">
-                <span class="flex items-center gap-1.5"><span class="w-2.5 h-2.5 rounded-sm bg-emerald-500"></span> 1-3: Playoff Promosi Liga 1</span>
-                <span class="flex items-center gap-1.5"><span class="w-2.5 h-2.5 rounded-sm bg-white/20"></span> 4-6: Zona Aman</span>
-                <span class="flex items-center gap-1.5"><span class="w-2.5 h-2.5 rounded-sm bg-red-500/80"></span> 7-10: Playoff Degradasi</span>
+                <span class="flex items-center gap-1.5"><span class="w-2.5 h-2.5 rounded-sm bg-emerald-500"></span> Peringkat 1: Juara Grup (Lolos Langsung Promosi)</span>
+                <span class="flex items-center gap-1.5"><span class="w-2.5 h-2.5 rounded-sm bg-amber-400"></span> Peringkat 2: Play-Off Promosi (vs Runner-up Grup Lain)</span>
+                <span class="flex items-center gap-1.5"><span class="w-2.5 h-2.5 rounded-sm bg-white/20"></span> Peringkat 3–7: Zona Aman (Liga 2)</span>
+                <span class="flex items-center gap-1.5"><span class="w-2.5 h-2.5 rounded-sm bg-red-500/80"></span> Peringkat 8–10: Play-Off Degradasi</span>
             </div>
             <div class="flex items-center gap-1.5 text-white/40">
                 <i class="fa-solid fa-cloud-arrow-down text-emerald-400 text-xs"></i>

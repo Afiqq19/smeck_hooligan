@@ -54,11 +54,17 @@ class PtLibScraperService
         foreach ($teamsData as $index => $item) {
             $position = $index + 1;
             
-            // Penentuan zona kompetisi
+            // Penentuan zona kompetisi sesuai regulasi:
+            // - Peringkat 1: Lolos Promosi Langsung ke Liga 1
+            // - Peringkat 2: Play-Off Promosi (Diadu Runner-Up Grup A vs Grup B)
+            // - Peringkat 3-7: Zona Aman (Bertahan di Liga 2)
+            // - Peringkat 8-10: Play-Off Degradasi
             $zone = 'safe';
-            if ($position <= 3) {
-                $zone = 'promotion_playoff'; // Top 3 Masuk Babak 8 Besar / Playoff Promosi
-            } elseif ($position >= 7) {
+            if ($position === 1) {
+                $zone = 'direct_promotion'; // Juara Grup: Lolos Langsung Liga 1
+            } elseif ($position === 2) {
+                $zone = 'playoff_promotion'; // Runner-up: Playoff Lawan Runner-up Grup Lain
+            } elseif ($position >= 8) {
                 $zone = 'relegation_playoff'; // Playoff Degradasi
             }
 

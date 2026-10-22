@@ -546,8 +546,9 @@ class SuperAdminDashboardController extends Controller
         foreach ($all as $index => $item) {
             $pos = $index + 1;
             $zone = 'safe';
-            if ($pos <= 3) $zone = 'promotion_playoff';
-            elseif ($pos >= 7) $zone = 'relegation_playoff';
+            if ($pos === 1) $zone = 'direct_promotion';
+            elseif ($pos === 2) $zone = 'playoff_promotion';
+            elseif ($pos >= 8) $zone = 'relegation_playoff';
 
             $item->update([
                 'position' => $pos,

@@ -382,9 +382,19 @@
                         </div>
                     </div>
                     <div class="text-right">
-                        <span class="px-2.5 py-1 rounded-full text-[9px] font-bold bg-emerald-500/20 text-emerald-300 border border-emerald-500/30">
-                            Playoff Promosi
-                        </span>
+                        @if($psmsStanding->position === 1)
+                            <span class="px-2.5 py-1 rounded-full text-[9px] font-bold bg-emerald-500/20 text-emerald-300 border border-emerald-500/30">
+                                🟢 Lolos Langsung Liga 1
+                            </span>
+                        @elseif($psmsStanding->position === 2)
+                            <span class="px-2.5 py-1 rounded-full text-[9px] font-bold bg-amber-500/20 text-amber-300 border border-amber-500/30">
+                                🟡 Play-off vs Runner-up Grup B
+                            </span>
+                        @else
+                            <span class="px-2.5 py-1 rounded-full text-[9px] font-bold bg-white/10 text-white/70 border border-white/15">
+                                ⚪ Peringkat 3 (Kejar Play-off)
+                            </span>
+                        @endif
                     </div>
                 </div>
             @endif
