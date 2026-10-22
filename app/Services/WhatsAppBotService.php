@@ -28,20 +28,28 @@ class WhatsAppBotService
         // ATURAN 1: PROTEKSI GRUP WHATSAPP (isGroup === true)
         // =========================================================================
         // Di dalam grup, bot TIDAK BOLEH membalas obrolan biasa sesama anggota!
-        // Bot HANYA merespon jika dipanggil dengan: "!bot", "bot", "/bot", atau tanda "!menu", "!jadwal", dll.
+        // Bot HANYA merespon jika dipanggil dengan: "bot", "!bot", ATAU perintah resmi suporter ("cek kta", "jadwal", "klasemen", "menu", "chant", "daftar", "1"-"6").
         if ($isGroup) {
             $isBotTriggered = false;
             $cleanText = $text;
 
+            // 1. Panggilan langsung dengan kata "bot" atau prefix tanda baca (!bot, /bot, .bot, smeck)
             if (preg_match('/^(!bot|\/bot|#bot|\.bot|bot|!smeck|smeck)\b\s*(.*)$/i', $text, $matches)) {
                 $isBotTriggered = true;
                 $cleanText = trim($matches[2]);
-            } elseif (preg_match('/^(!|\/|#|\.)(menu|bantuan|help|jadwal|klasemen|cek|kta|daftar|chant)\b\s*(.*)$/i', $text, $matches)) {
+            }
+            // 2. Perintah ber-prefix (!menu, !jadwal, !cek, dll)
+            elseif (preg_match('/^(!|\/|#|\.)(menu|bantuan|help|jadwal|klasemen|cek|kta|daftar|chant)\b\s*(.*)$/i', $text, $matches)) {
                 $isBotTriggered = true;
                 $cleanText = trim($matches[2] . ' ' . $matches[3]);
             }
+            // 3. Perintah resmi suporter langsung tanpa prefix di grup
+            elseif (preg_match('/^(cek\s+kta|cek\b|kta\b|jadwal|klasemen|daftar|chant|anthem|lagu|menu|bantuan|help|info|panduan|[1-6]$|smc-|6032)/i', $text)) {
+                $isBotTriggered = true;
+                $cleanText = $text;
+            }
 
-            // Jika di grup orang mengobrol biasa tanpa memanggil kata 'bot' / tanda seru, BOT WAJIB DIAM!
+            // Jika di grup orang mengobrol biasa tanpa memanggil bot atau perintah resmi, BOT WAJIB DIAM!
             if (! $isBotTriggered) {
                 return null;
             }
@@ -49,15 +57,15 @@ class WhatsAppBotService
             // Jika di grup hanya mengetik "bot" atau "!bot" tanpa perintah lanjutan:
             if (empty($cleanText)) {
                 return "🤖 *BOT SMECK HOOLIGAN SIAP!* 💚\n\n" .
-                    "Halo Saudaraku! Gunakan perintah berikut di grup suporter:\n" .
-                    "• `!jadwal` ➔ Cek laga terdekat PSMS\n" .
-                    "• `!klasemen` ➔ Cek klasemen Liga 2\n" .
-                    "• `!cek kta <nomor/nama>` ➔ Cek keaslian KTA\n" .
-                    "• `!chant` ➔ Lirik lagu suporter\n" .
-                    "• `!menu` ➔ Panduan lengkap bot";
+                    "Halo Saudaraku! Langsung ketik perintah berikut di grup suporter:\n" .
+                    "• *jadwal* ➔ Cek laga terdekat PSMS\n" .
+                    "• *klasemen* ➔ Cek klasemen Liga 2\n" .
+                    "• *cek kta nama/nomor* ➔ Cek keaslian KTA (Contoh: `cek kta syafiq` atau `cek kta 1950`)\n" .
+                    "• *chant* ➔ Lirik lagu suporter\n" .
+                    "• *menu* ➔ Panduan lengkap bot";
             }
 
-            // Lanjutkan pemrosesan menggunakan teks yang sudah dibersihkan dari kata 'bot'
+            // Lanjutkan pemrosesan menggunakan teks yang sudah dibersihkan
             $text = $cleanText;
             $upper = strtoupper($cleanText);
         }
@@ -144,7 +152,7 @@ class WhatsAppBotService
         // Jika orang hanya ngobrol biasa ("makan yuk", "lagi di mana?", "oke", "siap", "wkwk"):
         // BOT WAJIB DIAM! Jangan ikut campur agar tidak mengganggu obrolan pribadi/grup.
         if ($isGroup) {
-            return "⚠️ Perintah tidak dikenali di grup. Ketik `!menu` untuk melihat daftar perintah resmi bot.";
+            return "⚠️ Perintah tidak dikenali di grup. Ketik *menu* untuk melihat panduan lengkap bot SMeCK Hooligan.";
         }
 
         return null;
@@ -157,12 +165,12 @@ class WhatsAppBotService
     {
         return "🔍 *PANDUAN LENGKAP CARA CEK KTA SUPORTER* 💚\n\n" .
             "Untuk mengecek keaslian, status aktif/suspend, dan data anggota resmi SMeCK Hooligan, formatnya sangat mudah:\n\n" .
-            "👉 Ketik: *CEK KTA <Nomor KTA / NIA / Nama>*\n\n" .
-            "💡 *CONTOH PENGETIKAN (Bisa Dicoba Langsung):*\n" .
-            "• `CEK KTA 1950` ➔ Cukup 4 angka belakang kartu KTA\n" .
-            "• `CEK KTA SMC-2024-001` ➔ Cek via Nomor Induk Anggota (NIA)\n" .
-            "• `CEK KTA 6032-9800-2024-1950` ➔ Nomor kartu fisik lengkap\n" .
-            "• `CEK KTA Bani Ginting` ➔ Cek via Nama Suporter\n\n" .
+            "👉 Ketik: *CEK KTA [Nomor KTA / NIA / Nama]* _(tanpa tanda kurung)_\n\n" .
+            "💡 *CONTOH PENGETIKAN LANGSUNG:*\n" .
+            "• `cek kta syafiq` ➔ Cek via Nama Anggota\n" .
+            "• `cek kta 1950` ➔ Cukup 4 angka belakang nomor KTA\n" .
+            "• `cek kta SMC-2024-001` ➔ Cek via Nomor Induk Anggota (NIA)\n" .
+            "• `cek kta 6032-9800-2024-1950` ➔ Nomor kartu fisik lengkap\n\n" .
             "✅ *Data yang akan tampil:*\n" .
             "- Nama Lengkap Anggota & Chapter Domisili\n" .
             "- Status KTA (🟢 Aktif / 🚨 Suspended)\n" .
@@ -176,8 +184,12 @@ class WhatsAppBotService
     public function handleCheckKta(string $query): string
     {
         $rawQuery = trim($query);
+        // Bersihkan tanda kurung sudut (< >), kurung siku, dan tanda kutip yang sering diketik user
+        $rawQuery = trim($rawQuery, "<>[](){}\"' \t\n\r\0\x0B");
+        $rawQuery = preg_replace('/[<>\[\](){}\"\']/', '', $rawQuery);
+        $rawQuery = trim($rawQuery);
 
-        if (empty($rawQuery) || in_array(strtoupper($rawQuery), ['KTA', 'CEK', 'CEK KTA'])) {
+        if (empty($rawQuery) || in_array(strtoupper($rawQuery), ['KTA', 'CEK', 'CEK KTA', 'NOMOR/NAMA', '<NOMOR/NAMA>', 'NOMOR', 'NAMA'])) {
             return $this->handleKtaTutorial();
         }
 
@@ -223,9 +235,27 @@ class WhatsAppBotService
 
         // 4. Cari via Nama Anggota (User::where('name', 'like', ...))
         if (! isset($user) || ! $user) {
+            // Pencarian string nama lengkap terlebih dahulu
             $user = User::where('name', 'like', "%{$rawQuery}%")
                 ->with(['profile', 'chapter', 'nfcCard'])
                 ->first();
+
+            // Jika belum ketemu, cari berdasarkan token kata nama (contoh: "MHD syafiq" -> mencari kata "syafiq")
+            if (! $user) {
+                $words = preg_split('/\s+/', $rawQuery);
+                $keywords = array_filter($words, function ($w) {
+                    $clean = strtolower(trim($w, "."));
+                    return strlen($clean) >= 3 && !in_array($clean, ['mhd', 'muh', 'mohd', 'bin', 'binti', 'dan', 'smeck', 'kta']);
+                });
+
+                if (! empty($keywords)) {
+                    $user = User::where(function ($q) use ($keywords) {
+                        foreach ($keywords as $kw) {
+                            $q->orWhere('name', 'like', "%{$kw}%");
+                        }
+                    })->with(['profile', 'chapter', 'nfcCard'])->first();
+                }
+            }
 
             if ($user) {
                 $profile = $user->profile;
@@ -378,11 +408,11 @@ class WhatsAppBotService
             "━━━━━━━━━━━━━━━━━━━━━━━━━━\n" .
             "1️⃣ *CEK KEASLIAN KTA ANGGOTA*\n" .
             "Untuk mengecek kartu resmi, aktif/suspend, dan gol. darah:\n" .
-            "👉 Ketik: *CEK KTA <Nomor KTA / NIA / Nama>*\n" .
+            "👉 Ketik: *cek kta [nama atau nomor]* _(tanpa kurung)_\n" .
             "💡 *Contoh Langsung:*\n" .
-            "   • `CEK KTA 1950`\n" .
-            "   • `CEK KTA SMC-2024-001`\n" .
-            "   • `CEK KTA Bani Ginting`\n\n" .
+            "   • `cek kta syafiq`\n" .
+            "   • `cek kta 1950`\n" .
+            "   • `cek kta SMC-2024-001`\n\n" .
             "━━━━━━━━━━━━━━━━━━━━━━━━━━\n" .
             "2️⃣ *JADWAL LAGA PSMS MEDAN*\n" .
             "Untuk melihat jadwal laga terdekat, stadion, dan tiket:\n" .

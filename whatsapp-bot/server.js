@@ -189,11 +189,11 @@ async function startWhatsApp() {
             if (!messageText) continue;
 
             // PROTEKSI ANTI-SPAM GRUP DI LEVEL GATEWAY:
-            // Jika pesan berasal dari GRUP dan BUKAN panggilan bot ("bot", "!bot", "!jadwal", dll), LEWATI LANGSUNG!
+            // Tanggapi jika pesan diawali panggilan bot ("bot", "!bot") ATAU perintah resmi suporter ("cek kta", "jadwal", "klasemen", dll)
             if (isGroup) {
-                const isBotCall = /^(!|\/|#|\.|bot\b|smeck\b)/i.test(messageText);
+                const isBotCall = /^(!|\/|#|\.|bot\b|smeck\b|cek\s+kta|cek\b|kta\b|jadwal|klasemen|daftar|chant|anthem|lagu|menu|bantuan|help|info|panduan|[1-6]$|smc-|6032)/i.test(messageText);
                 if (!isBotCall) {
-                    // Abaikan obrolan biasa sesama anggota grup tanpa menyentuh webhook
+                    // Abaikan obrolan santai sesama anggota grup tanpa menyentuh webhook
                     continue;
                 }
             }
