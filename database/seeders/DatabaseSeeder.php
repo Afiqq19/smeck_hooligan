@@ -32,6 +32,9 @@ class DatabaseSeeder extends Seeder
             NfcCard::where('uid_number', '04:A2:8B:1A:F3:60:80')->update(['card_number' => '6032-9800-2024-1950']);
         } catch (\Throwable $e) {}
 
+        // Sinkronkan Berita & Maklumat Perdana jika belum ada
+        $this->call(NewsArticleSeeder::class);
+
         if (Chapter::count() > 0) {
             return;
         }
