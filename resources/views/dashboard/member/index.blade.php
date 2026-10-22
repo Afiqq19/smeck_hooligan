@@ -5,6 +5,9 @@
 @section('header_subtitle', 'Identitas resmi suporter SMeCK Hooligan dengan chip NFC & QR Presensi')
 
 @push('styles')
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Caveat:wght@600;700&family=Dancing+Script:wght@700&display=swap" rel="stylesheet">
 <style>
     /* 3D Card Flip Styling */
     .perspective-1000 {
@@ -46,6 +49,31 @@
     @keyframes sheen {
         0% { background-position: -200% 0; }
         100% { background-position: 200% 0; }
+    }
+    .font-signature {
+        font-family: 'Caveat', 'Dancing Script', cursive;
+    }
+    .guilloche-bg {
+        background-color: #f8fafc;
+        background-image: 
+            repeating-linear-gradient(45deg, rgba(16, 185, 129, 0.12) 0, rgba(16, 185, 129, 0.12) 2px, transparent 2px, transparent 6px),
+            repeating-linear-gradient(-45deg, rgba(15, 23, 42, 0.08) 0, rgba(15, 23, 42, 0.08) 2px, transparent 2px, transparent 6px);
+    }
+    .holo-stripe {
+        background: linear-gradient(90deg, #18181b 0%, #27272a 25%, #3f3f46 50%, #27272a 75%, #18181b 100%);
+        position: relative;
+        overflow: hidden;
+    }
+    .holo-stripe::after {
+        content: '';
+        position: absolute;
+        inset: 0;
+        background: linear-gradient(90deg, transparent, rgba(245, 158, 11, 0.18), rgba(16, 185, 129, 0.18), transparent);
+        animation: holo-pass 4s infinite linear;
+    }
+    @keyframes holo-pass {
+        0% { transform: translateX(-100%); }
+        100% { transform: translateX(100%); }
     }
 </style>
 @endpush
@@ -217,61 +245,235 @@
                     </div>
 
                     {{-- -------------------------------------------------- --}}
-                    {{-- BACK OF THE CARD --}}
+                    {{-- BACK OF THE CARD: ULTRA-MODERN VIP SUPPORTER NFC HYBRID --}}
                     {{-- -------------------------------------------------- --}}
-                    <div class="card-face card-back p-6 sm:p-7 flex flex-col justify-between overflow-hidden border border-white/20 shadow-2xl bg-gradient-to-br from-black via-smeck-dark-900 to-smeck-green-950 text-white relative">
+                    <div class="card-face card-back p-3.5 sm:p-5 flex flex-col justify-between overflow-hidden border border-emerald-500/30 ring-1 ring-amber-400/20 shadow-2xl bg-gradient-to-br from-neutral-950 via-slate-950 to-neutral-950 text-white relative">
                         
-                        {{-- Magnetic Stripe --}}
-                        <div class="absolute top-6 left-0 right-0 h-10 bg-neutral-900 border-y border-white/10"></div>
+                        {{-- Holographic Ambient Light Orbs --}}
+                        <div class="absolute -top-12 -right-12 w-40 h-40 bg-emerald-500/15 rounded-full blur-2xl pointer-events-none"></div>
+                        <div class="absolute -bottom-12 -left-12 w-40 h-40 bg-amber-500/10 rounded-full blur-2xl pointer-events-none"></div>
 
-                        {{-- Signature Panel & QR Code --}}
-                        <div class="mt-12 flex items-center justify-between gap-4">
-                            {{-- Signature Area --}}
-                            <div class="flex-1">
-                                <div class="text-[9px] text-white/50 uppercase font-semibold mb-1">Tanda Tangan Pemegang Kartu:</div>
-                                <div class="h-9 rounded bg-neutral-100 flex items-center px-3 text-neutral-800 font-serif italic text-xs select-none">
-                                    {{ $user->name }}
+                        {{-- Holographic Sheen Layer --}}
+                        <div class="absolute inset-0 shimmer-effect opacity-30 pointer-events-none"></div>
+
+                        {{-- Watermark Rooster Crest --}}
+                        <div class="absolute right-4 bottom-4 w-36 h-36 rounded-full overflow-hidden opacity-[0.04] pointer-events-none">
+                            <img src="{{ asset('images/logo-crest.jpg') }}" alt="Watermark" class="w-full h-full object-cover">
+                        </div>
+
+                        {{-- TOP: Hi-Co Magnetic Stripe with Holographic Laser Micro-Text --}}
+                        <div class="-mx-3.5 -mt-3.5 sm:-mx-5 sm:-mt-5 relative">
+                            <div class="h-8 sm:h-9 holo-stripe border-b border-amber-400/20 shadow-inner flex items-center justify-between px-3 sm:px-5">
+                                <div class="flex items-center gap-2 overflow-hidden select-none whitespace-nowrap">
+                                    <span class="text-[7px] sm:text-[8px] font-mono tracking-widest text-white/50 uppercase font-semibold">
+                                        ★ SMeCK HOOLIGAN ★ PSMS MEDAN 1950 ★ OFFICIAL SUPPORTER IDENTITY ★ NFC DUAL-INTERFACE PASS ★ SADA ROHA ★
+                                    </span>
                                 </div>
-                                <div class="mt-2 text-[8px] text-white/40 leading-relaxed">
-                                    Kartu ini adalah tanda keanggotaan sah SMeCK Hooligan suporter PSMS Medan. Hak milik DPP SMeCK Hooligan.
+                                <div class="text-[7px] sm:text-[8px] font-mono text-amber-300/80 font-bold shrink-0 pl-2">
+                                    HI-CO 4000 Oe
                                 </div>
                             </div>
 
-                            {{-- QR Code Display --}}
-                            <div class="p-2 rounded-xl bg-white shrink-0 shadow-lg text-center">
-                                <svg class="w-16 h-16 sm:w-20 sm:h-20" viewBox="0 0 100 100" fill="none">
-                                    {{-- Stylized SVG QR Code pattern --}}
-                                    <rect width="100" height="100" fill="white"/>
-                                    <rect x="10" y="10" width="25" height="25" fill="#062b08"/>
-                                    <rect x="15" y="15" width="15" height="15" fill="white"/>
-                                    <rect x="18" y="18" width="9" height="9" fill="#062b08"/>
-                                    
-                                    <rect x="65" y="10" width="25" height="25" fill="#062b08"/>
-                                    <rect x="70" y="15" width="15" height="15" fill="white"/>
-                                    <rect x="73" y="18" width="9" height="9" fill="#062b08"/>
-                                    
-                                    <rect x="10" y="65" width="25" height="25" fill="#062b08"/>
-                                    <rect x="15" y="70" width="15" height="15" fill="white"/>
-                                    <rect x="18" y="73" width="9" height="9" fill="#062b08"/>
-
-                                    <rect x="42" y="15" width="8" height="8" fill="#062b08"/>
-                                    <rect x="42" y="30" width="16" height="8" fill="#062b08"/>
-                                    <rect x="50" y="45" width="10" height="15" fill="#062b08"/>
-                                    <rect x="70" y="55" width="15" height="10" fill="#062b08"/>
-                                    <rect x="42" y="75" width="20" height="10" fill="#062b08"/>
-                                    <rect x="75" y="75" width="15" height="15" fill="#062b08"/>
-                                </svg>
-                                <div class="text-[8px] text-neutral-800 font-mono font-bold mt-1">SCAN PRESENSI</div>
+                            {{-- Technical Standard Sub-bar --}}
+                            <div class="px-3 sm:px-5 py-1 flex items-center justify-between bg-black/40 border-b border-white/5 text-[7px] sm:text-[8px] text-white/50 font-mono">
+                                <div class="flex items-center gap-1.5">
+                                    <span class="w-1.5 h-1.5 rounded-full bg-emerald-400"></span>
+                                    <span class="text-white/70 font-semibold">DPP SMECK OFFICIAL NFC PASS</span>
+                                </div>
+                                <div class="flex items-center gap-2">
+                                    <span>ISO/IEC 7810 ID-1</span>
+                                    <span>•</span>
+                                    <span class="text-emerald-400 flex items-center gap-1">
+                                        <i class="fa-solid fa-wifi rotate-90 text-[8px]"></i> 13.56 MHz
+                                    </span>
+                                </div>
                             </div>
                         </div>
 
-                        {{-- Card Back Bottom Info --}}
-                        <div class="pt-2 border-t border-white/10 flex items-center justify-between text-[9px] text-white/50">
-                            <div>
-                                Emergency: <strong class="text-white">{{ $user->profile?->emergency_contact_number ?? '0812-6543-2199' }}</strong>
+                        {{-- MIDDLE SECTION: Signature Panel + Barcode + Gate QR Scanner --}}
+                        <div class="my-auto py-1 sm:py-2 flex items-center justify-between gap-3 sm:gap-4 relative z-10">
+                            
+                            {{-- Left Column: Security Signature Strip & Barcode & Terms --}}
+                            <div class="flex-1 min-w-0 flex flex-col justify-between space-y-1.5 sm:space-y-2">
+                                
+                                {{-- Signature Strip --}}
+                                <div>
+                                    <div class="flex items-center justify-between text-[7px] sm:text-[8px] uppercase tracking-wider mb-0.5">
+                                        <span class="text-white/70 font-bold flex items-center gap-1">
+                                            <i class="fa-solid fa-signature text-emerald-400 text-[8px]"></i> Tanda Tangan Resmi Pemegang
+                                        </span>
+                                        <span class="text-[6px] sm:text-[7px] text-amber-300 font-mono">AUTHORIZED SIGNATURE</span>
+                                    </div>
+                                    
+                                    <div class="flex items-center rounded-lg overflow-hidden border border-emerald-500/40 shadow-inner">
+                                        {{-- Guilloche Pattern Signature Area --}}
+                                        <div class="flex-1 h-7 sm:h-8 guilloche-bg flex items-center px-2.5 relative overflow-hidden">
+                                            {{-- Security micro-watermark --}}
+                                            <div class="absolute inset-0 flex items-center justify-around opacity-15 select-none pointer-events-none text-[6px] font-mono tracking-widest text-slate-800">
+                                                <span>SMECK</span><span>HOOLIGAN</span><span>VALID</span><span>MEMBER</span>
+                                            </div>
+                                            {{-- Cursive handwritten signature --}}
+                                            <span class="relative z-10 font-signature text-base sm:text-lg text-slate-900 font-bold select-none -rotate-1 tracking-wide truncate">
+                                                {{ $user->name }}
+                                            </span>
+                                        </div>
+                                        
+                                        {{-- Embedded Security Code Pill (CVV Style) --}}
+                                        <div class="h-7 sm:h-8 px-2 sm:px-2.5 bg-gradient-to-br from-amber-300 via-amber-400 to-amber-500 text-slate-950 flex flex-col items-center justify-center border-l border-amber-600/40 shrink-0">
+                                            <span class="text-[6px] font-bold uppercase tracking-tighter opacity-70">SEC CODE</span>
+                                            <span class="font-mono font-black text-[9px] sm:text-[10px] tracking-wider leading-none">
+                                                {{ substr(crc32($user->id . 'smeck1950'), 0, 3) ?: '195' }}
+                                            </span>
+                                        </div>
+                                    </div>
+                                </div>
+
+                                {{-- Laser Etched Barcode --}}
+                                <div class="pt-0.5">
+                                    <div class="h-4 sm:h-5 flex items-center gap-[1.5px] sm:gap-[2px] opacity-75 overflow-hidden">
+                                        {{-- Stylized Laser Barcode Lines --}}
+                                        @for($i = 0; $i < 38; $i++)
+                                            @php
+                                                $barWidth = ($i % 5 == 0 || $i % 7 == 0) ? 'w-1 sm:w-1.5' : (($i % 3 == 0) ? 'w-0.5 sm:w-1' : 'w-[1px]');
+                                                $barOpacity = ($i % 4 == 0) ? 'bg-white' : 'bg-emerald-300';
+                                            @endphp
+                                            <div class="{{ $barWidth }} h-full {{ $barOpacity }} rounded-full"></div>
+                                        @endfor
+                                    </div>
+                                    <div class="flex items-center justify-between text-[7px] sm:text-[8px] font-mono text-white/50 tracking-wider mt-0.5">
+                                        <span>* {{ $user->profile?->nia ?? 'SMCK-2024-1950' }} *</span>
+                                        <span class="text-amber-400/90 font-bold uppercase">SUPORTER TRIBUN RESMI</span>
+                                    </div>
+                                </div>
+
+                                {{-- Official Terms --}}
+                                <div class="text-[7px] sm:text-[8px] text-white/45 leading-tight line-clamp-2">
+                                    Kartu ini adalah hak milik resmi DPP SMeCK Hooligan. Wajib ditunjukkan saat verifikasi gate Stadion Teladan & penukaran gelang matchday.
+                                </div>
                             </div>
-                            <div class="font-display font-bold text-smeck-gold">
-                                "SALAM SADA ROHA"
+
+                            {{-- Right Column: Gate Access QR Scanner Box --}}
+                            <div class="shrink-0 flex flex-col items-center">
+                                <div class="relative p-1.5 sm:p-2 rounded-xl bg-gradient-to-b from-slate-900 to-black border border-emerald-500/40 shadow-xl flex flex-col items-center">
+                                    
+                                    {{-- Viewfinder Corner Crosshairs --}}
+                                    <div class="absolute top-0.5 left-0.5 w-2 h-2 border-t-2 border-l-2 border-emerald-400 rounded-tl"></div>
+                                    <div class="absolute top-0.5 right-0.5 w-2 h-2 border-t-2 border-r-2 border-emerald-400 rounded-tr"></div>
+                                    <div class="absolute bottom-0.5 left-0.5 w-2 h-2 border-b-2 border-l-2 border-emerald-400 rounded-bl"></div>
+                                    <div class="absolute bottom-0.5 right-0.5 w-2 h-2 border-b-2 border-r-2 border-emerald-400 rounded-br"></div>
+
+                                    {{-- Status Pill --}}
+                                    <div class="flex items-center gap-1 px-1.5 py-0.5 mb-1 rounded-full bg-emerald-500/20 border border-emerald-500/30 text-[6px] sm:text-[7px] font-mono text-emerald-300 font-bold uppercase">
+                                        <span class="w-1.5 h-1.5 rounded-full bg-emerald-400 animate-pulse"></span>
+                                        <span>GATE TELADAN</span>
+                                    </div>
+
+                                    {{-- QR Matrix Container --}}
+                                    <div class="w-16 h-16 sm:w-20 sm:h-20 bg-white rounded-lg p-1 shadow-md flex items-center justify-center relative overflow-hidden">
+                                        <div id="dynamic-kta-qr" class="w-full h-full flex items-center justify-center">
+                                            {{-- High-Density SVG QR Matrix --}}
+                                            <svg class="w-full h-full" viewBox="0 0 100 100" fill="none">
+                                                <rect width="100" height="100" fill="white"/>
+                                                
+                                                {{-- Top-Left Finder Pattern --}}
+                                                <rect x="6" y="6" width="26" height="26" rx="2" fill="#052e16"/>
+                                                <rect x="10" y="10" width="18" height="18" fill="white"/>
+                                                <rect x="13" y="13" width="12" height="12" rx="1.5" fill="#052e16"/>
+
+                                                {{-- Top-Right Finder Pattern --}}
+                                                <rect x="68" y="6" width="26" height="26" rx="2" fill="#052e16"/>
+                                                <rect x="72" y="10" width="18" height="18" fill="white"/>
+                                                <rect x="75" y="13" width="12" height="12" rx="1.5" fill="#052e16"/>
+
+                                                {{-- Bottom-Left Finder Pattern --}}
+                                                <rect x="6" y="68" width="26" height="26" rx="2" fill="#052e16"/>
+                                                <rect x="10" y="72" width="18" height="18" fill="white"/>
+                                                <rect x="13" y="75" width="12" height="12" rx="1.5" fill="#052e16"/>
+
+                                                {{-- Timing & Alignment Patterns --}}
+                                                <rect x="36" y="10" width="4" height="4" fill="#052e16"/>
+                                                <rect x="44" y="10" width="4" height="4" fill="#052e16"/>
+                                                <rect x="52" y="10" width="4" height="4" fill="#052e16"/>
+                                                <rect x="60" y="10" width="4" height="4" fill="#052e16"/>
+
+                                                <rect x="10" y="36" width="4" height="4" fill="#052e16"/>
+                                                <rect x="10" y="44" width="4" height="4" fill="#052e16"/>
+                                                <rect x="10" y="52" width="4" height="4" fill="#052e16"/>
+                                                <rect x="10" y="60" width="4" height="4" fill="#052e16"/>
+
+                                                <rect x="70" y="70" width="16" height="16" rx="1" fill="#052e16"/>
+                                                <rect x="73" y="73" width="10" height="10" fill="white"/>
+                                                <rect x="76" y="76" width="4" height="4" fill="#052e16"/>
+
+                                                {{-- Data Modules --}}
+                                                <rect x="36" y="22" width="6" height="6" fill="#052e16"/>
+                                                <rect x="46" y="18" width="6" height="6" fill="#052e16"/>
+                                                <rect x="56" y="24" width="6" height="6" fill="#052e16"/>
+                                                
+                                                <rect x="22" y="38" width="6" height="6" fill="#052e16"/>
+                                                <rect x="32" y="34" width="6" height="6" fill="#052e16"/>
+                                                <rect x="62" y="38" width="6" height="6" fill="#052e16"/>
+                                                
+                                                <rect x="18" y="48" width="6" height="6" fill="#052e16"/>
+                                                <rect x="28" y="56" width="6" height="6" fill="#052e16"/>
+                                                <rect x="38" y="50" width="6" height="6" fill="#052e16"/>
+                                                <rect x="58" y="52" width="6" height="6" fill="#052e16"/>
+                                                <rect x="68" y="48" width="6" height="6" fill="#052e16"/>
+
+                                                <rect x="36" y="64" width="6" height="6" fill="#052e16"/>
+                                                <rect x="46" y="60" width="6" height="6" fill="#052e16"/>
+                                                <rect x="56" y="66" width="6" height="6" fill="#052e16"/>
+
+                                                <rect x="36" y="76" width="6" height="6" fill="#052e16"/>
+                                                <rect x="46" y="80" width="6" height="6" fill="#052e16"/>
+                                                <rect x="56" y="76" width="6" height="6" fill="#052e16"/>
+
+                                                {{-- Center Emblem Badge --}}
+                                                <circle cx="50" cy="50" r="10" fill="#052e16" stroke="white" stroke-width="2"/>
+                                                <path d="M47 45 L53 45 L55 52 L50 55 L45 52 Z" fill="#22c55e"/>
+                                                <circle cx="50" cy="48" r="2" fill="#fbbf24"/>
+                                            </svg>
+                                        </div>
+                                    </div>
+
+                                    {{-- Micro Scan Prompt --}}
+                                    <div class="text-[6px] sm:text-[7px] text-white/70 font-mono font-bold mt-1 tracking-wider uppercase">
+                                        SCAN PRESENSI
+                                    </div>
+                                </div>
+                            </div>
+
+                        </div>
+
+                        {{-- BOTTOM FOOTER: DPP Emergency Hotline & Gold Foil Slogan --}}
+                        <div class="pt-1.5 sm:pt-2 border-t border-white/10 flex items-center justify-between text-[7px] sm:text-[9px] relative z-10">
+                            {{-- Hotline DPP --}}
+                            <div class="flex items-center gap-1.5 sm:gap-2">
+                                <div class="w-5 h-5 sm:w-6 sm:h-6 rounded-md bg-red-500/20 text-red-400 flex items-center justify-center text-[9px] sm:text-xs shrink-0 border border-red-500/30">
+                                    <i class="fa-solid fa-headset"></i>
+                                </div>
+                                <div>
+                                    <div class="text-[6px] sm:text-[7px] text-white/40 uppercase font-mono">Bantuan & Darurat DPP:</div>
+                                    <div class="font-mono text-[8px] sm:text-[10px] font-bold text-white tracking-wide">
+                                        {{ $user->profile?->emergency_contact_number ?? '0812-6543-2199' }}
+                                    </div>
+                                </div>
+                            </div>
+
+                            {{-- Holographic Security Emblem --}}
+                            <div class="hidden sm:flex items-center gap-1 px-2 py-0.5 rounded-full bg-white/[0.04] border border-white/10 text-[7px] font-mono text-white/60">
+                                <i class="fa-solid fa-shield-halved text-amber-400 text-[8px]"></i>
+                                <span>AUTHENTIC PASS</span>
+                            </div>
+
+                            {{-- Slogan --}}
+                            <div class="text-right">
+                                <div class="font-display font-black text-[9px] sm:text-xs text-smeck-gold tracking-widest drop-shadow">
+                                    "SALAM SADA ROHA"
+                                </div>
+                                <div class="text-[6px] sm:text-[7px] font-mono text-emerald-400 font-bold tracking-widest uppercase">
+                                    RIBAT SUDE • PSMS MEDAN
+                                </div>
                             </div>
                         </div>
 
@@ -621,36 +823,66 @@
                     <i class="fa-solid fa-qrcode"></i>
                     <span>Tampak Belakang (Back View & QR Presensi Gate)</span>
                 </div>
-                <div class="rounded-2xl p-6 bg-gradient-to-br from-black via-slate-900 to-emerald-950 border border-white/20 text-white shadow-xl relative overflow-hidden print:border-slate-800">
-                    <div class="h-8 -mx-6 -mt-6 mb-4 bg-neutral-900 border-b border-white/10"></div>
+                <div class="rounded-2xl p-4 sm:p-5 bg-gradient-to-br from-neutral-950 via-slate-950 to-neutral-950 border border-emerald-500/30 text-white shadow-xl relative overflow-hidden print:border-slate-800">
+                    
+                    {{-- Magnetic Stripe --}}
+                    <div class="h-8 -mx-4 sm:-mx-5 -mt-4 sm:-mt-5 mb-3 holo-stripe border-b border-amber-400/20 shadow-inner flex items-center justify-between px-4">
+                        <span class="text-[7px] sm:text-[8px] font-mono tracking-widest text-white/50 uppercase font-semibold">
+                            ★ SMeCK HOOLIGAN ★ PSMS MEDAN 1950 ★ OFFICIAL SUPPORTER IDENTITY ★ NFC DUAL-INTERFACE PASS ★
+                        </span>
+                        <span class="text-[7px] font-mono text-amber-300 font-bold shrink-0">HI-CO 4000 Oe</span>
+                    </div>
+
+                    {{-- Middle Body --}}
                     <div class="flex items-center justify-between gap-4">
-                        <div class="flex-1 text-[10px] text-white/60 space-y-1">
-                            <div>Tanda Tangan Suporter: <strong class="text-white italic underline">{{ $user->name }}</strong></div>
-                            <p class="text-[9px] text-white/40 leading-relaxed">
-                                Tunjukkan QR Code ini kepada panitia tiket pintu stadion Teladan untuk verifikasi hak akses dan presensi tribun resmi.
+                        <div class="flex-1 space-y-2">
+                            {{-- Signature Strip --}}
+                            <div>
+                                <div class="text-[8px] text-white/60 uppercase font-semibold mb-1 flex items-center justify-between">
+                                    <span>Tanda Tangan Suporter:</span>
+                                    <span class="text-[7px] text-amber-400 font-mono">AUTHORIZED SIGNATURE</span>
+                                </div>
+                                <div class="flex items-center rounded-lg overflow-hidden border border-emerald-500/40">
+                                    <div class="flex-1 h-7 guilloche-bg flex items-center px-2.5">
+                                        <span class="font-signature text-base text-slate-900 font-bold select-none -rotate-1">
+                                            {{ $user->name }}
+                                        </span>
+                                    </div>
+                                    <div class="h-7 px-2 bg-gradient-to-r from-amber-300 to-amber-500 text-slate-950 flex flex-col items-center justify-center font-mono font-black text-[9px] border-l border-amber-600/40">
+                                        <span>{{ substr(crc32($user->id . 'smeck1950'), 0, 3) ?: '195' }}</span>
+                                    </div>
+                                </div>
+                            </div>
+
+                            <p class="text-[8px] text-white/50 leading-relaxed">
+                                Tunjukkan QR Code ini kepada panitia pintu Stadion Teladan untuk verifikasi hak akses tribun & presensi suporter resmi.
                             </p>
-                            <div class="pt-1 text-amber-400 font-bold">SALAM SADA ROHA • KINANTAN JUARA</div>
+                            <div class="text-[8px] text-amber-400 font-bold tracking-wider">
+                                SALAM SADA ROHA • RIBAT SUDE • KINANTAN JUARA
+                            </div>
                         </div>
-                        <div class="p-2 rounded-xl bg-white text-center shrink-0">
-                            <svg class="w-16 h-16" viewBox="0 0 100 100" fill="none">
-                                <rect width="100" height="100" fill="white"/>
-                                <rect x="10" y="10" width="25" height="25" fill="#062b08"/>
-                                <rect x="15" y="15" width="15" height="15" fill="white"/>
-                                <rect x="18" y="18" width="9" height="9" fill="#062b08"/>
-                                <rect x="65" y="10" width="25" height="25" fill="#062b08"/>
-                                <rect x="70" y="15" width="15" height="15" fill="white"/>
-                                <rect x="73" y="18" width="9" height="9" fill="#062b08"/>
-                                <rect x="10" y="65" width="25" height="25" fill="#062b08"/>
-                                <rect x="15" y="70" width="15" height="15" fill="white"/>
-                                <rect x="18" y="73" width="9" height="9" fill="#062b08"/>
-                                <rect x="42" y="15" width="8" height="8" fill="#062b08"/>
-                                <rect x="42" y="30" width="16" height="8" fill="#062b08"/>
-                                <rect x="50" y="45" width="10" height="15" fill="#062b08"/>
-                                <rect x="70" y="55" width="15" height="10" fill="#062b08"/>
-                                <rect x="42" y="75" width="20" height="10" fill="#062b08"/>
-                                <rect x="75" y="75" width="15" height="15" fill="#062b08"/>
-                            </svg>
-                            <div class="text-[7px] text-neutral-900 font-bold font-mono">PRESENSI</div>
+
+                        {{-- QR Viewfinder --}}
+                        <div class="p-1.5 rounded-xl bg-slate-900 border border-emerald-500/40 shrink-0 text-center">
+                            <div class="w-16 h-16 bg-white rounded-lg p-1 flex items-center justify-center">
+                                <div id="modal-dynamic-qr" class="w-full h-full flex items-center justify-center">
+                                    <svg class="w-full h-full" viewBox="0 0 100 100" fill="none">
+                                        <rect width="100" height="100" fill="white"/>
+                                        <rect x="6" y="6" width="26" height="26" rx="2" fill="#052e16"/>
+                                        <rect x="10" y="10" width="18" height="18" fill="white"/>
+                                        <rect x="13" y="13" width="12" height="12" rx="1.5" fill="#052e16"/>
+                                        <rect x="68" y="6" width="26" height="26" rx="2" fill="#052e16"/>
+                                        <rect x="72" y="10" width="18" height="18" fill="white"/>
+                                        <rect x="75" y="13" width="12" height="12" rx="1.5" fill="#052e16"/>
+                                        <rect x="6" y="68" width="26" height="26" rx="2" fill="#052e16"/>
+                                        <rect x="10" y="72" width="18" height="18" fill="white"/>
+                                        <rect x="13" y="75" width="12" height="12" rx="1.5" fill="#052e16"/>
+                                        <circle cx="50" cy="50" r="10" fill="#052e16" stroke="white" stroke-width="2"/>
+                                        <path d="M47 45 L53 45 L55 52 L50 55 L45 52 Z" fill="#22c55e"/>
+                                    </svg>
+                                </div>
+                            </div>
+                            <div class="text-[6px] text-white/70 font-mono font-bold mt-1 uppercase">PRESENSI GATE</div>
                         </div>
                     </div>
                 </div>
@@ -667,6 +899,7 @@
 @endsection
 
 @push('scripts')
+<script src="https://cdnjs.cloudflare.com/ajax/libs/qrcodejs/1.0.0/qrcode.min.js"></script>
 <script>
     function flipKtaCard() {
         const card = document.getElementById('kta-card');
@@ -688,6 +921,43 @@
     function closeMemberCheckinModal() {
         document.getElementById('modalMemberCheckin').classList.add('hidden');
     }
+
+    // Generate dynamic verifiable QR Code
+    document.addEventListener('DOMContentLoaded', function () {
+        const qrVerificationUrl = "{{ route('api.check-kta', ['query' => $user->profile?->nia ?? ($user->nfcCard?->card_number ?? 'SMCK-1950')]) }}";
+        
+        if (typeof QRCode !== 'undefined') {
+            try {
+                const cardQr = document.getElementById('dynamic-kta-qr');
+                if (cardQr) {
+                    cardQr.innerHTML = '';
+                    new QRCode(cardQr, {
+                        text: qrVerificationUrl,
+                        width: 76,
+                        height: 76,
+                        colorDark: "#052e16",
+                        colorLight: "#ffffff",
+                        correctLevel: QRCode.CorrectLevel.M
+                    });
+                }
+
+                const modalQr = document.getElementById('modal-dynamic-qr');
+                if (modalQr) {
+                    modalQr.innerHTML = '';
+                    new QRCode(modalQr, {
+                        text: qrVerificationUrl,
+                        width: 60,
+                        height: 60,
+                        colorDark: "#052e16",
+                        colorLight: "#ffffff",
+                        correctLevel: QRCode.CorrectLevel.M
+                    });
+                }
+            } catch (e) {
+                console.warn('QR Code generation fallback:', e);
+            }
+        }
+    });
 </script>
 @endpush
 
