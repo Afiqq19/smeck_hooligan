@@ -9,8 +9,12 @@
     <div class="p-6 sm:p-8 rounded-3xl bg-smeck-dark-900 border border-white/10 shadow-2xl">
         {{-- Profile Header --}}
         <div class="flex items-center gap-5 pb-6 border-b border-white/10">
-            <div class="w-16 h-16 rounded-2xl bg-smeck-green-600 border border-smeck-green-500/40 flex items-center justify-center font-display font-black text-2xl text-white shrink-0 shadow-lg shadow-smeck-green-700/20">
-                {{ strtoupper(substr($user->name, 0, 1)) }}
+            <div class="w-16 h-16 rounded-2xl bg-smeck-dark-800 border-2 border-emerald-400 overflow-hidden flex items-center justify-center font-display font-black text-2xl text-white shrink-0 shadow-lg shadow-smeck-green-700/20 relative">
+                @if($user->profile?->profile_photo_path)
+                    <img src="{{ asset('storage/' . $user->profile->profile_photo_path) }}" alt="{{ $user->name }}" class="w-full h-full object-cover" style="object-position: center top;">
+                @else
+                    {{ strtoupper(substr($user->name, 0, 1)) }}
+                @endif
             </div>
             <div>
                 <h2 class="font-display font-black text-xl text-white">{{ $user->name }}</h2>
@@ -54,22 +58,37 @@
                 </h4>
 
                 {{-- Unggah Pas Foto KTA --}}
-                <div class="p-4 rounded-2xl bg-white/[0.04] border border-white/10 flex flex-col sm:flex-row items-center gap-4 mb-5">
-                    <div class="w-16 h-16 rounded-2xl border-2 border-amber-400/80 bg-smeck-dark-800 overflow-hidden shrink-0 shadow flex items-center justify-center">
+                <div class="p-5 rounded-2xl bg-white/[0.04] border border-white/10 flex flex-col sm:flex-row items-center gap-5 mb-6">
+                    <div class="w-20 h-24 sm:w-24 sm:h-28 rounded-2xl border-2 border-amber-400 bg-black overflow-hidden shrink-0 shadow-xl relative flex items-center justify-center">
                         @if($user->profile?->profile_photo_path)
-                            <img src="{{ asset('storage/' . $user->profile->profile_photo_path) }}" alt="{{ $user->name }}" class="w-full h-full object-cover">
+                            <img id="photo-preview-img" src="{{ asset('storage/' . $user->profile->profile_photo_path) }}" alt="{{ $user->name }}" class="w-full h-full object-cover" style="object-position: center top;">
                         @else
-                            <div class="w-full h-full bg-gradient-to-br from-emerald-800 to-black flex items-center justify-center text-white text-xl">
-                                <i class="fa-solid fa-camera text-emerald-300"></i>
+                            <div id="photo-preview-placeholder" class="w-full h-full bg-gradient-to-br from-emerald-800 to-black flex flex-col items-center justify-center text-white p-2 text-center">
+                                <i class="fa-solid fa-camera text-emerald-300 text-xl"></i>
+                                <span class="text-[9px] text-white/50 mt-1 uppercase font-bold">Belum Ada Foto</span>
                             </div>
+                            <img id="photo-preview-img" src="" alt="Preview" class="w-full h-full object-cover hidden" style="object-position: center top;">
                         @endif
                     </div>
                     <div class="flex-1 text-center sm:text-left">
-                        <label class="block font-bold uppercase text-white/80 text-xs mb-1">
-                            <i class="fa-solid fa-image text-amber-300 mr-1"></i> Pas Foto Resmi KTA Digital
+                        <div class="flex items-center justify-center sm:justify-start gap-2 mb-1">
+                            <span class="px-2 py-0.5 rounded text-[10px] font-bold bg-amber-400/20 text-amber-300 border border-amber-400/30">PAS FOTO RESMI KTA</span>
+                            <span class="text-[11px] text-white/50">Fokus Wajah Tegak</span>
+                        </div>
+                        <label class="block font-display font-black text-white text-sm mb-1">
+                            Pas Foto Profil & KTA Digital
                         </label>
-                        <p class="text-[11px] text-white/50 mb-2">Unggah pas foto tampak wajah jelas untuk dicetak di KTA (Maks. 3MB, format JPG/PNG/WebP).</p>
-                        <input type="file" name="profile_photo" accept="image/jpeg,image/png,image/jpg,image/webp" class="block w-full text-xs text-white/70 file:mr-3 file:py-1.5 file:px-3 file:rounded-xl file:border-0 file:text-xs file:font-bold file:bg-emerald-600 file:text-white hover:file:bg-emerald-500 cursor-pointer">
+                        <p class="text-[11px] text-white/60 mb-3 max-w-lg">
+                            Wajah akan diposisikan tegap di bagian atas kartu KTA. Format didukung: <strong>JPG, PNG, WebP</strong> (Maks. 3 MB).
+                        </p>
+                        <div class="flex flex-col sm:flex-row items-center gap-3">
+                            <label class="cursor-pointer px-4 py-2 rounded-xl bg-emerald-600 hover:bg-emerald-500 text-white font-bold text-xs shadow flex items-center gap-2 transition-all">
+                                <i class="fa-solid fa-cloud-arrow-up"></i>
+                                <span>Pilih / Ganti Pas Foto</span>
+                                <input type="file" name="profile_photo" id="profile_photo_input" accept="image/jpeg,image/png,image/jpg,image/webp" class="hidden" onchange="previewKtaPhoto(event)">
+                            </label>
+                            <span id="photo-file-name" class="text-xs text-white/50 font-mono truncate max-w-xs">Belum ada file baru dipilih</span>
+                        </div>
                     </div>
                 </div>
 
@@ -136,4 +155,29 @@
     </div>
 </div>
 @endsection
+
+@push('scripts')
+<script>
+    function previewKtaPhoto(event) {
+        const file = event.target.files[0];
+        if (file) {
+            const fileNameEl = document.getElementById('photo-file-name');
+            if (fileNameEl) fileNameEl.textContent = file.name;
+
+            const reader = new FileReader();
+            reader.onload = function(e) {
+                const img = document.getElementById('photo-preview-img');
+                const placeholder = document.getElementById('photo-preview-placeholder');
+                if (placeholder) placeholder.classList.add('hidden');
+                if (img) {
+                    img.src = e.target.result;
+                    img.classList.remove('hidden');
+                }
+            };
+            reader.readAsDataURL(file);
+        }
+    }
+</script>
+@endpush
+
 

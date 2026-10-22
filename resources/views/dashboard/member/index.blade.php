@@ -140,6 +140,12 @@
             $photoBase64 = 'data:' . $mime . ';base64,' . base64_encode(file_get_contents($photoDiskPath));
         }
     }
+
+    $psmsBase64 = '';
+    $psmsPath = public_path('logoKTA/LogoPSMS.png');
+    if (file_exists($psmsPath)) {
+        $psmsBase64 = 'data:image/png;base64,' . base64_encode(file_get_contents($psmsPath));
+    }
 @endphp
 <div class="space-y-8 max-w-7xl mx-auto">
 
@@ -252,17 +258,9 @@
                         <div class="relative z-10 my-auto py-2 flex items-center justify-between gap-3">
                             {{-- Logo PSMS Medan Club Crest --}}
                             <div class="flex items-center gap-2.5 bg-black/40 backdrop-blur-sm px-3 py-1.5 rounded-xl border border-white/10 shadow-sm">
-                                <svg class="w-8 h-8 sm:w-9 sm:h-9 shrink-0" viewBox="0 0 100 110" fill="none" xmlns="http://www.w3.org/2000/svg">
-                                    <path d="M50 5 L88 22 C88 65, 50 98, 50 105 C50 98, 12 65, 12 22 Z" fill="#064e3b" stroke="#d4af37" stroke-width="3"/>
-                                    <path d="M50 11 L82 25 C82 62, 50 92, 50 98 C50 92, 18 62, 18 25 Z" fill="#052e16"/>
-                                    <path d="M28 35 C24 48, 26 64, 50 82 C74 64, 76 48, 72 35" stroke="#d4af37" stroke-width="2" stroke-dasharray="3 3"/>
-                                    <path d="M50 25 C50 25, 42 38, 50 58 C58 38, 50 25, 50 25 Z" fill="#22c55e" stroke="#ffffff" stroke-width="1"/>
-                                    <path d="M35 38 C35 38, 38 48, 50 54 C45 42, 35 38, 35 38 Z" fill="#16a34a"/>
-                                    <path d="M65 38 C65 38, 62 48, 50 54 C55 42, 65 38, 65 38 Z" fill="#16a34a"/>
-                                    <circle cx="50" cy="70" r="8" fill="#ffffff" stroke="#0f172a" stroke-width="1.5"/>
-                                    <rect x="22" y="80" width="56" height="13" rx="3" fill="#d4af37"/>
-                                    <text x="50" y="90" fill="#052e16" font-family="'Inter', sans-serif" font-weight="900" font-size="8.5" text-anchor="middle">PSMS MEDAN</text>
-                                </svg>
+                                <div class="w-8 h-10 sm:w-9 sm:h-11 shrink-0 flex items-center justify-center">
+                                    <img src="{{ $psmsBase64 ?: asset('logoKTA/LogoPSMS.png') }}" alt="PSMS Medan" class="w-full h-full object-contain">
+                                </div>
                                 <div>
                                     <div class="text-[8px] text-amber-300 font-bold uppercase tracking-widest leading-none">PSMS MEDAN</div>
                                     <div class="text-xs sm:text-sm font-black text-white font-display tracking-wide mt-0.5">AYAM KINANTAN</div>
@@ -284,7 +282,7 @@
                                 {{-- Member Photo / Pas Foto Anggota --}}
                                 <div class="w-12 h-12 sm:w-14 sm:h-14 rounded-xl border-2 border-amber-400/80 bg-smeck-dark-800 overflow-hidden shrink-0 shadow-lg flex items-center justify-center relative">
                                     @if($user->profile?->profile_photo_path)
-                                        <img src="{{ asset('storage/' . $user->profile->profile_photo_path) }}" alt="{{ $user->name }}" class="w-full h-full object-cover">
+                                        <img src="{{ asset('storage/' . $user->profile->profile_photo_path) }}" alt="{{ $user->name }}" class="w-full h-full object-cover" style="object-position: center top;">
                                     @else
                                         <div class="w-full h-full bg-gradient-to-br from-emerald-800 via-smeck-dark-900 to-black flex flex-col items-center justify-center text-white">
                                             <i class="fa-solid fa-user text-lg text-emerald-300"></i>
@@ -833,17 +831,9 @@
                     <div class="relative z-10 flex items-center justify-between my-auto py-1 gap-2.5">
                         {{-- Logo PSMS Medan Club Crest --}}
                         <div class="flex items-center gap-2 bg-black/40 backdrop-blur-sm px-2.5 py-1 rounded-xl border border-white/10 shadow-sm">
-                            <svg class="w-7 h-7 sm:w-8 sm:h-8 shrink-0" viewBox="0 0 100 110" fill="none" xmlns="http://www.w3.org/2000/svg">
-                                <path d="M50 5 L88 22 C88 65, 50 98, 50 105 C50 98, 12 65, 12 22 Z" fill="#064e3b" stroke="#d4af37" stroke-width="3"/>
-                                <path d="M50 11 L82 25 C82 62, 50 92, 50 98 C50 92, 18 62, 18 25 Z" fill="#052e16"/>
-                                <path d="M28 35 C24 48, 26 64, 50 82 C74 64, 76 48, 72 35" stroke="#d4af37" stroke-width="2" stroke-dasharray="3 3"/>
-                                <path d="M50 25 C50 25, 42 38, 50 58 C58 38, 50 25, 50 25 Z" fill="#22c55e" stroke="#ffffff" stroke-width="1"/>
-                                <path d="M35 38 C35 38, 38 48, 50 54 C45 42, 35 38, 35 38 Z" fill="#16a34a"/>
-                                <path d="M65 38 C65 38, 62 48, 50 54 C55 42, 65 38, 65 38 Z" fill="#16a34a"/>
-                                <circle cx="50" cy="70" r="8" fill="#ffffff" stroke="#0f172a" stroke-width="1.5"/>
-                                <rect x="22" y="80" width="56" height="13" rx="3" fill="#d4af37"/>
-                                <text x="50" y="90" fill="#052e16" font-family="'Inter', sans-serif" font-weight="900" font-size="8.5" text-anchor="middle">PSMS MEDAN</text>
-                            </svg>
+                            <div class="w-7 h-9 sm:w-8 sm:h-10 shrink-0 flex items-center justify-center">
+                                <img src="{{ $psmsBase64 ?: asset('logoKTA/LogoPSMS.png') }}" alt="PSMS Medan" class="w-full h-full object-contain">
+                            </div>
                             <div>
                                 <div class="text-[7px] text-amber-300 font-bold uppercase tracking-widest leading-none">PSMS MEDAN</div>
                                 <div class="text-[11px] sm:text-xs font-black text-white font-display tracking-wide mt-0.5">AYAM KINANTAN</div>
@@ -864,9 +854,9 @@
                             {{-- Pas Foto Anggota --}}
                             <div class="w-11 h-11 sm:w-12 sm:h-12 rounded-xl border-2 border-amber-400/80 bg-smeck-dark-800 overflow-hidden shrink-0 shadow flex items-center justify-center relative">
                                 @if($photoBase64)
-                                    <img src="{{ $photoBase64 }}" alt="{{ $user->name }}" class="w-full h-full object-cover">
+                                    <img src="{{ $photoBase64 }}" alt="{{ $user->name }}" class="w-full h-full object-cover" style="object-position: center top;">
                                 @elseif($user->profile?->profile_photo_path)
-                                    <img src="{{ asset('storage/' . $user->profile->profile_photo_path) }}" alt="{{ $user->name }}" class="w-full h-full object-cover">
+                                    <img src="{{ asset('storage/' . $user->profile->profile_photo_path) }}" alt="{{ $user->name }}" class="w-full h-full object-cover" style="object-position: center top;">
                                 @else
                                     <div class="w-full h-full bg-gradient-to-br from-emerald-800 via-smeck-dark-900 to-black flex flex-col items-center justify-center text-white">
                                         <i class="fa-solid fa-user text-base text-emerald-300"></i>
@@ -1094,17 +1084,9 @@
         <div style="position: relative; z-index: 10; display: flex; align-items: center; justify-content: space-between; margin: auto 0; padding: 10px 0;">
             {{-- PSMS Medan Club Crest --}}
             <div style="display: flex; align-items: center; gap: 16px; background: rgba(0,0,0,0.45); padding: 10px 22px; border-radius: 18px; border: 1.5px solid rgba(255,255,255,0.12);">
-                <svg width="60" height="66" viewBox="0 0 100 110" fill="none" xmlns="http://www.w3.org/2000/svg">
-                    <path d="M50 5 L88 22 C88 65, 50 98, 50 105 C50 98, 12 65, 12 22 Z" fill="#064e3b" stroke="#d4af37" stroke-width="3"/>
-                    <path d="M50 11 L82 25 C82 62, 50 92, 50 98 C50 92, 18 62, 18 25 Z" fill="#052e16"/>
-                    <path d="M28 35 C24 48, 26 64, 50 82 C74 64, 76 48, 72 35" stroke="#d4af37" stroke-width="2" stroke-dasharray="3 3"/>
-                    <path d="M50 25 C50 25, 42 38, 50 58 C58 38, 50 25, 50 25 Z" fill="#22c55e" stroke="#ffffff" stroke-width="1"/>
-                    <path d="M35 38 C35 38, 38 48, 50 54 C45 42, 35 38, 35 38 Z" fill="#16a34a"/>
-                    <path d="M65 38 C65 38, 62 48, 50 54 C55 42, 65 38, 65 38 Z" fill="#16a34a"/>
-                    <circle cx="50" cy="70" r="8" fill="#ffffff" stroke="#0f172a" stroke-width="1.5"/>
-                    <rect x="22" y="80" width="56" height="13" rx="3" fill="#d4af37"/>
-                    <text x="50" y="90" fill="#052e16" font-family="'Inter', sans-serif" font-weight="900" font-size="8.5" text-anchor="middle">PSMS MEDAN</text>
-                </svg>
+                <div style="width: 52px; height: 65px; display: flex; align-items: center; justify-content: center;">
+                    <img src="{{ $psmsBase64 ?: asset('logoKTA/LogoPSMS.png') }}" alt="PSMS Medan" style="width: 100%; height: 100%; object-fit: contain;">
+                </div>
                 <div>
                     <div style="font-size: 13px; font-weight: 800; letter-spacing: 2.5px; color: #fbbf24; text-transform: uppercase;">PSMS MEDAN</div>
                     <div style="font-size: 22px; font-weight: 900; color: #ffffff; letter-spacing: 1px; margin-top: 2px;">AYAM KINANTAN</div>
@@ -1581,9 +1563,19 @@
                         ctx.beginPath();
                         ctx.roundRect(48, 485, 120, 120, 18);
                         ctx.clip();
-                        ctx.drawImage(pImg, 48, 485, 120, 120);
+                        // Anchor to top so portrait face is always visible
+                        const aspect = pImg.width / pImg.height;
+                        let sw = pImg.width, sh = pImg.height, sx = 0, sy = 0;
+                        if (aspect > 1) {
+                            sw = pImg.height;
+                            sx = (pImg.width - sw) / 2;
+                        } else {
+                            sh = pImg.width;
+                            sy = 0;
+                        }
+                        ctx.drawImage(pImg, sx, sy, sw, sh, 48, 485, 120, 120);
                         ctx.restore();
-                        ctx.strokeStyle = '#4ade80';
+                        ctx.strokeStyle = '#fbbf24';
                         ctx.lineWidth = 3;
                         ctx.strokeRect(48, 485, 120, 120);
                         callback(canvas.toDataURL('image/png', 1.0));

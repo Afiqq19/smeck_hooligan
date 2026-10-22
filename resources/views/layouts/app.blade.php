@@ -331,8 +331,12 @@
 
             <div class="flex items-center justify-between gap-3 p-2.5 rounded-xl bg-white/5 border border-white/5">
                 <div class="flex items-center gap-3 min-w-0">
-                    <div class="w-9 h-9 rounded-xl bg-smeck-green-600 flex items-center justify-center font-bold text-sm text-white shrink-0">
-                        {{ strtoupper(substr(auth()->user()->name, 0, 1)) }}
+                    <div class="w-9 h-9 rounded-xl bg-smeck-dark-800 border border-emerald-400/40 overflow-hidden flex items-center justify-center font-bold text-sm text-white shrink-0">
+                        @if(auth()->user()->profile?->profile_photo_path)
+                            <img src="{{ asset('storage/' . auth()->user()->profile->profile_photo_path) }}" alt="{{ auth()->user()->name }}" class="w-full h-full object-cover" style="object-position: center top;">
+                        @else
+                            {{ strtoupper(substr(auth()->user()->name, 0, 1)) }}
+                        @endif
                     </div>
                     <div class="min-w-0">
                         <div class="text-xs font-bold text-white truncate">{{ auth()->user()->name }}</div>
@@ -390,6 +394,13 @@
 
                 {{-- User Avatar & Logout --}}
                 <div class="flex items-center gap-3 pl-3 border-l border-white/10">
+                    <a href="{{ route('member.profile') }}" class="w-8 h-8 rounded-xl bg-smeck-dark-800 border border-emerald-400/40 overflow-hidden shrink-0 flex items-center justify-center text-xs font-bold text-white shadow hover:scale-105 transition-transform" title="Profil Saya">
+                        @if(auth()->user()->profile?->profile_photo_path)
+                            <img src="{{ asset('storage/' . auth()->user()->profile->profile_photo_path) }}" alt="{{ auth()->user()->name }}" class="w-full h-full object-cover" style="object-position: center top;">
+                        @else
+                            {{ strtoupper(substr(auth()->user()->name, 0, 1)) }}
+                        @endif
+                    </a>
                     <div class="text-right hidden sm:block whitespace-nowrap">
                         <div class="text-xs font-bold text-white">{{ auth()->user()->name }}</div>
                         <div class="text-[10px] text-smeck-green-400 font-mono">{{ auth()->user()->profile?->nia ?? 'ANGGOTA' }}</div>
