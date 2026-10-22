@@ -2,10 +2,53 @@
 
 @section('title', 'Direktori Anggota Nasional')
 @section('header_title', 'Direktori Anggota Nasional SMeCK Hooligan')
-@section('header_subtitle', 'Basis data seluruh suporter terdaftar di seluruh chapter, manajemen kartu KTA fisik, dan penetapan role pengurus')
+@section('header_subtitle', 'Basis data seluruh suporter terdaftar di seluruh chapter, manajemen kartu KTA fisik, verifikasi anggota baru, dan penetapan peran')
 
 @section('content')
 <div class="space-y-8 max-w-7xl mx-auto">
+
+    {{-- Top Statistics Summary Bar --}}
+    <div class="grid grid-cols-2 sm:grid-cols-4 gap-4">
+        <a href="{{ route('superadmin.members') }}" class="p-4 rounded-2xl bg-smeck-dark-900 border {{ !request('status') ? 'border-red-500/40 bg-red-500/5' : 'border-white/10' }} hover:border-red-500/30 transition-all flex items-center justify-between">
+            <div>
+                <div class="text-[10px] font-bold uppercase text-white/50 tracking-wider">Total Suporter</div>
+                <div class="font-display font-black text-2xl text-white mt-0.5">{{ $totalMembersCount }}</div>
+            </div>
+            <div class="w-9 h-9 rounded-xl bg-white/5 text-white/60 flex items-center justify-center text-sm">
+                <i class="fa-solid fa-users"></i>
+            </div>
+        </a>
+
+        <a href="{{ route('superadmin.members', ['status' => 'active']) }}" class="p-4 rounded-2xl bg-smeck-dark-900 border {{ request('status') === 'active' ? 'border-smeck-green-500/50 bg-smeck-green-500/5' : 'border-white/10' }} hover:border-smeck-green-500/30 transition-all flex items-center justify-between">
+            <div>
+                <div class="text-[10px] font-bold uppercase text-smeck-green-400 tracking-wider">Anggota Aktif</div>
+                <div class="font-display font-black text-2xl text-smeck-green-400 mt-0.5">{{ $activeMembersCount }}</div>
+            </div>
+            <div class="w-9 h-9 rounded-xl bg-smeck-green-500/20 text-smeck-green-400 flex items-center justify-center text-sm">
+                <i class="fa-solid fa-circle-check"></i>
+            </div>
+        </a>
+
+        <a href="{{ route('superadmin.members', ['status' => 'pending_approval']) }}" class="p-4 rounded-2xl bg-smeck-dark-900 border {{ request('status') === 'pending_approval' ? 'border-amber-500/50 bg-amber-500/5' : 'border-white/10' }} hover:border-amber-500/30 transition-all flex items-center justify-between">
+            <div>
+                <div class="text-[10px] font-bold uppercase text-amber-400 tracking-wider">Menunggu Approval</div>
+                <div class="font-display font-black text-2xl text-amber-400 mt-0.5">{{ $pendingMembersCount }}</div>
+            </div>
+            <div class="w-9 h-9 rounded-xl bg-amber-500/20 text-amber-400 flex items-center justify-center text-sm">
+                <i class="fa-solid fa-user-clock"></i>
+            </div>
+        </a>
+
+        <a href="{{ route('superadmin.members', ['status' => 'suspended']) }}" class="p-4 rounded-2xl bg-smeck-dark-900 border {{ request('status') === 'suspended' ? 'border-red-500/50 bg-red-500/5' : 'border-white/10' }} hover:border-red-500/30 transition-all flex items-center justify-between">
+            <div>
+                <div class="text-[10px] font-bold uppercase text-red-400 tracking-wider">Kena Sanksi / Suspend</div>
+                <div class="font-display font-black text-2xl text-red-400 mt-0.5">{{ $suspendedMembersCount }}</div>
+            </div>
+            <div class="w-9 h-9 rounded-xl bg-red-500/20 text-red-400 flex items-center justify-center text-sm">
+                <i class="fa-solid fa-triangle-exclamation"></i>
+            </div>
+        </a>
+    </div>
 
     {{-- Filter & Pencarian Nasional --}}
     <div class="p-6 rounded-3xl bg-smeck-dark-900 border border-white/10 shadow-xl">
@@ -24,7 +67,7 @@
                 <div>
                     <label class="block text-[11px] font-bold uppercase text-white/50 mb-1.5">Basis / Chapter</label>
                     <select name="chapter_id" class="w-full px-3 py-2.5 bg-white/5 border border-white/10 rounded-xl text-white text-xs focus:border-red-400 focus:outline-none">
-                        <option value="" class="bg-smeck-dark-900">Semua Basis</option>
+                        <option value="" class="bg-smeck-dark-900">Semua Basis Wilayah</option>
                         @foreach($chapters as $ch)
                             <option value="{{ $ch->id }}" {{ request('chapter_id') == $ch->id ? 'selected' : '' }} class="bg-smeck-dark-900">{{ $ch->name }}</option>
                         @endforeach
@@ -49,7 +92,8 @@
                     <select name="status" class="w-full px-3 py-2.5 bg-white/5 border border-white/10 rounded-xl text-white text-xs focus:border-red-400 focus:outline-none">
                         <option value="" class="bg-smeck-dark-900">Semua Status</option>
                         <option value="active" {{ request('status') === 'active' ? 'selected' : '' }} class="bg-smeck-dark-900">Aktif</option>
-                        <option value="suspended" {{ request('status') === 'suspended' ? 'selected' : '' }} class="bg-smeck-dark-900">Suspended</option>
+                        <option value="pending_approval" {{ request('status') === 'pending_approval' ? 'selected' : '' }} class="bg-smeck-dark-900">Menunggu Approval</option>
+                        <option value="suspended" {{ request('status') === 'suspended' ? 'selected' : '' }} class="bg-smeck-dark-900">Suspended / Sanksi</option>
                     </select>
                 </div>
             </div>
@@ -59,9 +103,9 @@
                     Menampilkan <strong>{{ $members->total() }}</strong> suporter terdaftar
                 </div>
                 <div class="flex items-center gap-2">
-                    @if(request()->hasAny(['search', 'chapter_id', 'blood_type', 'status']))
+                    @if(request()->hasAny(['search', 'chapter_id', 'blood_type', 'status', 'role']))
                         <a href="{{ route('superadmin.members') }}" class="px-3 py-1.5 rounded-xl bg-white/5 hover:bg-white/10 text-white/60 hover:text-white text-xs">
-                            Reset Filter
+                            <i class="fa-solid fa-rotate-left mr-1"></i> Reset
                         </a>
                     @endif
                     <button type="submit" class="px-4 py-2 rounded-xl bg-red-600 hover:bg-red-500 text-white font-bold text-xs shadow-lg transition-colors flex items-center gap-2">
@@ -116,7 +160,7 @@
                                     {{ $m->chapter?->name ?? 'DPP Pusat' }}
                                 </div>
                                 <div class="text-[10px] text-white/40 mt-0.5">
-                                    Gabung: {{ $m->profile?->joined_date ? $m->profile->joined_date->format('d M Y') : $m->created_at->format('d M Y') }}
+                                    Bergabung: {{ $m->profile?->joined_date ? $m->profile->joined_date->format('d M Y') : $m->created_at->format('d M Y') }}
                                 </div>
                             </td>
 
@@ -166,19 +210,40 @@
 
                             {{-- Status Akun --}}
                             <td class="py-4 px-5 text-center">
-                                <span class="px-2.5 py-0.5 rounded-full text-[10px] font-bold uppercase {{ $m->status === 'active' ? 'bg-smeck-green-500/20 text-smeck-green-400' : 'bg-red-500/20 text-red-400' }}">
-                                    {{ $m->status }}
-                                </span>
-                                @if($m->status === 'suspended')
-                                    <div class="text-[10px] text-red-400/90 mt-1 max-w-[140px] truncate mx-auto font-medium" title="{{ $m->suspension_reason ?? 'Pelanggaran Kode Etik' }}">
-                                        <i class="fa-solid fa-triangle-exclamation mr-1 text-red-500"></i>{{ $m->suspension_reason ?? 'Sanksi Disiplin' }}
-                                    </div>
+                                @if($m->status === 'active')
+                                    <span class="px-2.5 py-0.5 rounded-full text-[10px] font-bold uppercase bg-smeck-green-500/20 text-smeck-green-400 border border-smeck-green-500/30">
+                                        AKTIF
+                                    </span>
+                                @elseif($m->status === 'pending_approval')
+                                    <span class="px-2.5 py-0.5 rounded-full text-[10px] font-bold uppercase bg-amber-500/20 text-amber-300 border border-amber-500/30">
+                                        MENUNGGU
+                                    </span>
+                                @else
+                                    <span class="px-2.5 py-0.5 rounded-full text-[10px] font-bold uppercase bg-red-500/20 text-red-400 border border-red-500/30">
+                                        SUSPENDED
+                                    </span>
+                                    @if($m->suspension_reason)
+                                        <div class="text-[10px] text-red-400/90 mt-1 max-w-[150px] truncate mx-auto font-medium" title="{{ $m->suspension_reason }}">
+                                            <i class="fa-solid fa-triangle-exclamation mr-1 text-red-500"></i>{{ $m->suspension_reason }}
+                                        </div>
+                                    @endif
                                 @endif
                             </td>
 
                             {{-- Aksi DPP --}}
                             <td class="py-4 px-5 text-right">
-                                <div class="flex items-center justify-end gap-2">
+                                <div class="flex items-center justify-end gap-1.5 flex-wrap">
+                                    {{-- Approval Action if Pending --}}
+                                    @if($m->status === 'pending_approval')
+                                        <form action="{{ route('superadmin.members.approve', $m->id) }}" method="POST" onsubmit="return confirm('Setujui pendaftaran suporter {{ addslashes($m->name) }}?')">
+                                            @csrf
+                                            <button type="submit" class="px-2.5 py-1 rounded-lg bg-smeck-green-600 hover:bg-smeck-500 text-white font-bold text-[11px] shadow transition-colors flex items-center gap-1">
+                                                <i class="fa-solid fa-check"></i>
+                                                <span>Setujui</span>
+                                            </button>
+                                        </form>
+                                    @endif
+
                                     {{-- Role Toggle --}}
                                     <form action="{{ route('superadmin.members.role', $m->id) }}" method="POST">
                                         @csrf

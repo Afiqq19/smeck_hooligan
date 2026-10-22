@@ -118,6 +118,7 @@ Route::middleware(['auth', 'role:super_admin'])->prefix('superadmin')->name('sup
 
     // 2. Direktori Anggota Nasional
     Route::get('/members', [SuperAdminDashboardController::class, 'members'])->name('members');
+    Route::post('/members/{id}/approve', [SuperAdminDashboardController::class, 'approveMember'])->name('members.approve');
     Route::post('/members/{id}/role', [SuperAdminDashboardController::class, 'updateMemberRole'])->name('members.role');
     Route::post('/members/{id}/status', [SuperAdminDashboardController::class, 'toggleMemberStatus'])->name('members.status');
 

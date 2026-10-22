@@ -33,12 +33,17 @@ class SuperAdminDashboardController extends Controller
      */
     public function index(): View
     {
-        $totalMembers = User::where('role', 'member')->count();
+        $totalMembers = User::whereIn('role', ['member', 'admin_chapter'])->count();
+        $activeMembers = User::whereIn('role', ['member', 'admin_chapter'])->where('status', 'active')->count();
+        $suspendedMembers = User::whereIn('role', ['member', 'admin_chapter'])->where('status', 'suspended')->count();
+        $pendingMembers = User::whereIn('role', ['member', 'admin_chapter'])->where('status', 'pending_approval')->count();
+
         $totalChapters = Chapter::count();
         $totalActiveCards = NfcCard::where('status', 'active')->count();
+        $totalBlockedCards = NfcCard::where('status', 'blocked')->count();
         $totalNationalFunds = VoluntaryDue::where('status', 'verified')->sum('amount');
 
-        $recentMembers = User::where('role', 'member')->with('chapter', 'profile', 'nfcCard')->latest()->take(6)->get();
+        $recentMembers = User::whereIn('role', ['member', 'admin_chapter'])->with('chapter', 'profile', 'nfcCard')->latest()->take(6)->get();
         $chapters = Chapter::withCount('users')->orderBy('users_count', 'desc')->get();
 
         // Kesiapsiagaan Medis Tribun: Komposisi Golongan Darah Nasional
@@ -54,8 +59,12 @@ class SuperAdminDashboardController extends Controller
 
         return view('dashboard.superadmin.index', compact(
             'totalMembers',
+            'activeMembers',
+            'suspendedMembers',
+            'pendingMembers',
             'totalChapters',
             'totalActiveCards',
+            'totalBlockedCards',
             'totalNationalFunds',
             'recentMembers',
             'chapters',
@@ -110,8 +119,36 @@ class SuperAdminDashboardController extends Controller
 
         $members = $query->latest()->paginate(20)->withQueryString();
         $totalMembersCount = User::whereIn('role', ['member', 'admin_chapter'])->count();
+        $activeMembersCount = User::whereIn('role', ['member', 'admin_chapter'])->where('status', 'active')->count();
+        $pendingMembersCount = User::whereIn('role', ['member', 'admin_chapter'])->where('status', 'pending_approval')->count();
+        $suspendedMembersCount = User::whereIn('role', ['member', 'admin_chapter'])->where('status', 'suspended')->count();
 
-        return view('dashboard.superadmin.members', compact('members', 'chapters', 'totalMembersCount'));
+        return view('dashboard.superadmin.members', compact(
+            'members',
+            'chapters',
+            'totalMembersCount',
+            'activeMembersCount',
+            'pendingMembersCount',
+            'suspendedMembersCount'
+        ));
+    }
+
+    /**
+     * Setujui Pendaftaran Anggota Baru (Pusat DPP).
+     */
+    public function approveMember(int $id): RedirectResponse
+    {
+        $user = User::findOrFail($id);
+        $user->update([
+            'status' => 'active',
+            'suspension_reason' => null,
+        ]);
+
+        if ($user->profile && empty($user->profile->joined_date)) {
+            $user->profile->update(['joined_date' => now()]);
+        }
+
+        return back()->with('success', "Pendaftaran anggota {$user->name} resmi disetujui oleh DPP Pusat!");
     }
 
     /**
@@ -170,8 +207,11 @@ class SuperAdminDashboardController extends Controller
     public function chapters(): View
     {
         $chapters = Chapter::withCount('users')->latest()->get();
+        $totalChapters = $chapters->count();
+        $totalChapterMembers = $chapters->sum('users_count');
+        $avgMembers = $totalChapters > 0 ? round($totalChapterMembers / $totalChapters) : 0;
 
-        return view('dashboard.superadmin.chapters', compact('chapters'));
+        return view('dashboard.superadmin.chapters', compact('chapters', 'totalChapters', 'totalChapterMembers', 'avgMembers'));
     }
 
     /**
@@ -283,7 +323,10 @@ class SuperAdminDashboardController extends Controller
      */
     public function broadcast(): View
     {
-        return view('dashboard.superadmin.broadcast');
+        $recentBroadcasts = NewsArticle::where('category', 'Maklumat DPP')->latest()->paginate(10);
+        $totalBroadcasts = NewsArticle::where('category', 'Maklumat DPP')->count();
+
+        return view('dashboard.superadmin.broadcast', compact('recentBroadcasts', 'totalBroadcasts'));
     }
 
     /**
@@ -297,7 +340,20 @@ class SuperAdminDashboardController extends Controller
             'message' => ['required', 'string'],
         ]);
 
-        return back()->with('success', "Pengumuman '{$validated['title']}' berhasil disiarkan ke seluruh anggota!");
+        $summary = \Illuminate\Support\Str::limit(strip_tags($validated['message']), 160);
+
+        NewsArticle::create([
+            'title' => $validated['title'],
+            'category' => 'Maklumat DPP',
+            'summary' => $summary,
+            'content' => $validated['message'],
+            'author_name' => 'DPP SMeCK Hooligan',
+            'is_published' => true,
+            'is_featured' => true,
+            'published_at' => now(),
+        ]);
+
+        return back()->with('success', "Maklumat '{$validated['title']}' berhasil diterbitkan dan disiarkan ke seluruh portal anggota!");
     }
 
     /**
@@ -705,7 +761,7 @@ class SuperAdminDashboardController extends Controller
      */
     public function whatsappBot(Request $request): View
     {
-        $totalMembers = User::where('role', 'member')->count();
+        $totalMembers = User::whereIn('role', ['member', 'admin_chapter'])->count();
         $totalActiveCards = NfcCard::where('status', 'active')->count();
         $botNumber = config('services.whatsapp.bot_number', '0812-6000-1950 (Nomor Resmi SMeCK)');
         $webhookUrl = url('/api/whatsapp/webhook');

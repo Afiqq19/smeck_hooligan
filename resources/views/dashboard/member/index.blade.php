@@ -501,7 +501,7 @@
             @endif
         </div>
 
-        {{-- Log 2: Riwayat Iuran & Kas Suka Rela --}}
+        {{-- Log 2: Riwayat Iuran & Kas Sukarela --}}
         <div class="p-6 sm:p-7 rounded-3xl bg-smeck-dark-900 border border-white/10">
             <div class="flex items-center justify-between mb-5">
                 <h3 class="font-display font-bold text-lg text-white flex items-center gap-2">
@@ -518,7 +518,7 @@
                     @foreach($recentDues as $due)
                         <div class="p-3.5 rounded-2xl bg-white/[0.03] border border-white/5 flex items-center justify-between">
                             <div>
-                                <div class="text-xs font-bold text-white">{{ $due->notes ?? 'Iuran Kas Suka Rela' }}</div>
+                                <div class="text-xs font-bold text-white">{{ $due->notes ?? 'Iuran Kas Sukarela' }}</div>
                                 <div class="text-[11px] text-white/40">{{ $due->created_at->format('d M Y') }}</div>
                             </div>
                             <div class="text-right">

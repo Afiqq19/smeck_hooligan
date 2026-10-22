@@ -1,7 +1,7 @@
 @extends('layouts.app')
 
 @section('title', 'Iuran & Kas Sukarela')
-@section('header_title', 'Iuran & Kas Suka Rela SMeCK')
+@section('header_title', 'Iuran & Kas Sukarela SMeCK')
 @section('header_subtitle', 'Mendukung operasional kegiatan suporter, chant class, koreografi stadion, dan aksi sosial')
 
 @section('content')
