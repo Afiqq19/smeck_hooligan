@@ -59,6 +59,7 @@ Route::middleware(['auth', 'role:member,super_admin,admin_chapter'])->prefix('me
     // Menu Utama Member
     Route::get('/dashboard', [MemberDashboardController::class, 'index'])->name('dashboard');
     Route::get('/profile', [MemberDashboardController::class, 'profile'])->name('profile');
+    Route::post('/profile', [MemberDashboardController::class, 'updateProfile'])->name('profile.update');
     Route::get('/dues', [MemberDashboardController::class, 'dues'])->name('dues');
     Route::post('/dues', [MemberDashboardController::class, 'storeDues'])->name('dues.store');
     Route::get('/emergency-card', [MemberDashboardController::class, 'emergencyCard'])->name('emergency');

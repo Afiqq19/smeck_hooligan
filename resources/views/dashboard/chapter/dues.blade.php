@@ -106,8 +106,11 @@
                             <td class="py-3.5 px-4 text-right">
                                 <div class="flex items-center justify-end gap-2">
                                     {{-- Tombol Bukti Transfer jika ada --}}
-                                    @if($d->proof_file)
-                                        <button type="button" onclick="openProofModal('{{ asset('storage/' . $d->proof_file) }}', '{{ $d->user->name }}', '{{ number_format($d->amount, 0, ',', '.') }}', {{ $d->id }}, '{{ $d->status }}')" class="px-2.5 py-1 rounded-lg bg-white/5 hover:bg-white/15 text-white/80 hover:text-white text-[11px] font-semibold border border-white/10 transition-colors flex items-center gap-1">
+                                    @php
+                                        $proof = $d->payment_proof_path ?? $d->proof_file;
+                                    @endphp
+                                    @if($proof)
+                                        <button type="button" onclick="openProofModal('{{ asset('storage/' . $proof) }}', '{{ $d->user->name }}', '{{ number_format($d->amount, 0, ',', '.') }}', {{ $d->id }}, '{{ $d->status }}')" class="px-2.5 py-1 rounded-lg bg-white/5 hover:bg-white/15 text-white/80 hover:text-white text-[11px] font-semibold border border-white/10 transition-colors flex items-center gap-1">
                                             <i class="fa-solid fa-image text-amber-400"></i>
                                             <span class="hidden sm:inline">Bukti</span>
                                         </button>

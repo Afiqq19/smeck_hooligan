@@ -50,24 +50,70 @@ class MemberDashboardController extends Controller
     }
 
     /**
-     * Simpan Iuran Suka Rela Baru.
+     * Update Biodata & Profil Suporter Mandiri.
+     */
+    public function updateProfile(Request $request): RedirectResponse
+    {
+        $user = $request->user();
+        $validated = $request->validate([
+            'phone_number' => ['nullable', 'string', 'max:20'],
+            'blood_type' => ['nullable', 'string', 'in:A,B,AB,O'],
+            'shirt_size' => ['nullable', 'string', 'in:S,M,L,XL,XXL,3XL'],
+            'address' => ['nullable', 'string', 'max:500'],
+            'emergency_contact_name' => ['nullable', 'string', 'max:100'],
+            'emergency_contact_number' => ['nullable', 'string', 'max:20'],
+            'emergency_contact_relation' => ['nullable', 'string', 'max:50'],
+            'profile_photo' => ['nullable', 'image', 'mimes:jpeg,png,jpg,webp', 'max:3072'],
+        ]);
+
+        $profile = $user->profile ?? new \App\Models\MemberProfile(['user_id' => $user->id]);
+
+        if ($request->hasFile('profile_photo')) {
+            $path = $request->file('profile_photo')->store('profiles', 'public');
+            $profile->profile_photo_path = $path;
+        }
+
+        $profile->fill([
+            'phone_number' => $validated['phone_number'] ?? $profile->phone_number,
+            'blood_type' => $validated['blood_type'] ?? $profile->blood_type,
+            'shirt_size' => $validated['shirt_size'] ?? $profile->shirt_size,
+            'address' => $validated['address'] ?? $profile->address,
+            'emergency_contact_name' => $validated['emergency_contact_name'] ?? $profile->emergency_contact_name,
+            'emergency_contact_number' => $validated['emergency_contact_number'] ?? $profile->emergency_contact_number,
+            'emergency_contact_relation' => $validated['emergency_contact_relation'] ?? $profile->emergency_contact_relation,
+        ]);
+
+        $profile->save();
+
+        return back()->with('success', 'Biodata profil dan ukuran jersey Anda berhasil diperbarui!');
+    }
+
+    /**
+     * Simpan Iuran Suka Rela Baru dengan Bukti Transfer.
      */
     public function storeDues(Request $request): RedirectResponse
     {
         $validated = $request->validate([
             'amount' => ['required', 'numeric', 'min:10000'],
             'notes' => ['nullable', 'string', 'max:255'],
+            'payment_proof' => ['nullable', 'image', 'mimes:jpeg,png,jpg,webp', 'max:5120'],
         ]);
+
+        $proofPath = null;
+        if ($request->hasFile('payment_proof')) {
+            $proofPath = $request->file('payment_proof')->store('dues_proofs', 'public');
+        }
 
         VoluntaryDue::create([
             'user_id' => $request->user()->id,
             'chapter_id' => $request->user()->chapter_id ?? 1,
             'amount' => $validated['amount'],
+            'payment_proof_path' => $proofPath,
             'status' => 'pending',
             'notes' => $validated['notes'],
         ]);
 
-        return back()->with('success', 'Bukti iuran sukarela berhasil dikirim dan menunggu verifikasi Bendahara Chapter!');
+        return back()->with('success', 'Bukti iuran sukarela berhasil dikirim dan menunggu verifikasi Bendahara Basis!');
     }
 
     /**

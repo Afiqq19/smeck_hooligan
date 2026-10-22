@@ -79,11 +79,22 @@
                 </div>
             </div>
 
-            <div class="flex flex-wrap items-center gap-3">
-                <button type="button" onclick="flipKtaCard()" class="px-4 py-2.5 rounded-xl bg-white/10 hover:bg-white/15 text-white text-xs font-bold border border-white/10 flex items-center gap-2 transition-all">
+            <div class="flex flex-wrap items-center gap-2.5">
+                <button type="button" onclick="flipKtaCard()" class="px-3.5 py-2.5 rounded-xl bg-white/10 hover:bg-white/15 text-white text-xs font-bold border border-white/10 flex items-center gap-1.5 transition-all">
                     <i class="fa-solid fa-rotate text-smeck-green-400"></i>
-                    <span>Putar Kartu (Depan / Belakang)</span>
+                    <span>Putar Kartu</span>
                 </button>
+                <button type="button" onclick="openDownloadKtaModal()" class="px-4 py-2.5 rounded-xl bg-amber-500/20 hover:bg-amber-500/30 text-amber-300 border border-amber-500/30 text-xs font-bold flex items-center gap-1.5 transition-all shadow">
+                    <i class="fa-solid fa-download"></i>
+                    <span>Simpan KTA (HD)</span>
+                </button>
+                @php
+                    $waShareText = urlencode("Halo kawan-kawan suporter! Saya telah memiliki KTA Digital Resmi SMeCK Hooligan dengan NIA: " . ($user->profile?->nia ?? 'SMCK-1950') . " (Basis " . ($user->chapter->name ?? 'Medan') . "). Salam Sada Roha! Cek verifikasi identitas resmi saya di portal suporter SMeCK Hooligan: https://projek2.xie.my.id/");
+                @endphp
+                <a href="https://api.whatsapp.com/send?text={{ $waShareText }}" target="_blank" class="px-4 py-2.5 rounded-xl bg-emerald-600/30 hover:bg-emerald-600/50 text-emerald-300 border border-emerald-500/40 text-xs font-bold flex items-center gap-1.5 transition-all">
+                    <i class="fa-brands fa-whatsapp text-sm"></i>
+                    <span>Bagikan Status</span>
+                </a>
                 <a href="{{ route('member.tickets') }}" class="px-5 py-2.5 rounded-xl bg-smeck-green-600 hover:bg-smeck-green-500 text-white text-xs font-bold shadow-lg shadow-smeck-green-700/30 flex items-center gap-2 transition-all">
                     <i class="fa-solid fa-ticket"></i>
                     <span>Pesan Tiket Match</span>
@@ -488,6 +499,126 @@
     </div>
 
 </div>
+
+{{-- ========================================================================= --}}
+{{-- MODAL SIMPAN KTA HD KE GALERI HP / CETAK FISIK --}}
+{{-- ========================================================================= --}}
+<div id="modalDownloadKta" class="fixed inset-0 z-50 bg-black/90 backdrop-blur-md hidden flex items-center justify-center p-4 overflow-y-auto">
+    <div class="bg-smeck-dark-900 border border-white/10 rounded-3xl max-w-2xl w-full p-6 sm:p-8 shadow-2xl relative my-8 print:p-0 print:m-0 print:shadow-none print:bg-white print:w-full">
+        <div class="flex items-center justify-between pb-4 border-b border-white/10 mb-6 print:hidden">
+            <div>
+                <h3 class="font-display font-black text-lg text-white">Simpan / Cetak KTA Digital HD</h3>
+                <p class="text-xs text-white/50">Tampak depan dan belakang KTA resmi suporter SMeCK Hooligan beresolusi tinggi.</p>
+            </div>
+            <div class="flex items-center gap-2">
+                <button onclick="window.print()" class="px-4 py-2 rounded-xl bg-smeck-green-600 hover:bg-smeck-green-500 text-white font-bold text-xs shadow flex items-center gap-1.5">
+                    <i class="fa-solid fa-print"></i>
+                    <span>Cetak / Simpan PDF</span>
+                </button>
+                <button onclick="closeDownloadKtaModal()" class="px-3 py-2 rounded-xl bg-white/10 hover:bg-white/20 text-white font-bold text-xs">
+                    Tutup
+                </button>
+            </div>
+        </div>
+
+        {{-- Preview Kartu 2 Sisi HD --}}
+        <div class="space-y-6">
+            {{-- TAMPAK DEPAN KARTU --}}
+            <div>
+                <div class="text-[11px] font-bold uppercase tracking-wider text-smeck-gold mb-2 flex items-center gap-1.5 print:text-black">
+                    <i class="fa-solid fa-credit-card"></i>
+                    <span>Tampak Depan (Front View)</span>
+                </div>
+                <div class="rounded-2xl p-6 bg-gradient-to-br from-emerald-950 via-slate-900 to-black border border-white/20 text-white shadow-xl relative overflow-hidden print:border-slate-800">
+                    <div class="flex items-center justify-between mb-4">
+                        <div class="flex items-center gap-3">
+                            <div class="w-10 h-10 rounded-xl overflow-hidden border border-amber-400/50 bg-black p-0.5">
+                                <img src="{{ asset('images/logo-crest.jpg') }}" alt="Logo" class="w-full h-full object-cover rounded-lg">
+                            </div>
+                            <div>
+                                <div class="font-black text-sm tracking-wider uppercase">SMeCK HOOLIGAN</div>
+                                <div class="text-[9px] text-amber-400 font-bold uppercase tracking-widest">KTA SUPORTER RESMI PSMS</div>
+                            </div>
+                        </div>
+                        <span class="px-2 py-0.5 rounded bg-emerald-500 text-white font-bold text-[9px] uppercase tracking-wider">RESMI</span>
+                    </div>
+
+                    <div class="flex items-center justify-between gap-4 py-2">
+                        <div>
+                            <div class="text-[9px] text-white/50 uppercase">Nama Lengkap Anggota:</div>
+                            <div class="text-base font-black tracking-wide">{{ $user->name }}</div>
+                            <div class="text-[11px] font-mono text-amber-400 font-bold mt-0.5">
+                                NIA: {{ $user->profile?->nia ?? 'SMCK-1950-2024' }}
+                            </div>
+                            <div class="text-[10px] text-white/60 mt-1">
+                                Basis: <strong>{{ $user->chapter->name ?? 'Medan Kota' }}</strong> • Gol. Darah: <strong>{{ $user->profile?->blood_type ?? 'O' }}</strong>
+                            </div>
+                        </div>
+                        <div class="text-right">
+                            <div class="w-12 h-12 rounded-xl bg-white/10 border border-white/10 flex items-center justify-center font-black text-xl text-emerald-400 font-display">
+                                {{ strtoupper(substr($user->name, 0, 1)) }}
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="mt-4 pt-3 border-t border-white/10 flex items-center justify-between text-xs">
+                        <div class="font-mono font-bold text-amber-400 tracking-wider">
+                            {{ $user->nfcCard?->card_number ?? '6032-9800-2024-1950' }}
+                        </div>
+                        <div class="text-[9px] text-white/40 uppercase font-mono">
+                            CHIP UID: {{ $user->nfcCard?->uid_number ? substr($user->nfcCard->uid_number, 0, 8).'••' : 'ONLINE NFC' }}
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            {{-- TAMPAK BELAKANG KARTU --}}
+            <div>
+                <div class="text-[11px] font-bold uppercase tracking-wider text-smeck-green-400 mb-2 flex items-center gap-1.5 print:text-black">
+                    <i class="fa-solid fa-qrcode"></i>
+                    <span>Tampak Belakang (Back View & QR Presensi Gate)</span>
+                </div>
+                <div class="rounded-2xl p-6 bg-gradient-to-br from-black via-slate-900 to-emerald-950 border border-white/20 text-white shadow-xl relative overflow-hidden print:border-slate-800">
+                    <div class="h-8 -mx-6 -mt-6 mb-4 bg-neutral-900 border-b border-white/10"></div>
+                    <div class="flex items-center justify-between gap-4">
+                        <div class="flex-1 text-[10px] text-white/60 space-y-1">
+                            <div>Tanda Tangan Suporter: <strong class="text-white italic underline">{{ $user->name }}</strong></div>
+                            <p class="text-[9px] text-white/40 leading-relaxed">
+                                Tunjukkan QR Code ini kepada panitia tiket pintu stadion Teladan untuk verifikasi hak akses dan presensi tribun resmi.
+                            </p>
+                            <div class="pt-1 text-amber-400 font-bold">SALAM SADA ROHA • KINANTAN JUARA</div>
+                        </div>
+                        <div class="p-2 rounded-xl bg-white text-center shrink-0">
+                            <svg class="w-16 h-16" viewBox="0 0 100 100" fill="none">
+                                <rect width="100" height="100" fill="white"/>
+                                <rect x="10" y="10" width="25" height="25" fill="#062b08"/>
+                                <rect x="15" y="15" width="15" height="15" fill="white"/>
+                                <rect x="18" y="18" width="9" height="9" fill="#062b08"/>
+                                <rect x="65" y="10" width="25" height="25" fill="#062b08"/>
+                                <rect x="70" y="15" width="15" height="15" fill="white"/>
+                                <rect x="73" y="18" width="9" height="9" fill="#062b08"/>
+                                <rect x="10" y="65" width="25" height="25" fill="#062b08"/>
+                                <rect x="15" y="70" width="15" height="15" fill="white"/>
+                                <rect x="18" y="73" width="9" height="9" fill="#062b08"/>
+                                <rect x="42" y="15" width="8" height="8" fill="#062b08"/>
+                                <rect x="42" y="30" width="16" height="8" fill="#062b08"/>
+                                <rect x="50" y="45" width="10" height="15" fill="#062b08"/>
+                                <rect x="70" y="55" width="15" height="10" fill="#062b08"/>
+                                <rect x="42" y="75" width="20" height="10" fill="#062b08"/>
+                                <rect x="75" y="75" width="15" height="15" fill="#062b08"/>
+                            </svg>
+                            <div class="text-[7px] text-neutral-900 font-bold font-mono">PRESENSI</div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <div class="mt-6 text-center text-xs text-white/50 print:hidden">
+            <i class="fa-solid fa-circle-info mr-1 text-amber-400"></i> Klik <strong>Cetak / Simpan PDF</strong> untuk menyimpan kartu ke perangkat atau mencetaknya ke kertas PVC.
+        </div>
+    </div>
+</div>
 @endsection
 
 @push('scripts')
@@ -496,5 +627,14 @@
         const card = document.getElementById('kta-card');
         card.classList.toggle('card-flipped');
     }
+
+    function openDownloadKtaModal() {
+        document.getElementById('modalDownloadKta').classList.remove('hidden');
+    }
+
+    function closeDownloadKtaModal() {
+        document.getElementById('modalDownloadKta').classList.add('hidden');
+    }
 </script>
 @endpush
+
