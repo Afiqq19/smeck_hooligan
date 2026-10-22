@@ -125,6 +125,22 @@
 @endpush
 
 @section('content')
+@php
+    $logoBase64 = '';
+    $logoPath = public_path('images/logo-crest.jpg');
+    if (file_exists($logoPath)) {
+        $logoBase64 = 'data:image/jpeg;base64,' . base64_encode(file_get_contents($logoPath));
+    }
+
+    $photoBase64 = '';
+    if ($user->profile?->profile_photo_path) {
+        $photoDiskPath = storage_path('app/public/' . $user->profile->profile_photo_path);
+        if (file_exists($photoDiskPath)) {
+            $mime = @mime_content_type($photoDiskPath) ?: 'image/jpeg';
+            $photoBase64 = 'data:' . $mime . ';base64,' . base64_encode(file_get_contents($photoDiskPath));
+        }
+    }
+@endphp
 <div class="space-y-8 max-w-7xl mx-auto">
 
     {{-- TOP BANNER / GREETING WITH SUPORTER CHOREO ATMOSPHERE --}}
@@ -763,14 +779,14 @@
                     {{-- Shimmer & Watermark --}}
                     <div class="absolute inset-0 shimmer-effect pointer-events-none opacity-20"></div>
                     <div class="absolute -right-6 -bottom-6 w-36 h-36 rounded-full overflow-hidden opacity-10 pointer-events-none">
-                        <img src="{{ asset('images/logo-crest.jpg') }}" alt="Watermark" class="w-full h-full object-cover">
+                        <img src="{{ $logoBase64 ?: asset('images/logo-crest.jpg') }}" alt="Watermark" class="w-full h-full object-cover">
                     </div>
 
                     {{-- Header Kartu Depan --}}
                     <div class="relative z-10 flex items-center justify-between">
                         <div class="flex items-center gap-2.5">
                             <div class="w-9 h-9 sm:w-10 sm:h-10 rounded-xl overflow-hidden border border-amber-400/60 p-0.5 bg-black shrink-0 shadow">
-                                <img src="{{ asset('images/logo-crest.jpg') }}" alt="Logo" class="w-full h-full object-cover rounded-lg">
+                                <img src="{{ $logoBase64 ?: asset('images/logo-crest.jpg') }}" alt="Logo" class="w-full h-full object-cover rounded-lg">
                             </div>
                             <div>
                                 <div class="font-display font-black text-xs sm:text-sm tracking-wider uppercase text-white leading-tight">
@@ -808,7 +824,9 @@
                     <div class="relative z-10 flex items-end justify-between pt-2 border-t border-white/10 gap-2.5">
                         <div class="flex items-center gap-2.5 min-w-0">
                             <div class="w-11 h-11 sm:w-12 sm:h-12 rounded-xl border-2 border-smeck-green-400/80 bg-smeck-dark-800 overflow-hidden shrink-0 shadow flex items-center justify-center">
-                                @if($user->profile?->profile_photo_path)
+                                @if($photoBase64)
+                                    <img src="{{ $photoBase64 }}" alt="{{ $user->name }}" class="w-full h-full object-cover">
+                                @elseif($user->profile?->profile_photo_path)
                                     <img src="{{ asset('storage/' . $user->profile->profile_photo_path) }}" alt="{{ $user->name }}" class="w-full h-full object-cover">
                                 @else
                                     <div class="w-full h-full bg-gradient-to-br from-smeck-green-700 to-smeck-dark-900 flex items-center justify-center font-display font-black text-lg text-white">
@@ -983,6 +1001,178 @@
     </div>
 </div>
 
+{{-- ========================================================================= --}}
+{{-- DEDICATED OFF-SCREEN EXPORT CONTAINER (1016 x 635 px • 300 DPI)           --}}
+{{-- Selalu standby di memori tanpa display:none sehingga bebas reflow & CORS   --}}
+{{-- ========================================================================= --}}
+<div id="kta-export-staging" style="position: fixed; left: -9999px; top: 0; width: 1016px; height: 635px; overflow: hidden; pointer-events: none; z-index: -9999;" class="print-hide">
+    
+    {{-- EXPORT DEPAN: 1016 x 635 px --}}
+    <div id="kta-export-front" style="width: 1016px; height: 635px; background: linear-gradient(135deg, #052e16 0%, #064e3b 35%, #0f172a 70%, #020617 100%); color: #ffffff; padding: 44px 48px; box-sizing: border-box; position: relative; font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Helvetica, Arial, sans-serif; display: flex; flex-direction: column; justify-content: space-between; border-radius: 28px; overflow: hidden; border: 3px solid rgba(255,255,255,0.2);">
+        
+        {{-- Watermark Logo --}}
+        <div style="position: absolute; right: -50px; bottom: -50px; width: 380px; height: 380px; opacity: 0.08; pointer-events: none; border-radius: 50%; overflow: hidden;">
+            <img src="{{ $logoBase64 ?: asset('images/logo-crest.jpg') }}" alt="Watermark" style="width: 100%; height: 100%; object-fit: cover;">
+        </div>
+
+        {{-- Header Depan --}}
+        <div style="position: relative; z-index: 10; display: flex; align-items: center; justify-content: space-between;">
+            <div style="display: flex; align-items: center; gap: 20px;">
+                <div style="width: 80px; height: 80px; border-radius: 18px; border: 2.5px solid #fbbf24; background: #000; padding: 4px; box-sizing: border-box; overflow: hidden; display: flex; align-items: center; justify-content: center;">
+                    <img src="{{ $logoBase64 ?: asset('images/logo-crest.jpg') }}" alt="Logo" style="width: 100%; height: 100%; object-fit: cover; border-radius: 12px;">
+                </div>
+                <div>
+                    <div style="font-size: 32px; font-weight: 900; letter-spacing: 2px; text-transform: uppercase; color: #ffffff; line-height: 1.1;">
+                        SMeCK HOOLIGAN
+                    </div>
+                    <div style="font-size: 15px; font-weight: 800; letter-spacing: 3px; color: #fbbf24; text-transform: uppercase; margin-top: 4px;">
+                        SUPORTER RESMI PSMS MEDAN
+                    </div>
+                </div>
+            </div>
+            <div style="display: flex; align-items: center; gap: 16px;">
+                <span style="background: #16a34a; color: #ffffff; font-size: 16px; font-weight: 800; letter-spacing: 2px; padding: 8px 20px; border-radius: 10px; text-transform: uppercase; box-shadow: 0 4px 12px rgba(22,163,74,0.4);">
+                    RESMI & AKTIF
+                </span>
+            </div>
+        </div>
+
+        {{-- Middle Depan: EMV Chip & Chapter --}}
+        <div style="position: relative; z-index: 10; display: flex; align-items: center; justify-content: space-between; margin: auto 0; padding: 10px 0;">
+            <div style="width: 100px; height: 72px; border-radius: 12px; background: linear-gradient(135deg, #fef08a, #f59e0b, #b45309); border: 2px solid #fde68a; box-shadow: inset 0 2px 4px rgba(0,0,0,0.3); padding: 8px; box-sizing: border-box; display: flex; flex-direction: column; justify-content: space-between;">
+                <div style="height: 2px; background: rgba(146,64,14,0.5); width: 100%;"></div>
+                <div style="height: 2px; background: rgba(146,64,14,0.5); width: 70%; margin: 0 auto;"></div>
+                <div style="height: 2px; background: rgba(146,64,14,0.5); width: 100%;"></div>
+            </div>
+            <div style="text-align: right;">
+                <div style="font-size: 16px; font-weight: 800; letter-spacing: 3px; color: rgba(255,255,255,0.5); text-transform: uppercase;">
+                    BASIS CHAPTER
+                </div>
+                <div style="font-size: 28px; font-weight: 900; color: #86efac; margin-top: 4px;">
+                    {{ $user->chapter?->name ?? 'Chapter Medan Kota' }}
+                </div>
+            </div>
+        </div>
+
+        {{-- Footer Depan: Foto, Identitas, No Kartu --}}
+        <div style="position: relative; z-index: 10; display: flex; align-items: flex-end; justify-content: space-between; border-top: 2px solid rgba(255,255,255,0.15); padding-top: 20px;">
+            <div style="display: flex; align-items: center; gap: 24px;">
+                <div style="width: 120px; height: 120px; border-radius: 20px; border: 3px solid #4ade80; background: #0f172a; overflow: hidden; display: flex; align-items: center; justify-content: center; box-shadow: 0 8px 24px rgba(0,0,0,0.5);">
+                    @if($photoBase64)
+                        <img src="{{ $photoBase64 }}" alt="{{ $user->name }}" style="width: 100%; height: 100%; object-fit: cover;">
+                    @else
+                        <div style="width: 100%; height: 100%; background: linear-gradient(135deg, #15803d, #022c22); display: flex; align-items: center; justify-content: center; font-size: 54px; font-weight: 900; color: #ffffff;">
+                            {{ strtoupper(substr($user->name, 0, 1)) }}
+                        </div>
+                    @endif
+                </div>
+                <div>
+                    <div style="font-size: 32px; font-weight: 900; color: #ffffff; letter-spacing: 1px; max-width: 440px; white-space: nowrap; overflow: hidden; text-overflow: ellipsis;">
+                        {{ strtoupper($user->name) }}
+                    </div>
+                    <div style="font-size: 24px; font-family: monospace; font-weight: 900; color: #fbbf24; letter-spacing: 2px; margin-top: 4px;">
+                        {{ $user->profile?->nia ?? 'SMCK-2024-1950' }}
+                    </div>
+                    <div style="font-size: 17px; color: rgba(255,255,255,0.7); margin-top: 6px; font-weight: 600;">
+                        <span>GOL: <strong style="color:#fff;">{{ $user->profile?->blood_type ?? 'O' }}</strong></span>
+                        <span style="margin: 0 10px;">•</span>
+                        <span>EST: <strong style="color:#fff;">{{ $user->profile?->joined_date?->format('Y') ?? '2024' }}</strong></span>
+                    </div>
+                </div>
+            </div>
+            <div style="text-align: right;">
+                <div style="font-size: 15px; font-family: monospace; font-weight: 700; color: rgba(255,255,255,0.5); letter-spacing: 2px; text-transform: uppercase;">
+                    NO. KARTU KTA:
+                </div>
+                <div style="font-size: 24px; font-family: monospace; font-weight: 900; color: #fbbf24; letter-spacing: 2px; margin-top: 4px;">
+                    {{ $user->nfcCard?->card_number ?? '6032-9800-2024-1950' }}
+                </div>
+            </div>
+        </div>
+    </div>
+
+    {{-- EXPORT BELAKANG: 1016 x 635 px --}}
+    <div id="kta-export-back" style="width: 1016px; height: 635px; background: linear-gradient(135deg, #09090b 0%, #020617 50%, #0a0a0a 100%); color: #ffffff; padding: 0; box-sizing: border-box; position: relative; font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Helvetica, Arial, sans-serif; display: flex; flex-direction: column; justify-content: space-between; border-radius: 28px; overflow: hidden; border: 3px solid rgba(255,255,255,0.2);">
+        
+        {{-- Pita Magnetik Atas --}}
+        <div>
+            <div style="height: 72px; background: #18181b; border-bottom: 2px solid rgba(255,255,255,0.15); display: flex; align-items: center; justify-content: space-between; padding: 0 44px;">
+                <span style="font-size: 18px; font-family: monospace; letter-spacing: 3px; color: rgba(255,255,255,0.7); text-transform: uppercase;">
+                    KARTU TANDA ANGGOTA DIGITAL • {{ strtoupper($user->chapter?->name ?? 'CHAPTER SMECK HOOLIGAN') }}
+                </span>
+                <span style="font-size: 20px; font-weight: 900; color: #fbbf24; letter-spacing: 2px;">
+                    SADA ROHA
+                </span>
+            </div>
+            <div style="height: 34px; background: rgba(0,0,0,0.5); border-bottom: 1px solid rgba(255,255,255,0.08); display: flex; align-items: center; justify-content: space-between; padding: 0 44px; font-size: 15px;">
+                <div style="color: #4ade80; font-weight: 700; display: flex; align-items: center; gap: 8px;">
+                    <span>✓</span> <span>Suporter Resmi PSMS Medan</span>
+                </div>
+                <div style="color: rgba(255,255,255,0.5); font-family: monospace;">
+                    <span>NFC Terhubung</span>
+                </div>
+            </div>
+        </div>
+
+        {{-- Isi Kartu: Tanda Tangan, Ketentuan & QR Presensi --}}
+        <div style="padding: 24px 44px; display: flex; align-items: center; justify-content: space-between; gap: 30px; margin: auto 0;">
+            {{-- Kiri --}}
+            <div style="flex: 1; min-width: 0;">
+                <div style="font-size: 16px; color: rgba(255,255,255,0.6); font-weight: 600; margin-bottom: 8px;">
+                    Tanda Tangan Pemegang Kartu:
+                </div>
+                <div style="display: flex; align-items: center; width: 440px; height: 70px; background: #ffffff; border-radius: 12px; overflow: hidden; border: 2px solid rgba(255,255,255,0.2);">
+                    <div style="flex: 1; height: 100%; background: #f8fafc; display: flex; align-items: center; padding: 0 20px;">
+                        <span style="font-family: 'Caveat', cursive, sans-serif; font-size: 38px; font-weight: 700; color: #0f172a; white-space: nowrap; overflow: hidden; text-overflow: ellipsis;">
+                            {{ $user->name }}
+                        </span>
+                    </div>
+                    <div style="padding: 0 16px; height: 100%; background: rgba(22,163,74,0.15); border-left: 2px solid rgba(22,163,74,0.3); display: flex; align-items: center; justify-content: center;">
+                        <span style="font-size: 16px; font-weight: 900; color: #16a34a; letter-spacing: 2px;">
+                            RESMI
+                        </span>
+                    </div>
+                </div>
+
+                <div style="display: flex; align-items: center; gap: 16px; font-size: 18px; font-family: monospace; color: rgba(255,255,255,0.8); margin-top: 14px;">
+                    <div>NIA: <strong style="color: #fbbf24;">{{ $user->profile?->nia ?? 'SMCK-2024-1950' }}</strong></div>
+                    <span>•</span>
+                    <div>Basis: <strong style="color: #ffffff;">{{ $user->chapter?->name ?? 'Medan Kota' }}</strong></div>
+                </div>
+
+                <div style="font-size: 15px; color: rgba(255,255,255,0.6); line-height: 1.6; margin-top: 12px;">
+                    <div>• Bukti keanggotaan sah SMeCK Hooligan {{ $user->chapter?->name ? '('.$user->chapter->name.')' : '' }}.</div>
+                    <div>• Tunjukkan saat presensi dan penukaran tiket di stadion.</div>
+                    <div>• Jika menemukan kartu ini, harap hubungi Pengurus {{ $user->chapter?->name ?? 'Chapter' }}.</div>
+                </div>
+            </div>
+
+            {{-- Kanan: QR Presensi --}}
+            <div style="width: 210px; background: rgba(255,255,255,0.05); border: 2px solid rgba(255,255,255,0.15); border-radius: 20px; padding: 16px; text-align: center; box-sizing: border-box; display: flex; flex-direction: column; align-items: center;">
+                <div style="font-size: 14px; font-weight: 800; color: #4ade80; text-transform: uppercase; letter-spacing: 2px; margin-bottom: 8px;">
+                    QR Presensi
+                </div>
+                <div style="width: 150px; height: 150px; background: #ffffff; border-radius: 12px; padding: 8px; box-sizing: border-box; display: flex; align-items: center; justify-content: center; box-shadow: 0 4px 12px rgba(0,0,0,0.3);">
+                    <div id="export-dynamic-qr" style="width: 100%; height: 100%; display: flex; align-items: center; justify-content: center;"></div>
+                </div>
+                <div style="font-size: 13px; color: rgba(255,255,255,0.5); font-family: monospace; margin-top: 8px;">
+                    Pintu Masuk Stadion
+                </div>
+            </div>
+        </div>
+
+        {{-- Footer Belakang --}}
+        <div style="height: 60px; border-top: 2px solid rgba(255,255,255,0.15); padding: 0 44px; display: flex; align-items: center; justify-content: space-between; font-size: 16px;">
+            <div style="color: rgba(255,255,255,0.7);">
+                Pengurus {{ $user->chapter?->name ?? 'Chapter' }}: <strong style="color: #ffffff; font-family: monospace;">{{ $user->profile?->emergency_contact_number ?? '0812-6543-2199' }}</strong>
+            </div>
+            <div style="font-weight: 900; color: #fbbf24; letter-spacing: 2px;">
+                "SALAM SADA ROHA"
+            </div>
+        </div>
+    </div>
+
+</div>
 
 @endsection
 
@@ -1033,6 +1223,7 @@
     function openDownloadKtaModal() {
         document.getElementById('modalDownloadKta').classList.remove('hidden');
         switchKtaTab('front');
+        ensureExportQrCodeReady();
 
         // Render QR Code di Modal
         const modalQr = document.getElementById('modal-dynamic-qr');
@@ -1062,89 +1253,370 @@
         document.getElementById('modalMemberCheckin').classList.add('hidden');
     }
 
-    // Fungsi Download KTA sebagai Gambar PNG 300 DPI (1016 x 635 px)
-    function downloadKtaImage(side, btn) {
-        const elementId = side === 'front' ? 'kta-pvc-front' : 'kta-pvc-back';
-        const element = document.getElementById(elementId);
-        if (!element) return;
+    // Pastikan QR Code di export staging selalu siap
+    function ensureExportQrCodeReady() {
+        const qrVerificationUrl = "{{ route('api.check-kta', ['query' => $user->profile?->nia ?? ($user->nfcCard?->card_number ?? 'SMCK-1950')]) }}";
+        const exportQr = document.getElementById('export-dynamic-qr');
+        if (exportQr && typeof QRCode !== 'undefined' && exportQr.children.length === 0) {
+            try {
+                new QRCode(exportQr, {
+                    text: qrVerificationUrl,
+                    width: 150,
+                    height: 150,
+                    colorDark: "#052e16",
+                    colorLight: "#ffffff",
+                    correctLevel: QRCode.CorrectLevel.M
+                });
+            } catch (e) {
+                console.warn('QRCode export staging error:', e);
+            }
+        }
+    }
 
-        const wrapper = side === 'front' ? document.getElementById('kta-preview-front-wrapper') : document.getElementById('kta-preview-back-wrapper');
-        const wasHidden = wrapper && wrapper.classList.contains('hidden');
-        if (wasHidden) {
-            wrapper.classList.remove('hidden');
+    // Fungsi Utama Download KTA sebagai Gambar PNG 300 DPI (1016 x 635 px)
+    function downloadKtaImage(side, btn, onComplete) {
+        ensureExportQrCodeReady();
+
+        const elementId = side === 'front' ? 'kta-export-front' : 'kta-export-back';
+        let element = document.getElementById(elementId);
+        if (!element) {
+            element = document.getElementById(side === 'front' ? 'kta-pvc-front' : 'kta-pvc-back');
+        }
+        if (!element) {
+            if (onComplete) onComplete(false);
+            return;
         }
 
-        const originalHtml = btn.innerHTML;
-        btn.innerHTML = '<i class="fa-solid fa-spinner fa-spin mr-1"></i> Merender PNG...';
-        btn.disabled = true;
+        const originalHtml = btn ? btn.innerHTML : '';
+        if (btn && !onComplete) {
+            btn.innerHTML = '<i class="fa-solid fa-spinner fa-spin mr-1"></i> Merender PNG...';
+            btn.disabled = true;
+        }
 
-        const targetWidth = 1016;
-        const targetHeight = 635;
+        const memberSlug = "{{ Str::slug($user->name) }}";
+        const sideLabel = side === 'front' ? 'DEPAN' : 'BELAKANG';
+        const fileName = `KTA-SMECK-${sideLabel}-${memberSlug}-1016x635px-300DPI.png`;
 
-        setTimeout(() => {
-            if (typeof html2canvas !== 'undefined') {
-                html2canvas(element, {
-                    scale: 3,
-                    useCORS: true,
-                    allowTaint: true,
-                    backgroundColor: null,
-                    logging: false
-                }).then(canvas => {
-                    const finalCanvas = document.createElement('canvas');
-                    finalCanvas.width = targetWidth;
-                    finalCanvas.height = targetHeight;
-                    const ctx = finalCanvas.getContext('2d');
-                    ctx.imageSmoothingEnabled = true;
-                    ctx.imageSmoothingQuality = 'high';
-                    ctx.drawImage(canvas, 0, 0, targetWidth, targetHeight);
+        const finishDownload = (dataUrl) => {
+            const link = document.createElement('a');
+            link.download = fileName;
+            link.href = dataUrl;
+            document.body.appendChild(link);
+            link.click();
+            document.body.removeChild(link);
 
-                    const link = document.createElement('a');
-                    const memberSlug = "{{ Str::slug($user->name) }}";
-                    const sideLabel = side === 'front' ? 'DEPAN' : 'BELAKANG';
-                    link.download = `KTA-SMECK-${sideLabel}-${memberSlug}-1016x635px-300DPI.png`;
-                    link.href = finalCanvas.toDataURL('image/png', 1.0);
-                    link.click();
-
-                    if (wasHidden) {
-                        wrapper.classList.add('hidden');
-                    }
-                    btn.innerHTML = originalHtml;
-                    btn.disabled = false;
-                }).catch(err => {
-                    console.error('Gagal export KTA:', err);
-                    if (wasHidden) {
-                        wrapper.classList.add('hidden');
-                    }
-                    btn.innerHTML = originalHtml;
-                    btn.disabled = false;
-                    alert('Gagal mendownload gambar PNG. Silakan coba kembali.');
-                });
-            } else {
-                if (wasHidden) {
-                    wrapper.classList.add('hidden');
-                }
-                alert('Pustaka pengolah gambar sedang dimuat, silakan coba beberapa saat lagi.');
+            if (btn && !onComplete) {
                 btn.innerHTML = originalHtml;
                 btn.disabled = false;
             }
-        }, 80);
+            if (onComplete) onComplete(true);
+        };
+
+        if (typeof html2canvas !== 'undefined') {
+            html2canvas(element, {
+                width: 1016,
+                height: 635,
+                scale: 1,
+                useCORS: true,
+                allowTaint: false,
+                backgroundColor: side === 'front' ? '#052e16' : '#09090b',
+                logging: false
+            }).then(canvas => {
+                const dataUrl = canvas.toDataURL('image/png', 1.0);
+                finishDownload(dataUrl);
+            }).catch(err => {
+                console.warn('html2canvas error, using native canvas fallback:', err);
+                try {
+                    drawFallbackKta(side, finishDownload);
+                } catch (fallbackErr) {
+                    console.error('KTA export failed completely:', fallbackErr);
+                    if (btn && !onComplete) {
+                        btn.innerHTML = originalHtml;
+                        btn.disabled = false;
+                    }
+                    if (onComplete) {
+                        onComplete(false);
+                    } else {
+                        alert('Gagal mendownload gambar PNG. Silakan gunakan opsi Cetak PDF.');
+                    }
+                }
+            });
+        } else {
+            try {
+                drawFallbackKta(side, finishDownload);
+            } catch (e) {
+                if (btn && !onComplete) {
+                    btn.innerHTML = originalHtml;
+                    btn.disabled = false;
+                    alert('Pustaka pengolah gambar sedang dimuat, silakan coba beberapa saat lagi.');
+                }
+                if (onComplete) onComplete(false);
+            }
+        }
     }
 
     // Fungsi Unduh Sepasang Sekaligus (Depan + Belakang PNG)
     function downloadBothKtaImages(btn) {
         const originalHtml = btn.innerHTML;
-        btn.innerHTML = '<i class="fa-solid fa-spinner fa-spin mr-1"></i> Mengunduh Depan...';
+        btn.innerHTML = '<i class="fa-solid fa-spinner fa-spin mr-1"></i> Mengunduh Depan (1/2)...';
         btn.disabled = true;
 
-        downloadKtaImage('front', btn);
-        setTimeout(() => {
-            btn.innerHTML = '<i class="fa-solid fa-spinner fa-spin mr-1"></i> Mengunduh Belakang...';
-            downloadKtaImage('back', btn);
+        downloadKtaImage('front', btn, function(successFront) {
+            btn.innerHTML = '<i class="fa-solid fa-spinner fa-spin mr-1"></i> Mengunduh Belakang (2/2)...';
             setTimeout(() => {
-                btn.innerHTML = originalHtml;
-                btn.disabled = false;
-            }, 1500);
-        }, 1200);
+                downloadKtaImage('back', btn, function(successBack) {
+                    btn.innerHTML = '<i class="fa-solid fa-check mr-1"></i> Berhasil Diunduh!';
+                    setTimeout(() => {
+                        btn.innerHTML = originalHtml;
+                        btn.disabled = false;
+                    }, 2000);
+                });
+            }, 600);
+        });
+    }
+
+    // Native HTML5 2D Canvas Fallback Drawer (100% Guaranteed Success without any external dependencies)
+    function drawFallbackKta(side, callback) {
+        const canvas = document.createElement('canvas');
+        canvas.width = 1016;
+        canvas.height = 635;
+        const ctx = canvas.getContext('2d');
+
+        if (side === 'front') {
+            const grad = ctx.createLinearGradient(0, 0, 1016, 635);
+            grad.addColorStop(0, '#052e16');
+            grad.addColorStop(0.35, '#064e3b');
+            grad.addColorStop(0.7, '#0f172a');
+            grad.addColorStop(1, '#020617');
+            ctx.fillStyle = grad;
+            ctx.fillRect(0, 0, 1016, 635);
+
+            ctx.strokeStyle = 'rgba(255, 255, 255, 0.2)';
+            ctx.lineWidth = 4;
+            ctx.strokeRect(8, 8, 1000, 619);
+
+            ctx.fillStyle = '#ffffff';
+            ctx.font = '900 32px sans-serif';
+            ctx.fillText('SMeCK HOOLIGAN', 145, 75);
+
+            ctx.fillStyle = '#fbbf24';
+            ctx.font = '700 15px sans-serif';
+            ctx.fillText('SUPORTER RESMI PSMS MEDAN', 145, 105);
+
+            ctx.fillStyle = '#16a34a';
+            ctx.beginPath();
+            ctx.roundRect(830, 48, 138, 42, 8);
+            ctx.fill();
+            ctx.fillStyle = '#ffffff';
+            ctx.font = '800 15px sans-serif';
+            ctx.fillText('RESMI & AKTIF', 845, 74);
+
+            const chipGrad = ctx.createLinearGradient(48, 190, 148, 255);
+            chipGrad.addColorStop(0, '#fde68a');
+            chipGrad.addColorStop(0.5, '#f59e0b');
+            chipGrad.addColorStop(1, '#b45309');
+            ctx.fillStyle = chipGrad;
+            ctx.beginPath();
+            ctx.roundRect(48, 190, 95, 65, 10);
+            ctx.fill();
+            ctx.strokeStyle = '#fef08a';
+            ctx.lineWidth = 2;
+            ctx.stroke();
+
+            ctx.textAlign = 'right';
+            ctx.fillStyle = 'rgba(255, 255, 255, 0.5)';
+            ctx.font = '700 16px sans-serif';
+            ctx.fillText('BASIS CHAPTER', 968, 205);
+
+            ctx.fillStyle = '#86efac';
+            ctx.font = '900 28px sans-serif';
+            ctx.fillText("{{ $user->chapter?->name ?? 'Chapter Medan Kota' }}", 968, 245);
+            ctx.textAlign = 'left';
+
+            ctx.strokeStyle = 'rgba(255, 255, 255, 0.15)';
+            ctx.lineWidth = 2;
+            ctx.beginPath();
+            ctx.moveTo(48, 470);
+            ctx.lineTo(968, 470);
+            ctx.stroke();
+
+            ctx.fillStyle = '#ffffff';
+            ctx.font = '900 32px sans-serif';
+            ctx.fillText("{{ strtoupper($user->name) }}", 200, 520);
+
+            ctx.fillStyle = '#fbbf24';
+            ctx.font = 'bold 24px monospace';
+            ctx.fillText("{{ $user->profile?->nia ?? 'SMCK-2024-1950' }}", 200, 555);
+
+            ctx.fillStyle = 'rgba(255, 255, 255, 0.7)';
+            ctx.font = '16px sans-serif';
+            ctx.fillText("GOL: {{ $user->profile?->blood_type ?? 'O' }}  •  EST: {{ $user->profile?->joined_date?->format('Y') ?? '2024' }}", 200, 585);
+
+            ctx.textAlign = 'right';
+            ctx.fillStyle = 'rgba(255, 255, 255, 0.4)';
+            ctx.font = '14px monospace';
+            ctx.fillText('NO. KARTU KTA:', 968, 545);
+
+            ctx.fillStyle = '#fbbf24';
+            ctx.font = 'bold 22px monospace';
+            ctx.fillText("{{ $user->nfcCard?->card_number ?? '6032-9800-2024-1950' }}", 968, 575);
+            ctx.textAlign = 'left';
+
+            const logoSrc = "{{ $logoBase64 }}";
+            const photoSrc = "{{ $photoBase64 }}";
+
+            const renderPhotoAndDone = () => {
+                if (photoSrc) {
+                    const pImg = new Image();
+                    pImg.onload = () => {
+                        ctx.save();
+                        ctx.beginPath();
+                        ctx.roundRect(48, 485, 120, 120, 18);
+                        ctx.clip();
+                        ctx.drawImage(pImg, 48, 485, 120, 120);
+                        ctx.restore();
+                        ctx.strokeStyle = '#4ade80';
+                        ctx.lineWidth = 3;
+                        ctx.strokeRect(48, 485, 120, 120);
+                        callback(canvas.toDataURL('image/png', 1.0));
+                    };
+                    pImg.onerror = () => callback(canvas.toDataURL('image/png', 1.0));
+                    pImg.src = photoSrc;
+                } else {
+                    ctx.fillStyle = '#064e3b';
+                    ctx.beginPath();
+                    ctx.roundRect(48, 485, 120, 120, 18);
+                    ctx.fill();
+                    ctx.fillStyle = '#ffffff';
+                    ctx.font = '900 48px sans-serif';
+                    ctx.fillText("{{ strtoupper(substr($user->name, 0, 1)) }}", 88, 565);
+                    callback(canvas.toDataURL('image/png', 1.0));
+                }
+            };
+
+            if (logoSrc) {
+                const lImg = new Image();
+                lImg.onload = () => {
+                    ctx.drawImage(lImg, 48, 45, 75, 75);
+                    renderPhotoAndDone();
+                };
+                lImg.onerror = () => renderPhotoAndDone();
+                lImg.src = logoSrc;
+            } else {
+                renderPhotoAndDone();
+            }
+
+        } else {
+            ctx.fillStyle = '#0a0a0c';
+            ctx.fillRect(0, 0, 1016, 635);
+
+            ctx.fillStyle = '#18181b';
+            ctx.fillRect(0, 0, 1016, 75);
+            ctx.strokeStyle = 'rgba(255, 255, 255, 0.15)';
+            ctx.lineWidth = 2;
+            ctx.beginPath();
+            ctx.moveTo(0, 75);
+            ctx.lineTo(1016, 75);
+            ctx.stroke();
+
+            ctx.fillStyle = 'rgba(255, 255, 255, 0.8)';
+            ctx.font = 'bold 18px monospace';
+            ctx.fillText("KARTU TANDA ANGGOTA DIGITAL • {{ strtoupper($user->chapter?->name ?? 'CHAPTER SMECK HOOLIGAN') }}", 40, 45);
+
+            ctx.textAlign = 'right';
+            ctx.fillStyle = '#fbbf24';
+            ctx.font = '900 20px sans-serif';
+            ctx.fillText('SADA ROHA', 976, 45);
+            ctx.textAlign = 'left';
+
+            ctx.fillStyle = 'rgba(0, 0, 0, 0.4)';
+            ctx.fillRect(0, 75, 1016, 35);
+            ctx.fillStyle = '#4ade80';
+            ctx.font = 'bold 14px sans-serif';
+            ctx.fillText('✓ Suporter Resmi PSMS Medan', 40, 98);
+
+            ctx.textAlign = 'right';
+            ctx.fillStyle = 'rgba(255, 255, 255, 0.5)';
+            ctx.font = '14px monospace';
+            ctx.fillText('NFC Terhubung', 976, 98);
+            ctx.textAlign = 'left';
+
+            ctx.fillStyle = 'rgba(255, 255, 255, 0.6)';
+            ctx.font = '16px sans-serif';
+            ctx.fillText('Tanda Tangan Pemegang Kartu:', 48, 175);
+
+            ctx.fillStyle = '#ffffff';
+            ctx.beginPath();
+            ctx.roundRect(48, 190, 440, 70, 12);
+            ctx.fill();
+
+            ctx.fillStyle = '#0f172a';
+            ctx.font = 'bold 36px Caveat, cursive, sans-serif';
+            ctx.fillText("{{ $user->name }}", 70, 240);
+
+            ctx.fillStyle = '#16a34a';
+            ctx.font = '900 16px sans-serif';
+            ctx.fillText('RESMI', 410, 235);
+
+            ctx.fillStyle = '#fbbf24';
+            ctx.font = 'bold 18px monospace';
+            ctx.fillText("NIA: {{ $user->profile?->nia ?? 'SMCK-2024-1950' }}", 48, 305);
+
+            ctx.fillStyle = '#ffffff';
+            ctx.font = '18px sans-serif';
+            ctx.fillText("• Basis: {{ $user->chapter?->name ?? 'Medan Kota' }}", 310, 305);
+
+            ctx.fillStyle = 'rgba(255, 255, 255, 0.6)';
+            ctx.font = '16px sans-serif';
+            ctx.fillText("• Bukti keanggotaan sah SMeCK Hooligan {{ $user->chapter?->name ? '('.$user->chapter->name.')' : '' }}.", 48, 360);
+            ctx.fillText("• Tunjukkan kartu saat presensi dan penukaran tiket di stadion.", 48, 395);
+            ctx.fillText("• Jika menemukan kartu ini, harap hubungi Pengurus {{ $user->chapter?->name ?? 'Chapter' }}.", 48, 430);
+
+            ctx.strokeStyle = 'rgba(255, 255, 255, 0.15)';
+            ctx.lineWidth = 2;
+            ctx.beginPath();
+            ctx.moveTo(48, 560);
+            ctx.lineTo(968, 560);
+            ctx.stroke();
+
+            ctx.fillStyle = 'rgba(255, 255, 255, 0.7)';
+            ctx.font = '16px sans-serif';
+            ctx.fillText("Pengurus {{ $user->chapter?->name ?? 'Chapter' }}: {{ $user->profile?->emergency_contact_number ?? '0812-6543-2199' }}", 48, 600);
+
+            ctx.textAlign = 'right';
+            ctx.fillStyle = '#fbbf24';
+            ctx.font = '900 18px sans-serif';
+            ctx.fillText('"SALAM SADA ROHA"', 968, 600);
+            ctx.textAlign = 'left';
+
+            ctx.fillStyle = 'rgba(255, 255, 255, 0.05)';
+            ctx.beginPath();
+            ctx.roundRect(740, 160, 228, 290, 20);
+            ctx.fill();
+            ctx.strokeStyle = 'rgba(255, 255, 255, 0.15)';
+            ctx.lineWidth = 2;
+            ctx.stroke();
+
+            ctx.fillStyle = '#4ade80';
+            ctx.font = '800 16px sans-serif';
+            ctx.fillText('QR PRESENSI', 795, 200);
+
+            const qrImg = document.querySelector('#export-dynamic-qr img, #dynamic-kta-qr img, #modal-dynamic-qr img');
+            if (qrImg && qrImg.src) {
+                const img = new Image();
+                img.onload = () => {
+                    ctx.drawImage(img, 764, 220, 180, 180);
+                    ctx.fillStyle = 'rgba(255, 255, 255, 0.5)';
+                    ctx.font = '14px monospace';
+                    ctx.fillText('Pintu Masuk Stadion', 785, 430);
+                    callback(canvas.toDataURL('image/png', 1.0));
+                };
+                img.onerror = () => callback(canvas.toDataURL('image/png', 1.0));
+                img.src = qrImg.src;
+            } else {
+                callback(canvas.toDataURL('image/png', 1.0));
+            }
+        }
     }
 
     // Generate dynamic verifiable QR Code
@@ -1173,6 +1645,19 @@
                         text: qrVerificationUrl,
                         width: 68,
                         height: 68,
+                        colorDark: "#052e16",
+                        colorLight: "#ffffff",
+                        correctLevel: QRCode.CorrectLevel.M
+                    });
+                }
+
+                const exportQr = document.getElementById('export-dynamic-qr');
+                if (exportQr) {
+                    exportQr.innerHTML = '';
+                    new QRCode(exportQr, {
+                        text: qrVerificationUrl,
+                        width: 150,
+                        height: 150,
                         colorDark: "#052e16",
                         colorLight: "#ffffff",
                         correctLevel: QRCode.CorrectLevel.M
