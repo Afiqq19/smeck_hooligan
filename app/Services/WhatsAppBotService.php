@@ -279,7 +279,7 @@ class WhatsAppBotService
                 "👉 `CEK KTA 1950`\n" .
                 "👉 `CEK KTA SMC-2024-001`\n\n" .
                 "⚠️ *Waspada KTA palsu!* Pastikan Anda mendaftar melalui portal resmi:\n" .
-                "https://projek2.xie.my.id/register";
+                "https://projeksmeck2.xie.my.id/register";
         }
 
         // Cek apakah akun ditangguhkan / suspend
@@ -320,7 +320,7 @@ class WhatsAppBotService
         $match = MatchTicket::where('status', 'open')->orderBy('match_time', 'asc')->first();
 
         if (! $match) {
-            return "📅 *JADWAL PERTANDINGAN PSMS MEDAN*\n\nSaat ini belum ada jadwal pertandingan resmi yang dibuka untuk tiket.\n\nPantau terus update laga terbaru di portal resmi:\nhttps://projek2.xie.my.id/";
+            return "📅 *JADWAL PERTANDINGAN PSMS MEDAN*\n\nSaat ini belum ada jadwal pertandingan resmi yang dibuka untuk tiket.\n\nPantau terus update laga terbaru di portal resmi:\nhttps://projeksmeck2.xie.my.id/";
         }
 
         $typeLabel = $match->type === 'away' ? '🚌 TUR TANDANG (AWAYDAYS)' : '🏟️ LAGA KANDANG (HOME)';
@@ -334,7 +334,7 @@ class WhatsAppBotService
             "🎟️ *Harga Tiket Anggota:* Rp " . number_format($match->price, 0, ',', '.') . "\n" .
             "📊 *Sisa Kuota:* {$match->remaining_quota} Tiket Tersedia\n\n" .
             "👉 Pesan tiket resmi sekarang lewat Portal Suporter:\n" .
-            "https://projek2.xie.my.id/login\n\n" .
+            "https://projeksmeck2.xie.my.id/login\n\n" .
             "Salam Sada Roha! Ayam Kinantan Selamanya! 🐓💚";
     }
 
@@ -347,7 +347,7 @@ class WhatsAppBotService
         $psms = $standings->firstWhere('is_our_team', true);
 
         if ($standings->isEmpty() || ! $psms) {
-            return "📊 *KLASEMEN LIGA 2 INDONESIA (GRUP BARAT)*\n\nData klasemen sedang disinkronkan langsung dari server PT LIB.\nSilakan pantau live di: https://projek2.xie.my.id/";
+            return "📊 *KLASEMEN LIGA 2 INDONESIA (GRUP BARAT)*\n\nData klasemen sedang disinkronkan langsung dari server PT LIB.\nSilakan pantau live di: https://projeksmeck2.xie.my.id/";
         }
 
         $zone = match ($psms->position) {
@@ -401,7 +401,7 @@ class WhatsAppBotService
         return "📝 *PENDAFTARAN ANGGOTA BARU SMECK HOOLIGAN*\n\n" .
             "Gabung bersama ribuan saudara suporter PSMS Medan se-Nusantara! Dapatkan KTA Digital resmi dan KTA Fisik chip NFC.\n\n" .
             "👉 *Daftar online di sini:*\n" .
-            "https://projek2.xie.my.id/register\n\n" .
+            "https://projeksmeck2.xie.my.id/register\n\n" .
             "Syarat mudah:\n" .
             "1. Siapkan KTP (NIK 16 digit)\n" .
             "2. Email aktif untuk verifikasi 1-klik\n" .
@@ -447,7 +447,7 @@ class WhatsAppBotService
             "Untuk menampilkan panduan ini kapan saja:\n" .
             "👉 Ketik: *MENU* atau *BANTUAN* (atau ketik angka *6*)\n" .
             "━━━━━━━━━━━━━━━━━━━━━━━━━━\n\n" .
-            "🌐 *Portal Resmi:* https://projek2.xie.my.id/\n" .
+            "🌐 *Portal Resmi:* https://projeksmeck2.xie.my.id/\n" .
             "Ayam Kinantan Selamanya! 🐓⚽";
     }
 }

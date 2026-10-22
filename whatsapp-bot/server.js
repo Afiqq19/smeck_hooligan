@@ -20,7 +20,7 @@ const __dirname = path.dirname(__filename);
 
 // Konfigurasi Environment & Paths
 const PORT = process.env.PORT || 3000;
-const WEBHOOK_URL = process.env.WEBHOOK_URL || 'https://projek2.xie.my.id/api/whatsapp/webhook';
+const WEBHOOK_URL = process.env.WEBHOOK_URL || 'https://projeksmeck2.xie.my.id/api/whatsapp/webhook';
 const LOCAL_WEBHOOK_URL = 'http://127.0.0.1:8000/api/whatsapp/webhook';
 const AUTH_DIR = path.join(__dirname, 'session_auth');
 const LARAVEL_STORAGE_DIR = path.join(__dirname, '..', 'storage', 'app', 'whatsapp');
