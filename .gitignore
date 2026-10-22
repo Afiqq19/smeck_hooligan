@@ -27,3 +27,6 @@ _ide_helper.php
 Homestead.json
 Homestead.yaml
 Thumbs.db
+/whatsapp-bot/node_modules
+/whatsapp-bot/session_auth
+/storage/app/whatsapp

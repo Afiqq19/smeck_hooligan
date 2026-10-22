@@ -22,6 +22,8 @@ use App\Services\WhatsAppBotService;
 use Illuminate\Http\JsonResponse;
 use Illuminate\Http\RedirectResponse;
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\File;
+use Illuminate\Support\Facades\Http;
 use Illuminate\View\View;
 
 class SuperAdminDashboardController extends Controller
@@ -748,6 +750,130 @@ class SuperAdminDashboardController extends Controller
             'reply' => $reply,
             'to' => $sender,
         ]);
+    }
+
+    /**
+     * Cek status koneksi real bot WhatsApp (via Node.js micro-service atau file session).
+     */
+    public function realBotStatus(): JsonResponse
+    {
+        // 1. Coba hubungi microservice Node.js di localhost:3000
+        try {
+            $response = Http::timeout(1.5)->get('http://127.0.0.1:3000/api/status');
+            if ($response->successful()) {
+                $data = $response->json();
+                $data['source'] = 'live_node_service';
+                return response()->json($data);
+            }
+        } catch (\Throwable $e) {
+            // Node service di localhost mungkin offline atau di port lain
+        }
+
+        // 2. Coba baca file session.json yang disimpan oleh bot di storage
+        $sessionFile = storage_path('app/whatsapp/session.json');
+        if (File::exists($sessionFile)) {
+            $session = json_decode(File::get($sessionFile), true);
+            if (is_array($session)) {
+                $session['source'] = 'storage_file';
+                return response()->json($session);
+            }
+        }
+
+        // 3. Fallback jika bot belum berjalan
+        return response()->json([
+            'status' => 'disconnected',
+            'source' => 'idle',
+            'user' => [
+                'phone' => null,
+                'name' => null,
+            ],
+            'qr' => null,
+            'message' => 'Layanan Bot WhatsApp belum aktif di background. Silakan jalankan JALANKAN-BOT-WA.bat',
+        ]);
+    }
+
+    /**
+     * Minta kode pairing WhatsApp 8-digit tanpa scan QR.
+     */
+    public function realPairingCode(Request $request): JsonResponse
+    {
+        $phone = $request->input('phone');
+        if (empty($phone)) {
+            return response()->json(['success' => false, 'message' => 'Nomor WhatsApp wajib diisi.'], 400);
+        }
+
+        try {
+            $response = Http::timeout(8)->post('http://127.0.0.1:3000/api/pairing-code', [
+                'phone' => $phone,
+            ]);
+
+            return response()->json($response->json(), $response->status());
+        } catch (\Throwable $e) {
+            return response()->json([
+                'success' => false,
+                'message' => 'Gagal menghubungi server bot. Pastikan file JALANKAN-BOT-WA.bat sedang berjalan di komputer/server Anda.',
+            ], 503);
+        }
+    }
+
+    /**
+     * Kirim pesan WhatsApp langsung dari dashboard admin.
+     */
+    public function realSendMessage(Request $request): JsonResponse
+    {
+        $phone = $request->input('phone');
+        $message = $request->input('message');
+
+        if (empty($phone) || empty($message)) {
+            return response()->json(['success' => false, 'message' => 'Nomor dan pesan wajib diisi.'], 400);
+        }
+
+        try {
+            $response = Http::timeout(8)->post('http://127.0.0.1:3000/api/send-message', [
+                'phone' => $phone,
+                'message' => $message,
+            ]);
+
+            return response()->json($response->json(), $response->status());
+        } catch (\Throwable $e) {
+            return response()->json([
+                'success' => false,
+                'message' => 'Layanan bot WhatsApp sedang offline. Silakan jalankan file JALANKAN-BOT-WA.bat.',
+            ], 503);
+        }
+    }
+
+    /**
+     * Putuskan sesi WhatsApp bot (Logout).
+     */
+    public function realLogout(): JsonResponse
+    {
+        try {
+            $response = Http::timeout(5)->post('http://127.0.0.1:3000/api/logout');
+            return response()->json($response->json(), $response->status());
+        } catch (\Throwable $e) {
+            $sessionFile = storage_path('app/whatsapp/session.json');
+            if (File::exists($sessionFile)) {
+                File::delete($sessionFile);
+            }
+            return response()->json(['success' => true, 'message' => 'Sesi lokal dibersihkan.']);
+        }
+    }
+
+    /**
+     * Endpoint untuk bot mengabari Laravel status terbarunya via HTTP webhook.
+     */
+    public function apiWhatsAppStatusUpdate(Request $request): JsonResponse
+    {
+        $payload = $request->all();
+        $sessionDir = storage_path('app/whatsapp');
+        if (!File::exists($sessionDir)) {
+            File::makeDirectory($sessionDir, 0755, true);
+        }
+
+        File::put($sessionDir . '/session.json', json_encode($payload, JSON_PRETTY_PRINT));
+
+        return response()->json(['success' => true]);
     }
 }
 
