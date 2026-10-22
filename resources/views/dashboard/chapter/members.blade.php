@@ -272,14 +272,6 @@
         @endif
     </div>
 
-        {{-- Pagination --}}
-        @if($members->hasPages())
-            <div class="p-4 border-t border-white/5 bg-white/[0.01]">
-                {{ $members->links() }}
-            </div>
-        @endif
-    </div>
-
 </div>
 
 {{-- ========================================================================= --}}

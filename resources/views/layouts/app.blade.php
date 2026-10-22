@@ -390,7 +390,7 @@
 
                 {{-- User Avatar & Logout --}}
                 <div class="flex items-center gap-3 pl-3 border-l border-white/10">
-                    <div class="text-right hidden sm:block">
+                    <div class="text-right hidden sm:block whitespace-nowrap">
                         <div class="text-xs font-bold text-white">{{ auth()->user()->name }}</div>
                         <div class="text-[10px] text-smeck-green-400 font-mono">{{ auth()->user()->profile?->nia ?? 'ANGGOTA' }}</div>
                     </div>
