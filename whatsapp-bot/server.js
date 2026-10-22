@@ -377,7 +377,7 @@ async function processOutboxQueue() {
     if (currentStatus !== 'connected' || !sock) return;
 
     const urls = [
-        'https://projek2.xie.my.id/api/whatsapp/outbox',
+        'https://projeksmeck2.xie.my.id/api/whatsapp/outbox',
         'http://127.0.0.1:8000/api/whatsapp/outbox',
     ];
 

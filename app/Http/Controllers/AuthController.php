@@ -8,7 +8,9 @@ use App\Models\User;
 use Illuminate\Http\RedirectResponse;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
+use Illuminate\Support\Facades\File;
 use Illuminate\Support\Facades\Hash;
+use Illuminate\Support\Facades\URL;
 use Illuminate\View\View;
 
 class AuthController extends Controller
@@ -112,11 +114,50 @@ class AuthController extends Controller
             'joined_date' => now(),
         ]);
 
-        // Kirim email notifikasi verifikasi
+        // Kirim email notifikasi verifikasi resmi Laravel
         try {
             $user->sendEmailVerificationNotification();
         } catch (\Throwable $e) {
             \Illuminate\Support\Facades\Log::warning('Email verification send failed: '.$e->getMessage());
+        }
+
+        // Kirim juga notifikasi ke WhatsApp pengguna otomatis jika nomor HP diisi
+        try {
+            if (! empty($validated['phone_number'])) {
+                $verificationUrl = URL::temporarySignedRoute(
+                    'verification.verify',
+                    now()->addMinutes(1440),
+                    [
+                        'id' => $user->id,
+                        'hash' => sha1($user->getEmailForVerification()),
+                    ]
+                );
+
+                $outboxDir = storage_path('app/whatsapp');
+                if (! File::exists($outboxDir)) {
+                    File::makeDirectory($outboxDir, 0755, true);
+                }
+                $outboxFile = $outboxDir . '/outbox.json';
+                $queue = File::exists($outboxFile) ? json_decode(File::get($outboxFile), true) : [];
+                $waMessage = "🟢 *PORTAL RESMI SMECK HOOLIGAN*\n\n"
+                    . "Halo Sdra/i *{$user->name}*!\n"
+                    . "Selamat! Pendaftaran Anda di Portal Suporter SMeCK Hooligan telah berhasil diterima.\n\n"
+                    . "📋 *NIA Resmi:* `{$nia}`\n"
+                    . "📧 *Email Terdaftar:* `{$user->email}`\n\n"
+                    . "Untuk mengaktifkan akun dan mengakses KTA Digital Anda, silakan klik tautan verifikasi resmi berikut:\n"
+                    . "👉 {$verificationUrl}\n\n"
+                    . "Ayam Kinantan Tak Kan Pernah Berjuang Sendirian!\n"
+                    . "*Sada Roha • Salam Sada Roha!*";
+                $queue[] = [
+                    'id' => uniqid('msg_'),
+                    'phone' => $validated['phone_number'],
+                    'message' => $waMessage,
+                    'created_at' => now()->toIso8601String(),
+                ];
+                File::put($outboxFile, json_encode($queue, JSON_PRETTY_PRINT));
+            }
+        } catch (\Throwable $e) {
+            \Illuminate\Support\Facades\Log::warning('WhatsApp registration notification failed: '.$e->getMessage());
         }
 
         // Simpan info registrasi di session
@@ -126,7 +167,7 @@ class AuthController extends Controller
         ]);
 
         return redirect()->route('verification.notice')
-            ->with('success', 'Pendaftaran berhasil! Kami telah mengirimkan tautan verifikasi ke email Anda. Silakan klik link tersebut untuk langsung login.');
+            ->with('success', 'Pendaftaran berhasil! Tautan verifikasi telah dikirimkan ke email & WhatsApp Anda. Silakan klik link tersebut untuk langsung login.');
     }
 
     /**
@@ -141,19 +182,7 @@ class AuthController extends Controller
             return redirect()->route('member.dashboard');
         }
 
-        $demoVerificationUrl = null;
-        if ($user) {
-            $demoVerificationUrl = \Illuminate\Support\Facades\URL::temporarySignedRoute(
-                'verification.verify',
-                now()->addMinutes(60),
-                [
-                    'id' => $user->id,
-                    'hash' => sha1($user->getEmailForVerification()),
-                ]
-            );
-        }
-
-        return view('auth.verify-email', compact('demoVerificationUrl'));
+        return view('auth.verify-email');
     }
 
     /**
@@ -212,13 +241,49 @@ class AuthController extends Controller
             \Illuminate\Support\Facades\Log::warning('Email verification resend failed: '.$e->getMessage());
         }
 
+        // Kirim ulang juga notifikasi WhatsApp jika nomor HP tersedia
+        try {
+            $phone = $user->profile?->phone_number;
+            if ($phone) {
+                $verificationUrl = URL::temporarySignedRoute(
+                    'verification.verify',
+                    now()->addMinutes(1440),
+                    [
+                        'id' => $user->id,
+                        'hash' => sha1($user->getEmailForVerification()),
+                    ]
+                );
+
+                $outboxDir = storage_path('app/whatsapp');
+                if (! File::exists($outboxDir)) {
+                    File::makeDirectory($outboxDir, 0755, true);
+                }
+                $outboxFile = $outboxDir . '/outbox.json';
+                $queue = File::exists($outboxFile) ? json_decode(File::get($outboxFile), true) : [];
+                $waMessage = "🟢 *KIRIM ULANG VERIFIKASI SMECK HOOLIGAN*\n\n"
+                    . "Halo *{$user->name}*,\n"
+                    . "Berikut adalah tautan verifikasi akun terbaru Anda:\n"
+                    . "👉 {$verificationUrl}\n\n"
+                    . "Silakan klik link tersebut untuk mengaktifkan akun dan KTA Digital Anda.";
+                $queue[] = [
+                    'id' => uniqid('msg_'),
+                    'phone' => $phone,
+                    'message' => $waMessage,
+                    'created_at' => now()->toIso8601String(),
+                ];
+                File::put($outboxFile, json_encode($queue, JSON_PRETTY_PRINT));
+            }
+        } catch (\Throwable $e) {
+            // ignore
+        }
+
         session([
             'registered_email' => $user->email,
             'verify_user_id' => $user->id,
         ]);
 
         return back()->with('status', 'verification-link-sent')
-            ->with('success', 'Tautan verifikasi baru berhasil dikirim ke alamat email: '.$user->email);
+            ->with('success', 'Tautan verifikasi baru berhasil dikirim ke alamat email & WhatsApp: '.$user->email);
     }
 
     /**

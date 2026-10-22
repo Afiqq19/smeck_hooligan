@@ -70,7 +70,7 @@ class WhatsAppBotService
                     "• *chant* ➔ Lirik lagu anthem tribun\n" .
                     "• *daftar* ➔ Registrasi anggota baru & KTA resmi\n" .
                     "• *menu* ➔ Panduan lengkap seluruh fitur\n\n" .
-                    "💡 *Contoh:* `@admin cek kta syafiq` atau langsung ketik `cek kta syafiq`! 🐓";
+                    "💡 *Contoh:* `@admin cek kta smeck` atau langsung ketik `cek kta smeck`! 🐓";
             }
 
             // Lanjutkan pemrosesan menggunakan teks yang sudah dibersihkan

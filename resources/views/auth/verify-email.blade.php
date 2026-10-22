@@ -65,17 +65,6 @@
                     </button>
                 </form>
 
-                {{-- Helper Shortcut Demo Testing --}}
-                @if(isset($demoVerificationUrl))
-                    <div class="pt-3 border-t border-white/10">
-                        <span class="text-[10px] text-white/40 block mb-2">Simulasi Pengujian Cepat:</span>
-                        <a href="{{ $demoVerificationUrl }}" class="w-full py-2.5 px-4 rounded-xl bg-white/10 hover:bg-white/15 text-smeck-gold font-bold text-xs transition-colors flex items-center justify-center gap-2 border border-smeck-gold/30">
-                            <i class="fa-solid fa-bolt"></i>
-                            <span>Klik Di Sini: Simulasi Verifikasi Langsung</span>
-                        </a>
-                    </div>
-                @endif
-
                 <div class="pt-2 text-center text-xs text-white/40">
                     <a href="{{ url('/') }}" class="hover:text-white transition-colors underline">Kembali ke Beranda</a>
                     <span class="mx-2">•</span>
