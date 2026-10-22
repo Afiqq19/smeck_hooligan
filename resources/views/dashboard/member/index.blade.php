@@ -332,86 +332,139 @@
                     </div>
 
                     {{-- -------------------------------------------------- --}}
-                    {{-- TAMPAK BELAKANG KARTU DIGITAL ANGGOTA --}}
+                    {{-- TAMPAK BELAKANG KARTU DIGITAL ANGGOTA (CO-BRANDING MILITAN) --}}
                     {{-- -------------------------------------------------- --}}
-                    <div class="card-face card-back p-4 sm:p-5 flex flex-col justify-between overflow-hidden border border-white/15 shadow-2xl bg-gradient-to-br from-neutral-950 via-slate-950 to-neutral-900 text-white relative">
+                    <div class="card-face card-back p-3.5 sm:p-4.5 flex flex-col justify-between overflow-hidden border border-emerald-500/30 shadow-2xl bg-gradient-to-br from-neutral-950 via-slate-950 to-neutral-900 text-white relative">
                         
                         {{-- Efek Kilau Halus --}}
-                        <div class="absolute inset-0 shimmer-effect opacity-20 pointer-events-none"></div>
+                        <div class="absolute inset-0 shimmer-effect opacity-15 pointer-events-none"></div>
 
                         {{-- 1. PITA MAGNETIK ATAS --}}
-                        <div class="-mx-4 -mt-4 sm:-mx-5 sm:-mt-5">
-                            <div class="h-9 bg-neutral-900 border-b border-white/10 flex items-center justify-between px-4 sm:px-5">
-                                <span class="text-[8px] sm:text-[9px] font-mono tracking-widest text-white/60 uppercase">
-                                    KARTU TANDA ANGGOTA DIGITAL • {{ strtoupper($user->chapter?->name ?? 'CHAPTER SMECK HOOLIGAN') }}
+                        <div class="-mx-3.5 -mt-3.5 sm:-mx-4.5 sm:-mt-4.5">
+                            <div class="h-8 sm:h-9 bg-neutral-900 border-b border-white/10 flex items-center justify-between px-3.5 sm:px-4.5">
+                                <span class="text-[7.5px] sm:text-[8.5px] font-mono tracking-widest text-white/70 uppercase">
+                                    KARTU ANGGOTA RESMI • CO-BRANDING MANDIRI E-MONEY
                                 </span>
                                 <span class="text-[8px] sm:text-[9px] font-display font-bold text-smeck-gold tracking-wider">
-                                    SADA ROHA
+                                    SALAM SADA ROHA
                                 </span>
                             </div>
 
-                            {{-- Sub-bar Identitas --}}
-                            <div class="px-4 sm:px-5 py-1 bg-black/40 border-b border-white/5 flex items-center justify-between text-[8px] sm:text-[9px]">
-                                <div class="flex items-center gap-1.5 text-emerald-400 font-semibold">
-                                    <i class="fa-solid fa-circle-check text-[9px]"></i>
-                                    <span>Suporter Resmi PSMS Medan</span>
+                            {{-- Sub-bar Basis & Identitas --}}
+                            <div class="px-3.5 sm:px-4.5 py-1 bg-black/60 border-b border-white/5 flex items-center justify-between text-[7px] sm:text-[8px]">
+                                <div class="flex items-center gap-1.5 text-emerald-400 font-bold uppercase tracking-wider">
+                                    <i class="fa-solid fa-shield-halved text-[8px]"></i>
+                                    <span>BASIS: {{ strtoupper($user->chapter?->name ?? 'CHAPTER MEDAN KOTA') }}</span>
                                 </div>
-                                <div class="text-white/50 font-mono flex items-center gap-1.5">
-                                    <i class="fa-solid fa-wifi rotate-90 text-[8px] text-emerald-400"></i>
-                                    <span>NFC Terhubung</span>
+                                <div class="text-white/60 font-mono flex items-center gap-1">
+                                    <i class="fa-solid fa-wifi rotate-90 text-[7px] text-amber-400"></i>
+                                    <span>NFC CHIP TERHUBUNG</span>
                                 </div>
                             </div>
                         </div>
 
-                        {{-- 2. KONTEN UTAMA: Tanda Tangan & QR Presensi --}}
-                        <div class="my-auto py-1 sm:py-2 flex items-center justify-between gap-3 sm:gap-5 relative z-10">
-                            
-                            {{-- Sisi Kiri: Tanda Tangan, Identitas & Ketentuan --}}
-                            <div class="flex-1 min-w-0 flex flex-col justify-between space-y-2">
-                                
-                                {{-- Area Tanda Tangan --}}
-                                <div>
-                                    <div class="text-[8px] sm:text-[9px] text-white/60 font-medium mb-1">
-                                        Tanda Tangan Pemegang Kartu:
-                                    </div>
-                                    <div class="flex items-center rounded-lg overflow-hidden border border-white/15 bg-white shadow-sm">
-                                        <div class="flex-1 h-8 sm:h-9 bg-slate-50 flex items-center px-3">
-                                            <span class="font-signature text-base sm:text-lg text-slate-900 font-bold select-none -rotate-1 tracking-wide truncate">
-                                                {{ $user->name }}
-                                            </span>
-                                        </div>
-                                        <div class="px-2.5 h-8 sm:h-9 bg-emerald-600/15 border-l border-emerald-500/30 flex items-center justify-center">
-                                            <span class="text-[8px] sm:text-[9px] font-bold text-emerald-600 uppercase tracking-wider flex items-center gap-1">
-                                                <i class="fa-solid fa-shield-halved text-[9px]"></i> RESMI
-                                            </span>
-                                        </div>
-                                    </div>
+                        {{-- 2. BARIS NOMOR KARTU 16 DIGIT & BARCODE E-MONEY --}}
+                        @php
+                            $rawCardNumber = $user->nfcCard?->card_number ?? '6032267188135621';
+                            $cleanCard = preg_replace('/[^0-9]/', '', $rawCardNumber);
+                            if (strlen($cleanCard) < 16) {
+                                $cleanCard = str_pad($cleanCard, 16, '0', STR_PAD_RIGHT);
+                            }
+                            $formattedCard = implode(' • ', str_split($cleanCard, 4));
+                        @endphp
+                        <div class="my-1 px-3 py-1.5 rounded-xl bg-white/[0.04] border border-white/10 flex items-center justify-between gap-2 relative z-10">
+                            <div>
+                                <div class="text-[6.5px] sm:text-[7.5px] font-mono uppercase text-white/50 tracking-wider">
+                                    NOMOR KARTU MANDIRI E-MONEY:
                                 </div>
-
-                                {{-- Ringkasan Identitas --}}
-                                <div class="flex items-center gap-3 text-[8px] sm:text-[9px] font-mono text-white/70">
-                                    <div>NIA: <strong class="text-smeck-gold">{{ $user->profile?->nia ?? 'SMCK-2024-1950' }}</strong></div>
-                                    <span>•</span>
-                                    <div>Basis: <strong class="text-white">{{ $user->chapter?->name ?? 'Medan Kota' }}</strong></div>
-                                </div>
-
-                                {{-- Ketentuan Penggunaan (Bahasa Normal & Santun) --}}
-                                <div class="text-[7px] sm:text-[8px] text-white/50 leading-relaxed space-y-0.5">
-                                    <div>• Kartu ini adalah bukti keanggotaan sah SMeCK Hooligan {{ $user->chapter?->name ? '('.$user->chapter->name.')' : '' }}.</div>
-                                    <div>• Tunjukkan kartu saat presensi dan penukaran tiket di stadion.</div>
-                                    <div>• Jika menemukan kartu ini, harap kembalikan ke Pengurus {{ $user->chapter?->name ?? 'Chapter' }}.</div>
+                                <div class="font-mono font-black text-xs sm:text-sm text-amber-300 tracking-wider">
+                                    {{ $formattedCard }}
                                 </div>
                             </div>
 
-                            {{-- Sisi Kanan: Kotak QR Presensi --}}
-                            <div class="shrink-0 flex flex-col items-center">
-                                <div class="p-2 rounded-xl bg-white/[0.04] border border-white/15 text-center flex flex-col items-center">
-                                    <div class="text-[7px] sm:text-[8px] font-bold text-emerald-400 uppercase tracking-wider mb-1 flex items-center gap-1">
-                                        <i class="fa-solid fa-qrcode text-[8px]"></i> QR Presensi
+                            {{-- Mini Barcode Retail Scan --}}
+                            <div class="bg-white px-2 py-0.5 rounded shadow flex flex-col items-center shrink-0">
+                                <svg class="h-4 sm:h-5 w-24 sm:w-28" viewBox="0 0 120 20" fill="black" xmlns="http://www.w3.org/2000/svg">
+                                    <rect x="0" y="0" width="2" height="20"/>
+                                    <rect x="4" y="0" width="1" height="20"/>
+                                    <rect x="7" y="0" width="3" height="20"/>
+                                    <rect x="12" y="0" width="1" height="20"/>
+                                    <rect x="15" y="0" width="2" height="20"/>
+                                    <rect x="19" y="0" width="4" height="20"/>
+                                    <rect x="25" y="0" width="1" height="20"/>
+                                    <rect x="28" y="0" width="3" height="20"/>
+                                    <rect x="33" y="0" width="2" height="20"/>
+                                    <rect x="37" y="0" width="1" height="20"/>
+                                    <rect x="40" y="0" width="4" height="20"/>
+                                    <rect x="46" y="0" width="2" height="20"/>
+                                    <rect x="50" y="0" width="1" height="20"/>
+                                    <rect x="53" y="0" width="3" height="20"/>
+                                    <rect x="58" y="0" width="2" height="20"/>
+                                    <rect x="62" y="0" width="4" height="20"/>
+                                    <rect x="68" y="0" width="1" height="20"/>
+                                    <rect x="71" y="0" width="2" height="20"/>
+                                    <rect x="75" y="0" width="3" height="20"/>
+                                    <rect x="80" y="0" width="1" height="20"/>
+                                    <rect x="83" y="0" width="4" height="20"/>
+                                    <rect x="89" y="0" width="2" height="20"/>
+                                    <rect x="93" y="0" width="1" height="20"/>
+                                    <rect x="96" y="0" width="3" height="20"/>
+                                    <rect x="101" y="0" width="2" height="20"/>
+                                    <rect x="105" y="0" width="4" height="20"/>
+                                    <rect x="111" y="0" width="1" height="20"/>
+                                    <rect x="114" y="0" width="2" height="20"/>
+                                    <rect x="118" y="0" width="2" height="20"/>
+                                </svg>
+                                <span class="text-[5.5px] font-mono text-black font-bold tracking-widest mt-0.5">{{ substr($cleanCard, 0, 8) }} {{ substr($cleanCard, 8, 8) }}</span>
+                            </div>
+                        </div>
+
+                        {{-- 3. KONTEN UTAMA: Panel Tanda Tangan, Maklumat & QR Verifikasi Identitas --}}
+                        <div class="my-auto py-1 flex items-center justify-between gap-3 relative z-10">
+                            
+                            {{-- Sisi Kiri: Tanda Tangan & Maklumat Ketentuan Anggota --}}
+                            <div class="flex-1 min-w-0 flex flex-col justify-between space-y-1.5">
+                                
+                                {{-- Area Tanda Tangan --}}
+                                <div>
+                                    <div class="text-[7.5px] sm:text-[8px] text-white/60 font-medium mb-0.5 flex items-center justify-between">
+                                        <span>Tanda Tangan Pemegang Sah:</span>
+                                        <span class="font-mono text-[7px] text-emerald-400 font-bold">NIA: {{ $user->profile?->nia ?? 'SMCK-1950' }}</span>
                                     </div>
-                                    <div class="w-18 h-18 sm:w-20 sm:h-20 bg-white rounded-lg p-1.5 flex items-center justify-center shadow-md">
+                                    <div class="flex items-center rounded-lg overflow-hidden border border-white/20 bg-white shadow-sm max-w-[210px] sm:max-w-[240px]">
+                                        <div class="flex-1 h-7 sm:h-8 bg-slate-50 flex items-center px-2.5">
+                                            <span class="font-signature text-sm sm:text-base text-slate-900 font-bold select-none truncate">
+                                                {{ $user->name }}
+                                            </span>
+                                        </div>
+                                        <div class="px-2 h-7 sm:h-8 bg-emerald-700 text-white flex items-center justify-center">
+                                            <span class="text-[7px] sm:text-[8px] font-black uppercase tracking-wider">
+                                                SAH
+                                            </span>
+                                        </div>
+                                    </div>
+                                </div>
+
+                                {{-- Maklumat & Ketentuan Anggota (Petunjuk Resmi) --}}
+                                <div class="text-[6.5px] sm:text-[7.5px] text-white/60 leading-tight space-y-0.5">
+                                    <div class="font-bold text-amber-300 uppercase tracking-wider mb-0.5">
+                                        MAKLUMAT KARTU & KETENTUAN SUPORTER:
+                                    </div>
+                                    <div>• Identitas resmi anggota terdaftar SMeCK Hooligan & kartu uang elektronik Mandiri e-money.</div>
+                                    <div>• Wajib menjaga nama baik organisasi, persaudaraan tribun, dan ikrar <em>Salam Sada Roha</em>.</div>
+                                    <div>• Saldo tersimpan pada chip kartu. Hubungi Pengurus Chapter atau Mandiri 14000 jika kartu hilang.</div>
+                                </div>
+                            </div>
+
+                            {{-- Sisi Kanan: Box QR Verifikasi Identitas Digital --}}
+                            <div class="shrink-0 flex flex-col items-center">
+                                <div class="p-2 rounded-xl bg-black/50 border border-emerald-500/30 text-center flex flex-col items-center shadow-lg">
+                                    <div class="text-[7px] sm:text-[8px] font-bold text-emerald-400 uppercase tracking-wider mb-1 flex items-center gap-1">
+                                        <i class="fa-solid fa-id-card-clip text-[8px]"></i>
+                                        <span>VERIFIKASI DIGITAL</span>
+                                    </div>
+                                    <div class="w-16 h-16 sm:w-18 sm:h-18 bg-white rounded-lg p-1 flex items-center justify-center shadow-md">
                                         <div id="dynamic-kta-qr" class="w-full h-full flex items-center justify-center">
-                                            {{-- Matriks QR Bersih & Presisi --}}
                                             <svg class="w-full h-full" viewBox="0 0 100 100" fill="none">
                                                 <rect width="100" height="100" fill="white"/>
                                                 <rect x="6" y="6" width="26" height="26" rx="2" fill="#052e16"/>
@@ -451,29 +504,25 @@
                                             </svg>
                                         </div>
                                     </div>
-                                    <div class="text-[7px] text-white/50 font-mono mt-1">
-                                        Pindai di Gate Stadion
+                                    <div class="text-[6.5px] text-emerald-400 font-bold uppercase tracking-wider mt-1">
+                                        SCAN CEK KEASLIAN
                                     </div>
                                 </div>
                             </div>
 
                         </div>
 
-                        {{-- 3. FOOTER: Hotline Sekretariat & Slogan --}}
-                        <div class="pt-1.5 sm:pt-2 border-t border-white/10 flex items-center justify-between text-[8px] sm:text-[9px] relative z-10">
-                            <div class="flex items-center gap-1.5">
-                                <i class="fa-solid fa-phone text-emerald-400 text-[10px]"></i>
-                                <span class="text-white/60">
-                                    Pengurus {{ $user->chapter?->name ?? 'Chapter' }}: <strong class="text-white font-mono">{{ $user->profile?->emergency_contact_number ?? '0812-6543-2199' }}</strong>
-                                </span>
+                        {{-- 4. FOOTER: Hotline Pengurus Basis & Call Center Mandiri --}}
+                        <div class="pt-1.5 border-t border-white/10 flex items-center justify-between text-[7px] sm:text-[8px] relative z-10">
+                            <div class="flex items-center gap-2 text-white/60">
+                                <span>Pengurus Basis: <strong class="text-white font-mono">{{ $user->profile?->emergency_contact_number ?? '0812-6543-2199' }}</strong></span>
+                                <span>•</span>
+                                <span>Mandiri: <strong class="text-amber-300 font-mono">14000</strong></span>
                             </div>
                             <div class="text-right">
-                                <div class="font-display font-black text-[9px] sm:text-xs text-smeck-gold tracking-widest">
-                                    "SALAM SADA ROHA"
-                                </div>
-                                <div class="text-[7px] text-white/40 uppercase tracking-wider">
-                                    Ayam Kinantan Juara
-                                </div>
+                                <span class="font-display font-black text-smeck-gold tracking-widest text-[8px] sm:text-[9px]">
+                                    AYAM KINANTAN JUARA
+                                </span>
                             </div>
                         </div>
 
@@ -900,72 +949,121 @@
                 </div>
                 
                 {{-- Container Belakang Berukuran Rasio 85.6 / 53.98 --}}
-                <div id="kta-pvc-back" class="kta-pvc-card w-full aspect-[85.6/53.98] rounded-2xl p-4 sm:p-5 bg-gradient-to-br from-neutral-950 via-slate-950 to-neutral-900 border border-white/15 text-white shadow-2xl relative overflow-hidden flex flex-col justify-between">
+                <div id="kta-pvc-back" class="kta-pvc-card w-full aspect-[85.6/53.98] rounded-2xl p-3.5 sm:p-4.5 bg-gradient-to-br from-neutral-950 via-slate-950 to-neutral-900 border border-emerald-500/30 text-white shadow-2xl relative overflow-hidden flex flex-col justify-between">
                     {{-- Shimmer --}}
                     <div class="absolute inset-0 shimmer-effect opacity-15 pointer-events-none"></div>
 
                     {{-- Pita Magnetik Atas --}}
-                    <div class="h-8 sm:h-9 -mx-4 sm:-mx-5 -mt-4 sm:-mt-5 mb-1 bg-neutral-900 border-b border-white/10 flex items-center justify-between px-4 sm:px-5">
-                        <span class="text-[8px] sm:text-[9px] font-mono tracking-widest text-white/70 uppercase">
-                            KARTU TANDA ANGGOTA DIGITAL • {{ strtoupper($user->chapter?->name ?? 'CHAPTER SMECK HOOLIGAN') }}
+                    <div class="h-8 sm:h-9 -mx-3.5 sm:-mx-4.5 -mt-3.5 sm:-mt-4.5 bg-neutral-900 border-b border-white/10 flex items-center justify-between px-3.5 sm:px-4.5">
+                        <span class="text-[7.5px] sm:text-[8.5px] font-mono tracking-widest text-white/70 uppercase">
+                            KARTU ANGGOTA RESMI • CO-BRANDING MANDIRI E-MONEY
                         </span>
                         <span class="text-[8px] sm:text-[9px] font-display font-bold text-smeck-gold tracking-wider">
-                            SADA ROHA
+                            SALAM SADA ROHA
                         </span>
                     </div>
 
-                    {{-- Sub-bar Identitas --}}
-                    <div class="-mx-4 sm:-mx-5 px-4 sm:px-5 py-0.5 bg-black/40 border-b border-white/5 flex items-center justify-between text-[7px] sm:text-[8px]">
-                        <div class="flex items-center gap-1.5 text-emerald-400 font-semibold">
-                            <i class="fa-solid fa-circle-check text-[8px]"></i>
-                            <span>Suporter Resmi PSMS Medan</span>
+                    {{-- Sub-bar Basis & Identitas --}}
+                    <div class="-mx-3.5 sm:-mx-4.5 px-3.5 sm:px-4.5 py-0.5 bg-black/60 border-b border-white/5 flex items-center justify-between text-[7px] sm:text-[8px]">
+                        <div class="flex items-center gap-1.5 text-emerald-400 font-bold uppercase tracking-wider">
+                            <i class="fa-solid fa-shield-halved text-[8px]"></i>
+                            <span>BASIS: {{ strtoupper($user->chapter?->name ?? 'CHAPTER MEDAN KOTA') }}</span>
                         </div>
-                        <div class="text-white/50 font-mono flex items-center gap-1">
-                            <i class="fa-solid fa-wifi rotate-90 text-[7px] text-emerald-400"></i>
-                            <span>NFC Terhubung</span>
+                        <div class="text-white/60 font-mono flex items-center gap-1">
+                            <i class="fa-solid fa-wifi rotate-90 text-[7px] text-amber-400"></i>
+                            <span>NFC CHIP ACTIVE</span>
                         </div>
                     </div>
 
-                    {{-- Isi Kartu: Tanda Tangan, Ketentuan & QR Presensi --}}
+                    {{-- Baris Nomor Kartu 16 Digit & Barcode e-money --}}
+                    <div class="my-1 px-2.5 py-1 rounded-xl bg-white/[0.04] border border-white/10 flex items-center justify-between gap-2 relative z-10">
+                        <div>
+                            <div class="text-[6px] sm:text-[7px] font-mono uppercase text-white/50 tracking-wider">
+                                NOMOR KARTU MANDIRI E-MONEY:
+                            </div>
+                            <div class="font-mono font-black text-[11px] sm:text-xs text-amber-300 tracking-wider">
+                                {{ $formattedCard }}
+                            </div>
+                        </div>
+
+                        {{-- Barcode Retail Scan --}}
+                        <div class="bg-white px-1.5 py-0.5 rounded shadow flex flex-col items-center shrink-0">
+                            <svg class="h-3.5 sm:h-4 w-20 sm:w-24" viewBox="0 0 120 20" fill="black" xmlns="http://www.w3.org/2000/svg">
+                                <rect x="0" y="0" width="2" height="20"/>
+                                <rect x="4" y="0" width="1" height="20"/>
+                                <rect x="7" y="0" width="3" height="20"/>
+                                <rect x="12" y="0" width="1" height="20"/>
+                                <rect x="15" y="0" width="2" height="20"/>
+                                <rect x="19" y="0" width="4" height="20"/>
+                                <rect x="25" y="0" width="1" height="20"/>
+                                <rect x="28" y="0" width="3" height="20"/>
+                                <rect x="33" y="0" width="2" height="20"/>
+                                <rect x="37" y="0" width="1" height="20"/>
+                                <rect x="40" y="0" width="4" height="20"/>
+                                <rect x="46" y="0" width="2" height="20"/>
+                                <rect x="50" y="0" width="1" height="20"/>
+                                <rect x="53" y="0" width="3" height="20"/>
+                                <rect x="58" y="0" width="2" height="20"/>
+                                <rect x="62" y="0" width="4" height="20"/>
+                                <rect x="68" y="0" width="1" height="20"/>
+                                <rect x="71" y="0" width="2" height="20"/>
+                                <rect x="75" y="0" width="3" height="20"/>
+                                <rect x="80" y="0" width="1" height="20"/>
+                                <rect x="83" y="0" width="4" height="20"/>
+                                <rect x="89" y="0" width="2" height="20"/>
+                                <rect x="93" y="0" width="1" height="20"/>
+                                <rect x="96" y="0" width="3" height="20"/>
+                                <rect x="101" y="0" width="2" height="20"/>
+                                <rect x="105" y="0" width="4" height="20"/>
+                                <rect x="111" y="0" width="1" height="20"/>
+                                <rect x="114" y="0" width="2" height="20"/>
+                                <rect x="118" y="0" width="2" height="20"/>
+                            </svg>
+                            <span class="text-[5px] font-mono text-black font-bold tracking-widest mt-0.5">{{ substr($cleanCard, 0, 8) }} {{ substr($cleanCard, 8, 8) }}</span>
+                        </div>
+                    </div>
+
+                    {{-- Isi Kartu: Tanda Tangan, Ketentuan & QR Verifikasi Identitas --}}
                     <div class="my-auto py-1 flex items-center justify-between gap-3 sm:gap-4 relative z-10">
                         {{-- Kiri: Tanda Tangan & Ketentuan --}}
-                        <div class="flex-1 min-w-0 space-y-1.5">
+                        <div class="flex-1 min-w-0 space-y-1">
                             <div>
-                                <div class="text-[8px] text-white/60 font-medium mb-0.5">Tanda Tangan Pemegang Kartu:</div>
-                                <div class="flex items-center rounded-lg overflow-hidden border border-white/15 bg-white shadow-sm max-w-[190px] sm:max-w-[210px]">
-                                    <div class="flex-1 h-7 sm:h-8 bg-slate-50 flex items-center px-2.5">
-                                        <span class="font-signature text-sm sm:text-base text-slate-900 font-bold select-none truncate">
+                                <div class="text-[7px] sm:text-[7.5px] text-white/60 font-medium mb-0.5 flex items-center justify-between">
+                                    <span>Tanda Tangan Pemegang Sah:</span>
+                                    <span class="font-mono text-[6.5px] text-emerald-400 font-bold">NIA: {{ $user->profile?->nia ?? 'SMCK-1950' }}</span>
+                                </div>
+                                <div class="flex items-center rounded-lg overflow-hidden border border-white/20 bg-white shadow-sm max-w-[190px] sm:max-w-[220px]">
+                                    <div class="flex-1 h-6 sm:h-7 bg-slate-50 flex items-center px-2">
+                                        <span class="font-signature text-xs sm:text-sm text-slate-900 font-bold select-none truncate">
                                             {{ $user->name }}
                                         </span>
                                     </div>
-                                    <div class="px-2 h-7 sm:h-8 bg-emerald-600/15 border-l border-emerald-500/30 flex items-center justify-center">
-                                        <span class="text-[7px] sm:text-[8px] font-bold text-emerald-600 uppercase tracking-wider">
-                                            RESMI
+                                    <div class="px-2 h-6 sm:h-7 bg-emerald-700 text-white flex items-center justify-center">
+                                        <span class="text-[6.5px] sm:text-[7px] font-black uppercase tracking-wider">
+                                            SAH
                                         </span>
                                     </div>
                                 </div>
                             </div>
 
-                            <div class="flex items-center gap-2 text-[8px] font-mono text-white/70">
-                                <div>NIA: <strong class="text-smeck-gold">{{ $user->profile?->nia ?? 'SMCK-2024-1950' }}</strong></div>
-                                <span>•</span>
-                                <div>Basis: <strong class="text-white">{{ $user->chapter?->name ?? 'Medan Kota' }}</strong></div>
-                            </div>
-
-                            <div class="text-[7px] sm:text-[8px] text-white/50 leading-tight space-y-0.5">
-                                <div>• Bukti keanggotaan sah SMeCK Hooligan {{ $user->chapter?->name ? '('.$user->chapter->name.')' : '' }}.</div>
-                                <div>• Tunjukkan saat presensi dan penukaran tiket di stadion.</div>
-                                <div>• Jika menemukan kartu ini, harap hubungi Pengurus {{ $user->chapter?->name ?? 'Chapter' }}.</div>
+                            <div class="text-[6.5px] sm:text-[7px] text-white/60 leading-tight space-y-0.5">
+                                <div class="font-bold text-amber-300 uppercase tracking-wider">
+                                    MAKLUMAT KARTU & KETENTUAN SUPORTER:
+                                </div>
+                                <div>• Identitas resmi anggota terdaftar SMeCK Hooligan & uang elektronik Mandiri e-money.</div>
+                                <div>• Wajib menjaga nama baik organisasi, persaudaraan tribun, dan ikrar <em>Salam Sada Roha</em>.</div>
+                                <div>• Saldo tersimpan pada chip kartu. Hubungi Pengurus Chapter atau Mandiri 14000 jika kartu hilang.</div>
                             </div>
                         </div>
 
-                        {{-- Kanan: QR Presensi --}}
+                        {{-- Kanan: Box QR Verifikasi Digital --}}
                         <div class="shrink-0 flex flex-col items-center">
-                            <div class="p-1.5 rounded-xl bg-white/[0.04] border border-white/15 text-center flex flex-col items-center">
-                                <div class="text-[7px] font-bold text-emerald-400 uppercase tracking-wider mb-0.5 flex items-center gap-1">
-                                    <i class="fa-solid fa-qrcode text-[7px]"></i> QR Presensi
+                            <div class="p-1.5 rounded-xl bg-black/50 border border-emerald-500/30 text-center flex flex-col items-center shadow-lg">
+                                <div class="text-[6.5px] font-bold text-emerald-400 uppercase tracking-wider mb-0.5 flex items-center gap-1">
+                                    <i class="fa-solid fa-id-card-clip text-[6.5px]"></i>
+                                    <span>VERIFIKASI DIGITAL</span>
                                 </div>
-                                <div class="w-16 h-16 sm:w-18 sm:h-18 bg-white rounded-lg p-1 flex items-center justify-center shadow">
+                                <div class="w-14 h-14 sm:w-16 sm:h-16 bg-white rounded-lg p-1 flex items-center justify-center shadow">
                                     <div id="modal-dynamic-qr" class="w-full h-full flex items-center justify-center">
                                         <svg class="w-full h-full" viewBox="0 0 100 100" fill="none">
                                             <rect width="100" height="100" fill="white"/>
@@ -983,16 +1081,19 @@
                                         </svg>
                                     </div>
                                 </div>
-                                <div class="text-[6px] text-white/50 font-mono mt-0.5">Pintu Masuk</div>
+                                <div class="text-[5.5px] text-emerald-400 font-bold uppercase tracking-wider mt-0.5">
+                                    SCAN CEK KEASLIAN
+                                </div>
                             </div>
                         </div>
                     </div>
 
                     {{-- Footer Belakang --}}
-                    <div class="pt-1.5 border-t border-white/10 flex items-center justify-between text-[7px] sm:text-[8px] relative z-10">
+                    <div class="pt-1 border-t border-white/10 flex items-center justify-between text-[6.5px] sm:text-[7.5px] relative z-10">
                         <div class="flex items-center gap-1.5 text-white/60">
-                            <i class="fa-solid fa-phone text-emerald-400 text-[8px]"></i>
-                            <span>Pengurus {{ $user->chapter?->name ?? 'Chapter' }}: <strong class="text-white font-mono">{{ $user->profile?->emergency_contact_number ?? '0812-6543-2199' }}</strong></span>
+                            <span>Pengurus Basis: <strong class="text-white font-mono">{{ $user->profile?->emergency_contact_number ?? '0812-6543-2199' }}</strong></span>
+                            <span>•</span>
+                            <span>Mandiri: <strong class="text-amber-300 font-mono">14000</strong></span>
                         </div>
                         <div class="text-right">
                             <span class="font-display font-bold text-smeck-gold tracking-wider">"SALAM SADA ROHA"</span>
@@ -1131,78 +1232,130 @@
         
         {{-- Pita Magnetik Atas --}}
         <div>
-            <div style="height: 72px; background: #18181b; border-bottom: 2px solid rgba(255,255,255,0.15); display: flex; align-items: center; justify-content: space-between; padding: 0 44px;">
-                <span style="font-size: 18px; font-family: monospace; letter-spacing: 3px; color: rgba(255,255,255,0.7); text-transform: uppercase;">
-                    KARTU TANDA ANGGOTA DIGITAL • {{ strtoupper($user->chapter?->name ?? 'CHAPTER SMECK HOOLIGAN') }}
+            <div style="height: 64px; background: #18181b; border-bottom: 2px solid rgba(255,255,255,0.15); display: flex; align-items: center; justify-content: space-between; padding: 0 44px;">
+                <span style="font-size: 17px; font-family: monospace; letter-spacing: 3px; color: rgba(255,255,255,0.7); text-transform: uppercase;">
+                    KARTU ANGGOTA RESMI • CO-BRANDING MANDIRI E-MONEY
                 </span>
-                <span style="font-size: 20px; font-weight: 900; color: #fbbf24; letter-spacing: 2px;">
-                    SADA ROHA
+                <span style="font-size: 19px; font-weight: 900; color: #fbbf24; letter-spacing: 2px;">
+                    SALAM SADA ROHA
                 </span>
             </div>
-            <div style="height: 34px; background: rgba(0,0,0,0.5); border-bottom: 1px solid rgba(255,255,255,0.08); display: flex; align-items: center; justify-content: space-between; padding: 0 44px; font-size: 15px;">
-                <div style="color: #4ade80; font-weight: 700; display: flex; align-items: center; gap: 8px;">
-                    <span>✓</span> <span>Suporter Resmi PSMS Medan</span>
+            <div style="height: 34px; background: rgba(0,0,0,0.6); border-bottom: 1.5px solid rgba(255,255,255,0.08); display: flex; align-items: center; justify-content: space-between; padding: 0 44px; font-size: 15px;">
+                <div style="color: #4ade80; font-weight: 800; display: flex; align-items: center; gap: 8px; text-transform: uppercase; letter-spacing: 1.5px;">
+                    <span>🛡️</span> <span>BASIS: {{ strtoupper($user->chapter?->name ?? 'CHAPTER MEDAN KOTA') }}</span>
                 </div>
-                <div style="color: rgba(255,255,255,0.5); font-family: monospace;">
-                    <span>NFC Terhubung</span>
+                <div style="color: #fbbf24; font-family: monospace; font-weight: 700;">
+                    <span>NFC CHIP ACTIVE</span>
                 </div>
             </div>
         </div>
 
-        {{-- Isi Kartu: Tanda Tangan, Ketentuan & QR Presensi --}}
-        <div style="padding: 24px 44px; display: flex; align-items: center; justify-content: space-between; gap: 30px; margin: auto 0;">
-            {{-- Kiri --}}
-            <div style="flex: 1; min-width: 0;">
-                <div style="font-size: 16px; color: rgba(255,255,255,0.6); font-weight: 600; margin-bottom: 8px;">
-                    Tanda Tangan Pemegang Kartu:
+        {{-- Baris Nomor Kartu 16 Digit & Barcode e-money --}}
+        <div style="margin: 0 44px; padding: 12px 24px; background: rgba(255,255,255,0.05); border: 1.5px solid rgba(255,255,255,0.12); border-radius: 16px; display: flex; align-items: center; justify-content: space-between;">
+            <div>
+                <div style="font-size: 13px; font-family: monospace; color: rgba(255,255,255,0.5); text-transform: uppercase; letter-spacing: 2px;">
+                    NOMOR KARTU MANDIRI E-MONEY:
                 </div>
-                <div style="display: flex; align-items: center; width: 440px; height: 70px; background: #ffffff; border-radius: 12px; overflow: hidden; border: 2px solid rgba(255,255,255,0.2);">
-                    <div style="flex: 1; height: 100%; background: #f8fafc; display: flex; align-items: center; padding: 0 20px;">
-                        <span style="font-family: 'Caveat', cursive, sans-serif; font-size: 38px; font-weight: 700; color: #0f172a; white-space: nowrap; overflow: hidden; text-overflow: ellipsis;">
-                            {{ $user->name }}
-                        </span>
-                    </div>
-                    <div style="padding: 0 16px; height: 100%; background: rgba(22,163,74,0.15); border-left: 2px solid rgba(22,163,74,0.3); display: flex; align-items: center; justify-content: center;">
-                        <span style="font-size: 16px; font-weight: 900; color: #16a34a; letter-spacing: 2px;">
-                            RESMI
-                        </span>
-                    </div>
-                </div>
-
-                <div style="display: flex; align-items: center; gap: 16px; font-size: 18px; font-family: monospace; color: rgba(255,255,255,0.8); margin-top: 14px;">
-                    <div>NIA: <strong style="color: #fbbf24;">{{ $user->profile?->nia ?? 'SMCK-2024-1950' }}</strong></div>
-                    <span>•</span>
-                    <div>Basis: <strong style="color: #ffffff;">{{ $user->chapter?->name ?? 'Medan Kota' }}</strong></div>
-                </div>
-
-                <div style="font-size: 15px; color: rgba(255,255,255,0.6); line-height: 1.6; margin-top: 12px;">
-                    <div>• Bukti keanggotaan sah SMeCK Hooligan {{ $user->chapter?->name ? '('.$user->chapter->name.')' : '' }}.</div>
-                    <div>• Tunjukkan saat presensi dan penukaran tiket di stadion.</div>
-                    <div>• Jika menemukan kartu ini, harap hubungi Pengurus {{ $user->chapter?->name ?? 'Chapter' }}.</div>
+                <div style="font-size: 24px; font-family: monospace; font-weight: 900; color: #fbbf24; letter-spacing: 3px; margin-top: 2px;">
+                    {{ $formattedCard }}
                 </div>
             </div>
 
-            {{-- Kanan: QR Presensi --}}
-            <div style="width: 210px; background: rgba(255,255,255,0.05); border: 2px solid rgba(255,255,255,0.15); border-radius: 20px; padding: 16px; text-align: center; box-sizing: border-box; display: flex; flex-direction: column; align-items: center;">
-                <div style="font-size: 14px; font-weight: 800; color: #4ade80; text-transform: uppercase; letter-spacing: 2px; margin-bottom: 8px;">
-                    QR Presensi
+            {{-- Barcode Retail Scan --}}
+            <div style="background: #ffffff; padding: 4px 14px; border-radius: 8px; display: flex; flex-direction: column; align-items: center; box-shadow: 0 4px 12px rgba(0,0,0,0.4);">
+                <svg width="220" height="34" viewBox="0 0 120 20" fill="black" xmlns="http://www.w3.org/2000/svg">
+                    <rect x="0" y="0" width="2" height="20"/>
+                    <rect x="4" y="0" width="1" height="20"/>
+                    <rect x="7" y="0" width="3" height="20"/>
+                    <rect x="12" y="0" width="1" height="20"/>
+                    <rect x="15" y="0" width="2" height="20"/>
+                    <rect x="19" y="0" width="4" height="20"/>
+                    <rect x="25" y="0" width="1" height="20"/>
+                    <rect x="28" y="0" width="3" height="20"/>
+                    <rect x="33" y="0" width="2" height="20"/>
+                    <rect x="37" y="0" width="1" height="20"/>
+                    <rect x="40" y="0" width="4" height="20"/>
+                    <rect x="46" y="0" width="2" height="20"/>
+                    <rect x="50" y="0" width="1" height="20"/>
+                    <rect x="53" y="0" width="3" height="20"/>
+                    <rect x="58" y="0" width="2" height="20"/>
+                    <rect x="62" y="0" width="4" height="20"/>
+                    <rect x="68" y="0" width="1" height="20"/>
+                    <rect x="71" y="0" width="2" height="20"/>
+                    <rect x="75" y="0" width="3" height="20"/>
+                    <rect x="80" y="0" width="1" height="20"/>
+                    <rect x="83" y="0" width="4" height="20"/>
+                    <rect x="89" y="0" width="2" height="20"/>
+                    <rect x="93" y="0" width="1" height="20"/>
+                    <rect x="96" y="0" width="3" height="20"/>
+                    <rect x="101" y="0" width="2" height="20"/>
+                    <rect x="105" y="0" width="4" height="20"/>
+                    <rect x="111" y="0" width="1" height="20"/>
+                    <rect x="114" y="0" width="2" height="20"/>
+                    <rect x="118" y="0" width="2" height="20"/>
+                </svg>
+                <span style="font-size: 11px; font-family: monospace; color: #000; font-weight: 800; letter-spacing: 2px;">{{ substr($cleanCard, 0, 8) }} {{ substr($cleanCard, 8, 8) }}</span>
+            </div>
+        </div>
+
+        {{-- Isi Kartu: Tanda Tangan, Ketentuan & QR Verifikasi Identitas --}}
+        <div style="padding: 14px 44px; display: flex; align-items: center; justify-content: space-between; gap: 30px; margin: auto 0;">
+            {{-- Kiri: Tanda Tangan & Ketentuan --}}
+            <div style="flex: 1; min-width: 0;">
+                <div style="display: flex; align-items: center; justify-content: space-between; max-width: 440px; margin-bottom: 6px;">
+                    <div style="font-size: 15px; color: rgba(255,255,255,0.7); font-weight: 600;">
+                        Tanda Tangan Pemegang Sah:
+                    </div>
+                    <div style="font-size: 15px; font-family: monospace; color: #4ade80; font-weight: 800;">
+                        NIA: {{ $user->profile?->nia ?? 'SMCK-1950' }}
+                    </div>
                 </div>
-                <div style="width: 150px; height: 150px; background: #ffffff; border-radius: 12px; padding: 8px; box-sizing: border-box; display: flex; align-items: center; justify-content: center; box-shadow: 0 4px 12px rgba(0,0,0,0.3);">
+                <div style="display: flex; align-items: center; width: 440px; height: 64px; background: #ffffff; border-radius: 12px; overflow: hidden; border: 2px solid rgba(255,255,255,0.2);">
+                    <div style="flex: 1; height: 100%; background: #f8fafc; display: flex; align-items: center; padding: 0 20px;">
+                        <span style="font-family: 'Caveat', cursive, sans-serif; font-size: 34px; font-weight: 700; color: #0f172a; white-space: nowrap; overflow: hidden; text-overflow: ellipsis;">
+                            {{ $user->name }}
+                        </span>
+                    </div>
+                    <div style="padding: 0 18px; height: 100%; background: #15803d; color: #ffffff; display: flex; align-items: center; justify-content: center;">
+                        <span style="font-size: 15px; font-weight: 900; letter-spacing: 2px;">
+                            SAH
+                        </span>
+                    </div>
+                </div>
+
+                <div style="font-size: 13.5px; color: rgba(255,255,255,0.7); line-height: 1.6; margin-top: 12px;">
+                    <div style="font-weight: 800; color: #fbbf24; text-transform: uppercase; letter-spacing: 1.5px; margin-bottom: 2px;">
+                        MAKLUMAT KARTU & KETENTUAN SUPORTER:
+                    </div>
+                    <div>• Identitas resmi anggota terdaftar SMeCK Hooligan & uang elektronik Mandiri e-money.</div>
+                    <div>• Wajib menjaga nama baik organisasi, persaudaraan tribun, dan ikrar <em>Salam Sada Roha</em>.</div>
+                    <div>• Saldo tersimpan pada chip kartu. Hubungi Pengurus Chapter atau Mandiri 14000 jika kartu hilang.</div>
+                </div>
+            </div>
+
+            {{-- Kanan: Box QR Verifikasi Digital --}}
+            <div style="width: 210px; background: rgba(0,0,0,0.5); border: 2px solid rgba(74,222,128,0.3); border-radius: 20px; padding: 14px; text-align: center; box-sizing: border-box; display: flex; flex-direction: column; align-items: center; box-shadow: 0 8px 24px rgba(0,0,0,0.5);">
+                <div style="font-size: 13px; font-weight: 900; color: #4ade80; text-transform: uppercase; letter-spacing: 1.5px; margin-bottom: 8px;">
+                    VERIFIKASI DIGITAL
+                </div>
+                <div style="width: 145px; height: 145px; background: #ffffff; border-radius: 12px; padding: 8px; box-sizing: border-box; display: flex; align-items: center; justify-content: center; box-shadow: 0 4px 12px rgba(0,0,0,0.3);">
                     <div id="export-dynamic-qr" style="width: 100%; height: 100%; display: flex; align-items: center; justify-content: center;"></div>
                 </div>
-                <div style="font-size: 13px; color: rgba(255,255,255,0.5); font-family: monospace; margin-top: 8px;">
-                    Pintu Masuk Stadion
+                <div style="font-size: 11px; color: #4ade80; font-weight: 800; text-transform: uppercase; letter-spacing: 1px; margin-top: 8px;">
+                    SCAN CEK KEASLIAN
                 </div>
             </div>
         </div>
 
         {{-- Footer Belakang --}}
-        <div style="height: 60px; border-top: 2px solid rgba(255,255,255,0.15); padding: 0 44px; display: flex; align-items: center; justify-content: space-between; font-size: 16px;">
-            <div style="color: rgba(255,255,255,0.7);">
-                Pengurus {{ $user->chapter?->name ?? 'Chapter' }}: <strong style="color: #ffffff; font-family: monospace;">{{ $user->profile?->emergency_contact_number ?? '0812-6543-2199' }}</strong>
+        <div style="height: 52px; border-top: 2px solid rgba(255,255,255,0.15); padding: 0 44px; display: flex; align-items: center; justify-content: space-between; font-size: 15px;">
+            <div style="color: rgba(255,255,255,0.7); display: flex; align-items: center; gap: 12px;">
+                <span>Pengurus Basis: <strong style="color: #ffffff; font-family: monospace;">{{ $user->profile?->emergency_contact_number ?? '0812-6543-2199' }}</strong></span>
+                <span>•</span>
+                <span>Mandiri: <strong style="color: #fbbf24; font-family: monospace;">14000</strong></span>
             </div>
             <div style="font-weight: 900; color: #fbbf24; letter-spacing: 2px;">
-                "SALAM SADA ROHA"
+                "AYAM KINANTAN JUARA"
             </div>
         </div>
     </div>
@@ -1596,95 +1749,121 @@
             ctx.stroke();
 
             ctx.fillStyle = 'rgba(255, 255, 255, 0.8)';
-            ctx.font = 'bold 18px monospace';
-            ctx.fillText("KARTU TANDA ANGGOTA DIGITAL • {{ strtoupper($user->chapter?->name ?? 'CHAPTER SMECK HOOLIGAN') }}", 40, 45);
+            ctx.font = 'bold 17px monospace';
+            ctx.fillText("KARTU ANGGOTA RESMI • CO-BRANDING MANDIRI E-MONEY", 40, 45);
 
             ctx.textAlign = 'right';
             ctx.fillStyle = '#fbbf24';
-            ctx.font = '900 20px sans-serif';
-            ctx.fillText('SADA ROHA', 976, 45);
+            ctx.font = '900 19px sans-serif';
+            ctx.fillText('SALAM SADA ROHA', 976, 45);
             ctx.textAlign = 'left';
 
-            ctx.fillStyle = 'rgba(0, 0, 0, 0.4)';
+            ctx.fillStyle = 'rgba(0, 0, 0, 0.6)';
             ctx.fillRect(0, 75, 1016, 35);
             ctx.fillStyle = '#4ade80';
-            ctx.font = 'bold 14px sans-serif';
-            ctx.fillText('✓ Suporter Resmi PSMS Medan', 40, 98);
+            ctx.font = 'bold 15px sans-serif';
+            ctx.fillText("🛡️ BASIS: {{ strtoupper($user->chapter?->name ?? 'CHAPTER MEDAN KOTA') }}", 40, 98);
 
             ctx.textAlign = 'right';
-            ctx.fillStyle = 'rgba(255, 255, 255, 0.5)';
-            ctx.font = '14px monospace';
-            ctx.fillText('NFC Terhubung', 976, 98);
+            ctx.fillStyle = '#fbbf24';
+            ctx.font = 'bold 14px monospace';
+            ctx.fillText('NFC CHIP ACTIVE', 976, 98);
             ctx.textAlign = 'left';
 
-            ctx.fillStyle = 'rgba(255, 255, 255, 0.6)';
-            ctx.font = '16px sans-serif';
-            ctx.fillText('Tanda Tangan Pemegang Kartu:', 48, 175);
+            // Baris Nomor Kartu 16 Digit & Barcode
+            ctx.fillStyle = 'rgba(255, 255, 255, 0.05)';
+            ctx.beginPath();
+            ctx.roundRect(40, 125, 936, 60, 12);
+            ctx.fill();
+
+            ctx.fillStyle = 'rgba(255, 255, 255, 0.5)';
+            ctx.font = '12px monospace';
+            ctx.fillText('NOMOR KARTU MANDIRI E-MONEY:', 60, 148);
+
+            ctx.fillStyle = '#fbbf24';
+            ctx.font = 'bold 22px monospace';
+            ctx.fillText("{{ $formattedCard }}", 60, 172);
+
+            // Barcode box
+            ctx.fillStyle = '#ffffff';
+            ctx.beginPath();
+            ctx.roundRect(750, 133, 210, 44, 8);
+            ctx.fill();
+            ctx.fillStyle = '#000000';
+            ctx.font = '11px monospace';
+            ctx.fillText("||| | |||| | ||| || |||", 785, 155);
+            ctx.font = '9px monospace';
+            ctx.fillText("{{ substr($cleanCard, 0, 8) }} {{ substr($cleanCard, 8, 8) }}", 780, 170);
+
+            // Tanda Tangan
+            ctx.fillStyle = 'rgba(255, 255, 255, 0.7)';
+            ctx.font = '15px sans-serif';
+            ctx.fillText('Tanda Tangan Pemegang Sah:', 48, 220);
 
             ctx.fillStyle = '#ffffff';
             ctx.beginPath();
-            ctx.roundRect(48, 190, 440, 70, 12);
+            ctx.roundRect(48, 230, 440, 64, 12);
             ctx.fill();
 
             ctx.fillStyle = '#0f172a';
-            ctx.font = 'bold 36px Caveat, cursive, sans-serif';
-            ctx.fillText("{{ $user->name }}", 70, 240);
+            ctx.font = 'bold 34px Caveat, cursive, sans-serif';
+            ctx.fillText("{{ $user->name }}", 70, 275);
 
-            ctx.fillStyle = '#16a34a';
+            ctx.fillStyle = '#15803d';
             ctx.font = '900 16px sans-serif';
-            ctx.fillText('RESMI', 410, 235);
+            ctx.fillText('SAH', 430, 270);
 
             ctx.fillStyle = '#fbbf24';
             ctx.font = 'bold 18px monospace';
-            ctx.fillText("NIA: {{ $user->profile?->nia ?? 'SMCK-2024-1950' }}", 48, 305);
+            ctx.fillText("NIA: {{ $user->profile?->nia ?? 'SMCK-1950' }}", 48, 325);
 
-            ctx.fillStyle = '#ffffff';
-            ctx.font = '18px sans-serif';
-            ctx.fillText("• Basis: {{ $user->chapter?->name ?? 'Medan Kota' }}", 310, 305);
+            ctx.fillStyle = '#fbbf24';
+            ctx.font = 'bold 14px sans-serif';
+            ctx.fillText("MAKLUMAT KARTU & KETENTUAN SUPORTER:", 48, 365);
 
-            ctx.fillStyle = 'rgba(255, 255, 255, 0.6)';
-            ctx.font = '16px sans-serif';
-            ctx.fillText("• Bukti keanggotaan sah SMeCK Hooligan {{ $user->chapter?->name ? '('.$user->chapter->name.')' : '' }}.", 48, 360);
-            ctx.fillText("• Tunjukkan kartu saat presensi dan penukaran tiket di stadion.", 48, 395);
-            ctx.fillText("• Jika menemukan kartu ini, harap hubungi Pengurus {{ $user->chapter?->name ?? 'Chapter' }}.", 48, 430);
+            ctx.fillStyle = 'rgba(255, 255, 255, 0.7)';
+            ctx.font = '13.5px sans-serif';
+            ctx.fillText("• Identitas resmi anggota terdaftar SMeCK Hooligan & uang elektronik Mandiri e-money.", 48, 395);
+            ctx.fillText("• Wajib menjaga nama baik organisasi, persaudaraan tribun, dan ikrar Salam Sada Roha.", 48, 425);
+            ctx.fillText("• Saldo tersimpan pada chip kartu. Hubungi Pengurus Chapter atau Mandiri 14000 jika kartu hilang.", 48, 455);
 
             ctx.strokeStyle = 'rgba(255, 255, 255, 0.15)';
             ctx.lineWidth = 2;
             ctx.beginPath();
-            ctx.moveTo(48, 560);
-            ctx.lineTo(968, 560);
+            ctx.moveTo(48, 570);
+            ctx.lineTo(968, 570);
             ctx.stroke();
 
             ctx.fillStyle = 'rgba(255, 255, 255, 0.7)';
-            ctx.font = '16px sans-serif';
-            ctx.fillText("Pengurus {{ $user->chapter?->name ?? 'Chapter' }}: {{ $user->profile?->emergency_contact_number ?? '0812-6543-2199' }}", 48, 600);
+            ctx.font = '15px sans-serif';
+            ctx.fillText("Pengurus Basis: {{ $user->profile?->emergency_contact_number ?? '0812-6543-2199' }}   •   Mandiri: 14000", 48, 605);
 
             ctx.textAlign = 'right';
             ctx.fillStyle = '#fbbf24';
-            ctx.font = '900 18px sans-serif';
-            ctx.fillText('"SALAM SADA ROHA"', 968, 600);
+            ctx.font = '900 17px sans-serif';
+            ctx.fillText('"AYAM KINANTAN JUARA"', 968, 605);
             ctx.textAlign = 'left';
 
-            ctx.fillStyle = 'rgba(255, 255, 255, 0.05)';
+            ctx.fillStyle = 'rgba(0, 0, 0, 0.5)';
             ctx.beginPath();
-            ctx.roundRect(740, 160, 228, 290, 20);
+            ctx.roundRect(740, 220, 228, 280, 20);
             ctx.fill();
-            ctx.strokeStyle = 'rgba(255, 255, 255, 0.15)';
+            ctx.strokeStyle = 'rgba(74, 222, 128, 0.3)';
             ctx.lineWidth = 2;
             ctx.stroke();
 
             ctx.fillStyle = '#4ade80';
-            ctx.font = '800 16px sans-serif';
-            ctx.fillText('QR PRESENSI', 795, 200);
+            ctx.font = '800 14px sans-serif';
+            ctx.fillText('VERIFIKASI DIGITAL', 785, 250);
 
             const qrImg = document.querySelector('#export-dynamic-qr img, #dynamic-kta-qr img, #modal-dynamic-qr img');
             if (qrImg && qrImg.src) {
                 const img = new Image();
                 img.onload = () => {
-                    ctx.drawImage(img, 764, 220, 180, 180);
-                    ctx.fillStyle = 'rgba(255, 255, 255, 0.5)';
-                    ctx.font = '14px monospace';
-                    ctx.fillText('Pintu Masuk Stadion', 785, 430);
+                    ctx.drawImage(img, 774, 265, 160, 160);
+                    ctx.fillStyle = '#4ade80';
+                    ctx.font = 'bold 11px sans-serif';
+                    ctx.fillText('SCAN CEK KEASLIAN', 795, 455);
                     callback(canvas.toDataURL('image/png', 1.0));
                 };
                 img.onerror = () => callback(canvas.toDataURL('image/png', 1.0));
