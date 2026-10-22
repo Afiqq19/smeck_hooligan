@@ -146,6 +146,18 @@
     if (file_exists($psmsPath)) {
         $psmsBase64 = 'data:image/png;base64,' . base64_encode(file_get_contents($psmsPath));
     }
+
+    $mandiriBase64 = '';
+    $mandiriPath = public_path('logoKTA/Bank_Mandiri_logo_2016.svg.webp');
+    if (file_exists($mandiriPath)) {
+        $mandiriBase64 = 'data:image/webp;base64,' . base64_encode(file_get_contents($mandiriPath));
+    }
+
+    $emoneyBase64 = '';
+    $emoneyPath = public_path('logoKTA/logo-mandiri-e-money-png-svg.webp');
+    if (file_exists($emoneyPath)) {
+        $emoneyBase64 = 'data:image/webp;base64,' . base64_encode(file_get_contents($emoneyPath));
+    }
 @endphp
 <div class="space-y-8 max-w-7xl mx-auto">
 
@@ -245,12 +257,8 @@
                             </div>
 
                             {{-- Brand Mandiri (Kanan Atas) --}}
-                            <div class="flex items-center gap-1.5 px-3 py-1.5 rounded-xl bg-white/10 backdrop-blur-md border border-white/20 shadow-md">
-                                <svg class="h-4 sm:h-5 w-auto" viewBox="0 0 100 28" fill="none" xmlns="http://www.w3.org/2000/svg">
-                                    <path d="M6 18 C12 8, 22 6, 28 8 C34 10, 36 16, 42 14" stroke="#f59e0b" stroke-width="3.5" stroke-linecap="round"/>
-                                    <path d="M11 20 C16 12, 24 10, 30 12 C36 14, 38 20, 44 18" stroke="#fbbf24" stroke-width="2" stroke-linecap="round"/>
-                                    <text x="46" y="20" fill="#ffffff" font-family="-apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif" font-weight="900" font-size="16" letter-spacing="-0.5">mandiri</text>
-                                </svg>
+                            <div class="flex items-center px-2.5 py-1 sm:px-3 sm:py-1.5 rounded-xl bg-white/95 backdrop-blur-md border border-white/60 shadow-md shrink-0">
+                                <img src="{{ $mandiriBase64 ?: asset('logoKTA/Bank_Mandiri_logo_2016.svg.webp') }}" alt="Bank Mandiri" class="h-3.5 sm:h-4.5 w-auto object-contain">
                             </div>
                         </div>
 
@@ -312,13 +320,8 @@
                                 <div class="text-white/60 text-base sm:text-lg" title="Contactless RFID/NFC">
                                     <i class="fa-solid fa-wifi rotate-90"></i>
                                 </div>
-                                <div class="bg-white px-2.5 py-1 sm:px-3 sm:py-1.5 rounded-lg shadow-lg border border-white/60 flex items-center justify-center">
-                                    <svg class="h-4 sm:h-5 w-auto" viewBox="0 0 85 24" fill="none" xmlns="http://www.w3.org/2000/svg">
-                                        <text x="2" y="17" fill="#002d62" font-family="-apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif" font-weight="900" font-size="15">e-</text>
-                                        <text x="18" y="17" fill="#002d62" font-family="-apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif" font-weight="900" font-size="15">money</text>
-                                        <path d="M20 5 C25 2, 30 2, 35 5 C40 8, 45 8, 50 5 C55 2, 60 2, 65 5 C70 8, 75 8, 80 5" stroke="#f59e0b" stroke-width="2.5" stroke-linecap="round"/>
-                                        <path d="M23 7.5 C28 4.5, 33 4.5, 38 7.5 C43 10.5, 48 10.5, 53 7.5 C58 4.5, 63 4.5, 68 7.5 C73 10.5, 78 10.5, 82 8" stroke="#ea580c" stroke-width="1.5" stroke-linecap="round"/>
-                                    </svg>
+                                <div class="bg-white px-2 py-1 sm:px-2.5 sm:py-1 rounded-xl shadow-lg border border-white/60 flex items-center justify-center overflow-hidden">
+                                    <img src="{{ $emoneyBase64 ?: asset('logoKTA/logo-mandiri-e-money-png-svg.webp') }}" alt="e-money" class="h-6 sm:h-7 w-auto object-contain rounded-md">
                                 </div>
                             </div>
                         </div>
@@ -818,12 +821,8 @@
                         </div>
 
                         {{-- Brand Mandiri (Kanan Atas) --}}
-                        <div class="flex items-center gap-1 px-2.5 py-1 rounded-xl bg-white/10 backdrop-blur-md border border-white/20 shadow-sm">
-                            <svg class="h-3.5 sm:h-4 w-auto" viewBox="0 0 100 28" fill="none" xmlns="http://www.w3.org/2000/svg">
-                                <path d="M6 18 C12 8, 22 6, 28 8 C34 10, 36 16, 42 14" stroke="#f59e0b" stroke-width="3.5" stroke-linecap="round"/>
-                                <path d="M11 20 C16 12, 24 10, 30 12 C36 14, 38 20, 44 18" stroke="#fbbf24" stroke-width="2" stroke-linecap="round"/>
-                                <text x="46" y="20" fill="#ffffff" font-family="-apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif" font-weight="900" font-size="16" letter-spacing="-0.5">mandiri</text>
-                            </svg>
+                        <div class="flex items-center px-2 py-0.5 sm:px-2.5 sm:py-1 rounded-xl bg-white/95 backdrop-blur-md border border-white/60 shadow-sm shrink-0">
+                            <img src="{{ $mandiriBase64 ?: asset('logoKTA/Bank_Mandiri_logo_2016.svg.webp') }}" alt="Bank Mandiri" class="h-3 sm:h-3.5 w-auto object-contain">
                         </div>
                     </div>
 
@@ -884,13 +883,8 @@
                             <div class="text-white/60 text-xs sm:text-sm" title="Contactless RFID/NFC">
                                 <i class="fa-solid fa-wifi rotate-90"></i>
                             </div>
-                            <div class="bg-white px-2 py-1 rounded-lg shadow-md border border-white/60 flex items-center justify-center">
-                                <svg class="h-3.5 sm:h-4 w-auto" viewBox="0 0 85 24" fill="none" xmlns="http://www.w3.org/2000/svg">
-                                    <text x="2" y="17" fill="#002d62" font-family="-apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif" font-weight="900" font-size="15">e-</text>
-                                    <text x="18" y="17" fill="#002d62" font-family="-apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif" font-weight="900" font-size="15">money</text>
-                                    <path d="M20 5 C25 2, 30 2, 35 5 C40 8, 45 8, 50 5 C55 2, 60 2, 65 5 C70 8, 75 8, 80 5" stroke="#f59e0b" stroke-width="2.5" stroke-linecap="round"/>
-                                    <path d="M23 7.5 C28 4.5, 33 4.5, 38 7.5 C43 10.5, 48 10.5, 53 7.5 C58 4.5, 63 4.5, 68 7.5 C73 10.5, 78 10.5, 82 8" stroke="#ea580c" stroke-width="1.5" stroke-linecap="round"/>
-                                </svg>
+                            <div class="bg-white px-1.5 py-0.5 sm:px-2 sm:py-1 rounded-lg shadow-md border border-white/60 flex items-center justify-center overflow-hidden">
+                                <img src="{{ $emoneyBase64 ?: asset('logoKTA/logo-mandiri-e-money-png-svg.webp') }}" alt="e-money" class="h-5 sm:h-6 w-auto object-contain rounded">
                             </div>
                         </div>
                     </div>
@@ -1071,12 +1065,8 @@
             </div>
 
             {{-- Brand Mandiri (Kanan Atas) --}}
-            <div style="display: flex; align-items: center; gap: 10px; background: rgba(255,255,255,0.12); padding: 8px 24px; border-radius: 16px; border: 1.5px solid rgba(255,255,255,0.25);">
-                <svg width="150" height="42" viewBox="0 0 100 28" fill="none" xmlns="http://www.w3.org/2000/svg">
-                    <path d="M6 18 C12 8, 22 6, 28 8 C34 10, 36 16, 42 14" stroke="#f59e0b" stroke-width="3.5" stroke-linecap="round"/>
-                    <path d="M11 20 C16 12, 24 10, 30 12 C36 14, 38 20, 44 18" stroke="#fbbf24" stroke-width="2" stroke-linecap="round"/>
-                    <text x="46" y="20" fill="#ffffff" font-family="-apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif" font-weight="900" font-size="16" letter-spacing="-0.5">mandiri</text>
-                </svg>
+            <div style="display: flex; align-items: center; background: rgba(255,255,255,0.95); padding: 6px 18px; border-radius: 14px; border: 1.5px solid rgba(255,255,255,0.8); box-shadow: 0 4px 16px rgba(0,0,0,0.3);">
+                <img src="{{ $mandiriBase64 ?: asset('logoKTA/Bank_Mandiri_logo_2016.svg.webp') }}" alt="Bank Mandiri" style="height: 34px; width: auto; object-fit: contain;">
             </div>
         </div>
 
@@ -1108,7 +1098,7 @@
             <div style="display: flex; align-items: center; gap: 24px;">
                 <div style="width: 120px; height: 120px; border-radius: 20px; border: 3px solid #fbbf24; background: #0f172a; overflow: hidden; display: flex; align-items: center; justify-content: center; box-shadow: 0 8px 24px rgba(0,0,0,0.5);">
                     @if($photoBase64)
-                        <img src="{{ $photoBase64 }}" alt="{{ $user->name }}" style="width: 100%; height: 100%; object-fit: cover;">
+                        <img src="{{ $photoBase64 }}" alt="{{ $user->name }}" style="width: 100%; height: 100%; object-fit: cover; object-position: center top;">
                     @else
                         <div style="width: 100%; height: 100%; background: linear-gradient(135deg, #064e3b, #022c22); display: flex; flex-direction: column; align-items: center; justify-content: center; color: #ffffff;">
                             <div style="font-size: 42px;">👤</div>
@@ -1138,13 +1128,8 @@
                         <path d="M12 3c-4.97 0-9 4.03-9 9 0 2.12.74 4.07 1.97 5.61L6.44 16.2C5.55 14.96 5 13.55 5 12c0-3.86 3.14-7 7-7s7 3.14 7 7c0 1.55-.55 2.96-1.44 4.2l1.47 1.41C20.26 16.07 21 14.12 21 12c0-4.97-4.03-9-9-9zm0 4c-2.76 0-5 2.24-5 5 0 1.25.46 2.39 1.22 3.28l1.44-1.44C9.25 13.37 9 12.71 9 12c0-1.65 1.35-3 3-3s3 1.35 3 3c0 .71-.25 1.37-.66 1.84l1.44 1.44C16.54 14.39 17 13.25 17 12c0-2.76-2.24-5-5-5zm0 4c-.55 0-1 .45-1 1s.45 1 1 1 1-.45 1-1-.45-1-1-1z"/>
                     </svg>
                 </div>
-                <div style="background: #ffffff; padding: 10px 24px; border-radius: 14px; box-shadow: 0 4px 16px rgba(0,0,0,0.3); border: 1.5px solid rgba(255,255,255,0.8); display: flex; align-items: center; justify-content: center;">
-                    <svg width="130" height="38" viewBox="0 0 85 24" fill="none" xmlns="http://www.w3.org/2000/svg">
-                        <text x="2" y="17" fill="#002d62" font-family="-apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif" font-weight="900" font-size="15">e-</text>
-                        <text x="18" y="17" fill="#002d62" font-family="-apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif" font-weight="900" font-size="15">money</text>
-                        <path d="M20 5 C25 2, 30 2, 35 5 C40 8, 45 8, 50 5 C55 2, 60 2, 65 5 C70 8, 75 8, 80 5" stroke="#f59e0b" stroke-width="2.5" stroke-linecap="round"/>
-                        <path d="M23 7.5 C28 4.5, 33 4.5, 38 7.5 C43 10.5, 48 10.5, 53 7.5 C58 4.5, 63 4.5, 68 7.5 C73 10.5, 78 10.5, 82 8" stroke="#ea580c" stroke-width="1.5" stroke-linecap="round"/>
-                    </svg>
+                <div style="background: #ffffff; padding: 6px 14px; border-radius: 14px; box-shadow: 0 4px 16px rgba(0,0,0,0.3); border: 1.5px solid rgba(255,255,255,0.8); display: flex; align-items: center; justify-content: center; overflow: hidden;">
+                    <img src="{{ $emoneyBase64 ?: asset('logoKTA/logo-mandiri-e-money-png-svg.webp') }}" alt="e-money" style="height: 52px; width: auto; object-fit: contain; border-radius: 8px;">
                 </div>
             </div>
         </div>
