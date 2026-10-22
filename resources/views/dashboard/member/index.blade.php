@@ -730,7 +730,7 @@
         <div class="p-4 sm:p-5 border-b border-white/10 shrink-0 bg-neutral-950/70 print-hide">
             <div class="flex items-center justify-between gap-3">
                 <div class="flex items-center gap-3 min-w-0">
-                    <div class="w-10 h-10 rounded-xl bg-amber-500/20 text-amber-400 flex items-center justify-center text-lg shrink-0 border border-amber-500/30">
+                    <div class="w-10 h-10 rounded-xl bg-emerald-500/20 text-emerald-400 flex items-center justify-center text-lg shrink-0 border border-emerald-500/30">
                         <i class="fa-solid fa-id-card"></i>
                     </div>
                     <div class="min-w-0">
@@ -785,14 +785,14 @@
                     {{-- Header Kartu Depan --}}
                     <div class="relative z-10 flex items-center justify-between">
                         <div class="flex items-center gap-2.5">
-                            <div class="w-9 h-9 sm:w-10 sm:h-10 rounded-xl overflow-hidden border border-amber-400/60 p-0.5 bg-black shrink-0 shadow">
+                            <div class="w-9 h-9 sm:w-10 sm:h-10 rounded-xl overflow-hidden border border-emerald-400/60 p-0.5 bg-black shrink-0 shadow">
                                 <img src="{{ $logoBase64 ?: asset('images/logo-crest.jpg') }}" alt="Logo" class="w-full h-full object-cover rounded-lg">
                             </div>
                             <div>
                                 <div class="font-display font-black text-xs sm:text-sm tracking-wider uppercase text-white leading-tight">
                                     SMeCK HOOLIGAN
                                 </div>
-                                <div class="text-[8px] sm:text-[9px] text-amber-400 font-bold uppercase tracking-widest">
+                                <div class="text-[8px] sm:text-[9px] text-emerald-300 font-bold uppercase tracking-widest">
                                     SUPORTER RESMI PSMS MEDAN
                                 </div>
                             </div>
@@ -987,7 +987,7 @@
                         <i class="fa-solid fa-download"></i>
                         <span>Unduh Belakang (PNG)</span>
                     </button>
-                    <button type="button" onclick="downloadBothKtaImages(this)" class="w-full sm:w-auto px-4 py-2.5 rounded-xl bg-gradient-to-r from-amber-500 to-amber-600 hover:from-amber-400 hover:to-amber-500 text-slate-950 font-black text-xs shadow-lg flex items-center justify-center gap-1.5 transition-all">
+                    <button type="button" onclick="downloadBothKtaImages(this)" class="w-full sm:w-auto px-4 py-2.5 rounded-xl bg-gradient-to-r from-emerald-600 via-teal-600 to-emerald-700 hover:from-emerald-500 hover:to-teal-500 text-white font-bold text-xs shadow-lg border border-emerald-400/30 flex items-center justify-center gap-1.5 transition-all">
                         <i class="fa-solid fa-layer-group"></i>
                         <span>Unduh Sepasang (PNG)</span>
                     </button>
