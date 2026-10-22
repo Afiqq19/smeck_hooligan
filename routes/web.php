@@ -125,6 +125,8 @@ Route::middleware(['auth', 'role:super_admin'])->prefix('superadmin')->name('sup
     // 3. Master Chapter Wilayah
     Route::get('/chapters', [SuperAdminDashboardController::class, 'chapters'])->name('chapters');
     Route::post('/chapters', [SuperAdminDashboardController::class, 'storeChapter'])->name('chapters.store');
+    Route::post('/chapters/{id}/update', [SuperAdminDashboardController::class, 'updateChapter'])->name('chapters.update');
+    Route::delete('/chapters/{id}', [SuperAdminDashboardController::class, 'deleteChapter'])->name('chapters.delete');
 
     // 4. KTA NFC Issuing & Batch Print Preview
     Route::get('/nfc-activation', [SuperAdminDashboardController::class, 'nfcActivation'])->name('nfc');
@@ -132,9 +134,12 @@ Route::middleware(['auth', 'role:super_admin'])->prefix('superadmin')->name('sup
     Route::post('/nfc/toggle/{cardId}', [SuperAdminDashboardController::class, 'toggleCardStatus'])->name('nfc.toggle');
     Route::post('/nfc/replace/{userId}', [SuperAdminDashboardController::class, 'replaceCard'])->name('nfc.replace');
 
-    // 5. Tiket Pertandingan & Alokasi Quota
+    // 5. Tiket Pertandingan, Kuota Suporter & Posko Gelang Tribun
     Route::get('/tickets', [SuperAdminDashboardController::class, 'ticketDistribution'])->name('tickets');
     Route::post('/tickets/match', [SuperAdminDashboardController::class, 'storeMatch'])->name('tickets.match');
+    Route::post('/tickets/match/{id}/update', [SuperAdminDashboardController::class, 'updateMatch'])->name('tickets.match.update');
+    Route::post('/tickets/orders/{id}/exchange', [SuperAdminDashboardController::class, 'exchangeWristband'])->name('tickets.exchange');
+    Route::post('/tickets/orders/{id}/undo', [SuperAdminDashboardController::class, 'undoWristband'])->name('tickets.undo');
     Route::post('/tickets/allocate', [SuperAdminDashboardController::class, 'storeTicketAllocation'])->name('tickets.allocate');
 
     // 6. Galeri Koreo & Dokumentasi Nasional

@@ -15,6 +15,7 @@ use App\Models\NfcCard;
 use App\Models\SmeckPartner;
 use App\Models\StoreProduct;
 use App\Models\TicketAllocation;
+use App\Models\TicketOrder;
 use App\Models\User;
 use App\Models\VoluntaryDue;
 use App\Services\PtLibScraperService;
@@ -232,6 +233,45 @@ class SuperAdminDashboardController extends Controller
     }
 
     /**
+     * Edit / Perbarui Data Chapter Basis Wilayah.
+     */
+    public function updateChapter(Request $request, int $id): RedirectResponse
+    {
+        $chapter = Chapter::findOrFail($id);
+
+        $validated = $request->validate([
+            'name' => ['required', 'string', 'max:255'],
+            'region_code' => ['required', 'string', 'max:20', 'unique:chapters,region_code,' . $id],
+            'leader_name' => ['required', 'string', 'max:255'],
+            'basecamp_address' => ['required', 'string'],
+            'is_active' => ['nullable', 'boolean'],
+        ]);
+
+        $validated['is_active'] = $request->has('is_active') ? $request->boolean('is_active') : true;
+
+        $chapter->update($validated);
+
+        return back()->with('success', "Data Basis / Chapter '{$chapter->name}' berhasil diperbarui!");
+    }
+
+    /**
+     * Hapus Chapter Basis Wilayah.
+     */
+    public function deleteChapter(int $id): RedirectResponse
+    {
+        $chapter = Chapter::withCount('users')->findOrFail($id);
+
+        if ($chapter->users_count > 0) {
+            $chapter->update(['is_active' => false]);
+            return back()->with('info', "Basis '{$chapter->name}' memiliki {$chapter->users_count} anggota. Status basis telah dinonaktifkan.");
+        }
+
+        $chapter->delete();
+
+        return back()->with('success', "Basis / Chapter '{$chapter->name}' berhasil dihapus.");
+    }
+
+    /**
      * Cetak & Aktivasi Kartu NFC (Tautkan UID fisik ke akun anggota).
      */
     public function nfcActivation(): View
@@ -357,15 +397,120 @@ class SuperAdminDashboardController extends Controller
     }
 
     /**
-     * [Prompt 6] Distribusi Tiket Pertandingan ke Chapter.
+     * Manajemen Kuota Tiket Suporter & Posko Penukaran Gelang Stadion.
      */
-    public function ticketDistribution(): View
+    public function ticketDistribution(Request $request): View
     {
-        $matches = MatchTicket::latest()->get();
+        $matches = MatchTicket::withCount('orders')->latest()->get();
         $chapters = Chapter::where('is_active', true)->get();
         $allocations = TicketAllocation::with('matchTicket', 'chapter')->latest()->get();
 
-        return view('dashboard.superadmin.tickets', compact('matches', 'chapters', 'allocations'));
+        $query = TicketOrder::with(['matchTicket', 'user.profile', 'chapter'])->latest();
+
+        if ($search = $request->get('search')) {
+            $query->where(function ($q) use ($search) {
+                $q->where('seat_number', 'like', "%{$search}%")
+                    ->orWhereHas('user', function ($uq) use ($search) {
+                        $uq->where('name', 'like', "%{$search}%")
+                            ->orWhere('email', 'like', "%{$search}%")
+                            ->orWhereHas('profile', function ($pq) use ($search) {
+                                $pq->where('nia', 'like', "%{$search}%")
+                                    ->orWhere('phone_number', 'like', "%{$search}%");
+                            });
+                    });
+            });
+        }
+
+        if ($matchId = $request->get('match_id')) {
+            $query->where('match_ticket_id', $matchId);
+        }
+
+        if ($checkinStatus = $request->get('checkin_status')) {
+            if ($checkinStatus === 'checked') {
+                $query->where('is_checked_in', true);
+            } elseif ($checkinStatus === 'unchecked') {
+                $query->where('is_checked_in', false);
+            }
+        }
+
+        $ticketOrders = $query->paginate(20)->withQueryString();
+
+        // Statistik Penukaran Gelang & Kuota Laga Nasional
+        $totalQuotaSupporter = MatchTicket::where('status', 'open')->sum('total_quota');
+        $totalRemainingQuota = MatchTicket::where('status', 'open')->sum('remaining_quota');
+        $totalSoldTickets = TicketOrder::count();
+        $totalWristbandChecked = TicketOrder::where('is_checked_in', true)->count();
+        $totalTicketRevenue = TicketOrder::where('payment_status', 'paid')->sum('total_amount');
+
+        return view('dashboard.superadmin.tickets', compact(
+            'matches',
+            'chapters',
+            'allocations',
+            'ticketOrders',
+            'totalQuotaSupporter',
+            'totalRemainingQuota',
+            'totalSoldTickets',
+            'totalWristbandChecked',
+            'totalTicketRevenue'
+        ));
+    }
+
+    /**
+     * Serahkan Gelang Tribun ke Suporter (Gate Check-in di Stadion).
+     */
+    public function exchangeWristband(int $orderId): RedirectResponse
+    {
+        $order = TicketOrder::with('user', 'matchTicket')->findOrFail($orderId);
+        $order->update([
+            'is_checked_in' => true,
+            'checked_in_at' => now(),
+        ]);
+
+        $code = $order->seat_number ?? ('TKT-' . $order->id);
+
+        return back()->with('success', "GELANG TRIBUN RESMI DISERAHKAN! Suporter {$order->user?->name} (Kode Booking #{$code}) telah check-in ke tribun.");
+    }
+
+    /**
+     * Batalkan Penukaran Gelang (Undo Check-in).
+     */
+    public function undoWristband(int $orderId): RedirectResponse
+    {
+        $order = TicketOrder::with('user')->findOrFail($orderId);
+        $order->update([
+            'is_checked_in' => false,
+            'checked_in_at' => null,
+        ]);
+
+        return back()->with('success', "Status penukaran gelang suporter {$order->user?->name} dikembalikan menjadi BELUM DITUKAR.");
+    }
+
+    /**
+     * Update Jadwal Pertandingan & Kuota Tiket PSMS.
+     */
+    public function updateMatch(Request $request, int $id): RedirectResponse
+    {
+        $match = MatchTicket::findOrFail($id);
+
+        $validated = $request->validate([
+            'match_title' => ['required', 'string', 'max:255'],
+            'match_time' => ['required', 'date'],
+            'stadium' => ['required', 'string', 'max:255'],
+            'type' => ['required', 'in:home,away'],
+            'price' => ['required', 'numeric', 'min:0'],
+            'total_quota' => ['required', 'integer', 'min:1'],
+            'status' => ['required', 'in:open,closed,completed'],
+            'away_destination' => ['nullable', 'string', 'max:255'],
+            'bus_transport_info' => ['nullable', 'string', 'max:255'],
+        ]);
+
+        $soldCount = max(0, $match->total_quota - $match->remaining_quota);
+        $newRemaining = max(0, $validated['total_quota'] - $soldCount);
+        $validated['remaining_quota'] = $newRemaining;
+
+        $match->update($validated);
+
+        return back()->with('success', "Jadwal laga & kuota tiket '{$match->match_title}' berhasil diperbarui!");
     }
 
     /**

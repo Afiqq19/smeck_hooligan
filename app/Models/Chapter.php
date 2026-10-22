@@ -32,6 +32,11 @@ class Chapter extends Model
         return $this->hasMany(VoluntaryDue::class);
     }
 
+    public function dues(): HasMany
+    {
+        return $this->hasMany(VoluntaryDue::class);
+    }
+
     public function eventAttendances(): HasMany
     {
         return $this->hasMany(EventAttendance::class);

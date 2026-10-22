@@ -190,18 +190,21 @@ class MemberDashboardController extends Controller
 
         $qty = $validated['quantity'] ?? 1;
         $totalAmount = $match->price * $qty;
+        $bookingCode = 'SMCK-TKT-' . strtoupper(\Illuminate\Support\Str::random(6));
 
         \App\Models\TicketOrder::create([
             'match_ticket_id' => $match->id,
             'user_id' => $request->user()->id,
             'chapter_id' => $request->user()->chapter_id ?? 1,
+            'seat_number' => $bookingCode,
             'total_amount' => $totalAmount,
             'payment_status' => 'paid',
+            'is_checked_in' => false,
         ]);
 
         $match->decrement('remaining_quota', $qty);
 
-        return back()->with('success', "Tiket untuk '{$match->match_title}' berhasil dipesan! Tunjukkan KTA fisik Anda di koordinator Chapter saat pengambilan tiket.");
+        return back()->with('success', "Tiket berhasil dipesan (Kode Booking: {$bookingCode})! Simpan bukti ini dan tunjukkan ke panitia tiket suporter di gerbang Stadion Teladan untuk ditukarkan menjadi gelang resmi tribun.");
     }
 
     /**
