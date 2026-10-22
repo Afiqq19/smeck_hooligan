@@ -13,11 +13,69 @@ class WhatsAppBotService
 {
     /**
      * Memproses pesan teks masuk dan mengembalikan balasan bot otomatis.
+     * Menggunakan proteksi anti-spam cerdas untuk grup dan chat pribadi.
      */
-    public function handleIncomingMessage(string $senderNumber, string $incomingText): string
-    {
+    public function handleIncomingMessage(
+        string $senderNumber,
+        string $incomingText,
+        bool $isGroup = false,
+        ?string $groupJid = null
+    ): ?string {
         $text = trim($incomingText);
         $upper = strtoupper($text);
+
+        // =========================================================================
+        // ATURAN 1: PROTEKSI GRUP WHATSAPP (isGroup === true)
+        // =========================================================================
+        // Di dalam grup, bot TIDAK BOLEH membalas obrolan biasa sesama anggota!
+        // Bot HANYA merespon jika dipanggil dengan: "!bot", "bot", "/bot", atau tanda "!menu", "!jadwal", dll.
+        if ($isGroup) {
+            $isBotTriggered = false;
+            $cleanText = $text;
+
+            if (preg_match('/^(!bot|\/bot|#bot|\.bot|bot|!smeck|smeck)\b\s*(.*)$/i', $text, $matches)) {
+                $isBotTriggered = true;
+                $cleanText = trim($matches[2]);
+            } elseif (preg_match('/^(!|\/|#|\.)(menu|bantuan|help|jadwal|klasemen|cek|kta|daftar|chant)\b\s*(.*)$/i', $text, $matches)) {
+                $isBotTriggered = true;
+                $cleanText = trim($matches[2] . ' ' . $matches[3]);
+            }
+
+            // Jika di grup orang mengobrol biasa tanpa memanggil kata 'bot' / tanda seru, BOT WAJIB DIAM!
+            if (! $isBotTriggered) {
+                return null;
+            }
+
+            // Jika di grup hanya mengetik "bot" atau "!bot" tanpa perintah lanjutan:
+            if (empty($cleanText)) {
+                return "🤖 *BOT SMECK HOOLIGAN SIAP!* 💚\n\n" .
+                    "Halo Saudaraku! Gunakan perintah berikut di grup suporter:\n" .
+                    "• `!jadwal` ➔ Cek laga terdekat PSMS\n" .
+                    "• `!klasemen` ➔ Cek klasemen Liga 2\n" .
+                    "• `!cek kta <nomor/nama>` ➔ Cek keaslian KTA\n" .
+                    "• `!chant` ➔ Lirik lagu suporter\n" .
+                    "• `!menu` ➔ Panduan lengkap bot";
+            }
+
+            // Lanjutkan pemrosesan menggunakan teks yang sudah dibersihkan dari kata 'bot'
+            $text = $cleanText;
+            $upper = strtoupper($cleanText);
+        }
+
+        // =========================================================================
+        // ATURAN 2: CHAT PRIBADI (JAPRI)
+        // =========================================================================
+        if (! $isGroup) {
+            // Bersihkan jika diawali "bot " atau "!bot "
+            if (preg_match('/^(!bot|\/bot|bot)\s+(.*)$/i', $text, $matches)) {
+                $text = trim($matches[2]);
+                $upper = strtoupper($text);
+            }
+        }
+
+        // =========================================================================
+        // PEMROSESAN PERINTAH RESMI
+        // =========================================================================
 
         // 1. Shortcut Angka Menu Utama (1 - 6)
         if ($upper === '1') {
@@ -35,48 +93,61 @@ class WhatsAppBotService
         if ($upper === '5') {
             return $this->handleChants();
         }
-        if ($upper === '6' || in_array($upper, ['MENU', 'HELP', 'BANTUAN', 'INFO', 'P', 'HALO', 'HAI', 'ASSALAMUALAIKUM', 'TES', 'TEST'])) {
+        if ($upper === '6' || in_array($upper, ['MENU', 'HELP', 'BANTUAN', 'INFO', 'PANDUAN', '!MENU', '!HELP'])) {
             return $this->handleHelp();
         }
 
-        // 2. Jika user hanya mengetik "CEK KTA", "KTA", atau "CEK" tanpa nomor/nama
-        if (in_array($upper, ['CEK KTA', 'KTA', 'CEK', 'CEK KTA DONG', 'CARA CEK KTA', 'CARA CEK', 'CEK KTA GIMANA', 'CEKKTA'])) {
+        // 2. Salam Pembuka Suporter (Khusus jika menyapa bot)
+        if (in_array($upper, ['P', 'HALO', 'HAI', 'ASSALAMUALAIKUM', 'SALAM SADA ROHA', 'TES', 'TEST', 'PING'])) {
+            return $this->handleHelp();
+        }
+
+        // 3. Jika user mengetik "CEK KTA", "KTA", atau "CEK" tanpa nomor/nama
+        if (in_array($upper, ['CEK KTA', 'KTA', 'CEK', 'CEK KTA DONG', 'CARA CEK KTA', 'CARA CEK', 'CEK KTA GIMANA', 'CEKKTA', '!CEK KTA'])) {
             return $this->handleKtaTutorial();
         }
 
-        // 3. Perintah Cek KTA dengan parameter (Contoh: "CEK KTA 1950", "KTA SMC-2024-001", "CEK Bani Ginting")
-        if (preg_match('/^(CEK\s+KTA|KTA|CEK)\s+(.+)$/i', $text, $matches)) {
+        // 4. Perintah Cek KTA dengan parameter (Contoh: "CEK KTA 1950", "KTA SMC-2024-001", "CEK Bani Ginting")
+        if (preg_match('/^(!?CEK\s+KTA|!?KTA|!?CEK)\s+(.+)$/i', $text, $matches)) {
             $query = trim($matches[2]);
             return $this->handleCheckKta($query);
         }
 
-        // 4. Perintah Jadwal Pertandingan
-        if (in_array($upper, ['JADWAL', 'JADWAL MATCH', 'PERTANDINGAN', 'MAIN', 'LAWAN', 'JADWAL PSMS', 'KAPAN MAIN'])) {
+        // 5. Perintah Jadwal Pertandingan
+        if (in_array($upper, ['JADWAL', 'JADWAL MATCH', 'PERTANDINGAN', 'MAIN', 'LAWAN', 'JADWAL PSMS', 'KAPAN MAIN', '!JADWAL'])) {
             return $this->handleSchedule();
         }
 
-        // 5. Perintah Klasemen Liga 2 (PT LIB)
-        if (in_array($upper, ['KLASEMEN', 'POIN', 'PERINGKAT', 'STANDINGS', 'KLASEMEN LIGA 2', 'KLASEMEN PSMS', 'KLASEMEN SEMENTARA'])) {
+        // 6. Perintah Klasemen Liga 2 (PT LIB)
+        if (in_array($upper, ['KLASEMEN', 'POIN', 'PERINGKAT', 'STANDINGS', 'KLASEMEN LIGA 2', 'KLASEMEN PSMS', 'KLASEMEN SEMENTARA', '!KLASEMEN'])) {
             return $this->handleStandings();
         }
 
-        // 6. Perintah Lagu & Chants Tribun
-        if (in_array($upper, ['CHANT', 'CHANTS', 'LAGU', 'ANTHEM', 'LIRIK', 'LIRIK LAGU', 'SALAM SADA ROHA'])) {
+        // 7. Perintah Lagu & Chants Tribun
+        if (in_array($upper, ['CHANT', 'CHANTS', 'LAGU', 'ANTHEM', 'LIRIK', 'LIRIK LAGU', 'SALAM SADA ROHA', '!CHANT'])) {
             return $this->handleChants();
         }
 
-        // 7. Perintah Pendaftaran Anggota Baru
-        if (in_array($upper, ['DAFTAR', 'GABUNG', 'REGISTRASI', 'JOIN', 'ANGGOTA BARU', 'CARA DAFTAR', 'GABUNG SUPORTER'])) {
+        // 8. Perintah Pendaftaran Anggota Baru
+        if (in_array($upper, ['DAFTAR', 'GABUNG', 'REGISTRASI', 'JOIN', 'ANGGOTA BARU', 'CARA DAFTAR', 'GABUNG SUPORTER', '!DAFTAR'])) {
             return $this->handleRegister();
         }
 
-        // 8. Cek apakah ada nomor KTA yang diketik langsung (misal: 6032-9800-2024-1950 atau SMC-2024-001)
+        // 9. Cek apakah ada nomor KTA yang diketik langsung (misal: 6032-9800-2024-1950 atau SMC-2024-001)
         if (preg_match('/^(SMC|6032|\d{4,16})/i', $text)) {
             return $this->handleCheckKta($text);
         }
 
-        // 9. Default: Tampilkan Menu Interaktif Lengkap dengan Contoh
-        return $this->handleHelp();
+        // =========================================================================
+        // JIKA BUKAN PERINTAH RESMI BOT:
+        // =========================================================================
+        // Jika orang hanya ngobrol biasa ("makan yuk", "lagi di mana?", "oke", "siap", "wkwk"):
+        // BOT WAJIB DIAM! Jangan ikut campur agar tidak mengganggu obrolan pribadi/grup.
+        if ($isGroup) {
+            return "⚠️ Perintah tidak dikenali di grup. Ketik `!menu` untuk melihat daftar perintah resmi bot.";
+        }
+
+        return null;
     }
 
     /**

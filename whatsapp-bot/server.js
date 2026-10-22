@@ -188,6 +188,16 @@ async function startWhatsApp() {
 
             if (!messageText) continue;
 
+            // PROTEKSI ANTI-SPAM GRUP DI LEVEL GATEWAY:
+            // Jika pesan berasal dari GRUP dan BUKAN panggilan bot ("bot", "!bot", "!jadwal", dll), LEWATI LANGSUNG!
+            if (isGroup) {
+                const isBotCall = /^(!|\/|#|\.|bot\b|smeck\b)/i.test(messageText);
+                if (!isBotCall) {
+                    // Abaikan obrolan biasa sesama anggota grup tanpa menyentuh webhook
+                    continue;
+                }
+            }
+
             console.log(`\n📩 [PESAN MASUK] Dari: ${senderPhone} (${isGroup ? 'GRUP' : 'PRIBADI'}): "${messageText}"`);
 
             // Kirim pesan ke API Webhook Laravel (dukung live & local)
@@ -198,6 +208,7 @@ async function startWhatsApp() {
                     message: messageText,
                     sender: senderPhone,
                     is_group: isGroup,
+                    group_jid: isGroup ? remoteJid : null,
                     push_name: m.pushName || 'Suporter',
                 }, { timeout: 8000 });
 
@@ -211,6 +222,7 @@ async function startWhatsApp() {
                         message: messageText,
                         sender: senderPhone,
                         is_group: isGroup,
+                        group_jid: isGroup ? remoteJid : null,
                         push_name: m.pushName || 'Suporter',
                     }, { timeout: 5000 });
                     if (fallbackRes.data && fallbackRes.data.reply) {

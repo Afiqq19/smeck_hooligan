@@ -738,12 +738,22 @@ class SuperAdminDashboardController extends Controller
     {
         $sender = $request->input('from', $request->input('sender', 'unknown'));
         $message = $request->input('message', $request->input('body', $request->input('text', '')));
+        $isGroup = (bool) $request->input('is_group', false);
+        $groupJid = $request->input('group_jid', null);
 
         if (empty($message)) {
             return response()->json(['status' => 'ignored', 'message' => 'Empty message']);
         }
 
-        $reply = $bot->handleIncomingMessage($sender, $message);
+        $reply = $bot->handleIncomingMessage($sender, $message, $isGroup, $groupJid);
+
+        if (empty($reply)) {
+            return response()->json([
+                'status' => 'ignored',
+                'message' => 'Pesan bukan perintah bot resmi atau obrolan biasa (diabaikan agar tidak spam).',
+                'reply' => null,
+            ]);
+        }
 
         return response()->json([
             'status' => 'success',
