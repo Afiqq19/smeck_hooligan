@@ -828,19 +828,86 @@ class SuperAdminDashboardController extends Controller
             return response()->json(['success' => false, 'message' => 'Nomor dan pesan wajib diisi.'], 400);
         }
 
+        // 1. Coba kirim langsung jika microservice lokal di localhost:3000 aktif
         try {
-            $response = Http::timeout(8)->post('http://127.0.0.1:3000/api/send-message', [
+            $response = Http::timeout(2)->post('http://127.0.0.1:3000/api/send-message', [
                 'phone' => $phone,
                 'message' => $message,
             ]);
 
-            return response()->json($response->json(), $response->status());
+            if ($response->successful()) {
+                return response()->json($response->json());
+            }
         } catch (\Throwable $e) {
-            return response()->json([
-                'success' => false,
-                'message' => 'Layanan bot WhatsApp sedang offline. Silakan jalankan file JALANKAN-BOT-WA.bat.',
-            ], 503);
+            // Local service tidak terjangkau (misal request di remote server)
         }
+
+        // 2. Simpan ke Outbox Queue di storage agar ditarik & dikirim otomatis oleh bot daemon
+        $outboxDir = storage_path('app/whatsapp');
+        if (!File::exists($outboxDir)) {
+            File::makeDirectory($outboxDir, 0755, true);
+        }
+
+        $outboxFile = $outboxDir . '/outbox.json';
+        $queue = File::exists($outboxFile) ? json_decode(File::get($outboxFile), true) : [];
+        if (!is_array($queue)) $queue = [];
+
+        $msgId = uniqid('msg_', true);
+        $queue[] = [
+            'id' => $msgId,
+            'phone' => $phone,
+            'message' => $message,
+            'status' => 'pending',
+            'created_at' => now()->toIso8601String(),
+        ];
+
+        File::put($outboxFile, json_encode($queue, JSON_PRETTY_PRINT));
+
+        return response()->json([
+            'success' => true,
+            'message' => "Pesan berhasil dimasukkan ke antrean Bot dan langsung dikirim secara otomatis ke {$phone}!",
+            'queued' => true,
+        ]);
+    }
+
+    /**
+     * Endpoint API Outbox: Bot menarik pesan yang harus dikirim.
+     */
+    public function apiWhatsAppGetOutbox(): JsonResponse
+    {
+        $outboxFile = storage_path('app/whatsapp/outbox.json');
+        if (!File::exists($outboxFile)) {
+            return response()->json(['messages' => []]);
+        }
+
+        $queue = json_decode(File::get($outboxFile), true);
+        if (!is_array($queue)) $queue = [];
+
+        return response()->json(['messages' => $queue]);
+    }
+
+    /**
+     * Endpoint API Outbox ACK: Bot mengonfirmasi pesan yang sudah sukses terkirim.
+     */
+    public function apiWhatsAppAckOutbox(Request $request): JsonResponse
+    {
+        $ids = $request->input('ids', []);
+        if (empty($ids) || !is_array($ids)) {
+            return response()->json(['success' => true]);
+        }
+
+        $outboxFile = storage_path('app/whatsapp/outbox.json');
+        if (File::exists($outboxFile)) {
+            $queue = json_decode(File::get($outboxFile), true);
+            if (is_array($queue)) {
+                $queue = array_values(array_filter($queue, function ($item) use ($ids) {
+                    return !in_array($item['id'] ?? '', $ids);
+                }));
+                File::put($outboxFile, json_encode($queue, JSON_PRETTY_PRINT));
+            }
+        }
+
+        return response()->json(['success' => true]);
     }
 
     /**

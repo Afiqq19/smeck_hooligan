@@ -182,10 +182,12 @@ Route::middleware(['auth', 'role:super_admin'])->prefix('superadmin')->name('sup
 Route::get('/berita/{slug}', [PublicController::class, 'showNews'])->name('news.show');
 Route::get('/api/news/{id}', [PublicController::class, 'getNewsJson'])->name('api.news.show');
 
-// Webhook WhatsApp Bot API (Incoming messages & status updates)
+// Webhook WhatsApp Bot API (Incoming messages, status updates & outbox queue)
 Route::post('/api/whatsapp/webhook', [SuperAdminDashboardController::class, 'apiWhatsAppWebhook'])->name('api.whatsapp.webhook');
 Route::get('/api/whatsapp/webhook', [SuperAdminDashboardController::class, 'apiWhatsAppWebhook']);
 Route::post('/api/whatsapp/status-update', [SuperAdminDashboardController::class, 'apiWhatsAppStatusUpdate'])->name('api.whatsapp.status-update');
+Route::get('/api/whatsapp/outbox', [SuperAdminDashboardController::class, 'apiWhatsAppGetOutbox'])->name('api.whatsapp.outbox');
+Route::post('/api/whatsapp/outbox-ack', [SuperAdminDashboardController::class, 'apiWhatsAppAckOutbox'])->name('api.whatsapp.outbox-ack');
 
 // =========================================================================
 // 7. ROUTE DEPLOYMENT & SERVER UTILITY (AUTO DEPLOY & STORAGE FALLBACK)

@@ -346,6 +346,52 @@ app.post('/api/logout', async (req, res) => {
     }
 });
 
+// =========================================================================
+// OUTBOX WORKER: Kirim Pesan Otomatis dari Antrean Laravel (Tanpa Buka Web WA)
+// =========================================================================
+async function processOutboxQueue() {
+    if (currentStatus !== 'connected' || !sock) return;
+
+    const urls = [
+        'https://projek2.xie.my.id/api/whatsapp/outbox',
+        'http://127.0.0.1:8000/api/whatsapp/outbox',
+    ];
+
+    for (const url of urls) {
+        try {
+            const res = await axios.get(url, { timeout: 3000 });
+            const messages = res.data?.messages || [];
+            if (!messages.length) continue;
+
+            const ackIds = [];
+            for (const item of messages) {
+                let phone = item.phone.replace(/[^0-9]/g, '');
+                if (phone.startsWith('0')) phone = '62' + phone.substring(1);
+                const jid = `${phone}@s.whatsapp.net`;
+
+                try {
+                    console.log(`\n🚀 [PENGIRIMAN OUTBOX OTOMATIS] Mengirim pesan ke +${phone}...`);
+                    await sock.sendMessage(jid, { text: item.message });
+                    console.log(`✅ [SUKSES TERKIRIM] Pesan berhasil dikirim oleh Bot ke +${phone} secara otomatis!`);
+                    ackIds.push(item.id);
+                } catch (sendErr) {
+                    console.error(`❌ Gagal mengirim outbox ke +${phone}:`, sendErr.message);
+                }
+            }
+
+            if (ackIds.length) {
+                const ackUrl = url.replace('/outbox', '/outbox-ack');
+                await axios.post(ackUrl, { ids: ackIds }, { timeout: 3000 }).catch(() => {});
+            }
+        } catch (err) {
+            // Antrean kosong atau server belum aktif
+        }
+    }
+}
+
+// Periksa antrean outbox setiap 2.5 detik
+setInterval(processOutboxQueue, 2500);
+
 // Jalankan HTTP Server
 app.listen(PORT, () => {
     console.log(`🌐 Server API Bot WhatsApp berjalan di http://localhost:${PORT}`);

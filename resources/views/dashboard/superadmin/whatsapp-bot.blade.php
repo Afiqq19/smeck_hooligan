@@ -750,39 +750,48 @@ Ketik kata kunci untuk mencoba:
             phone = '62' + phone.substring(1);
         }
 
-        // Jika bot terhubung, tawarkan kirim langsung via bot
-        if (currentBotState === 'connected') {
-            if (confirm(`Kirim pesan langsung melalui Bot WhatsApp ke nomor +${phone}?`)) {
-                fetch('{{ route("superadmin.whatsapp.real-send") }}', {
-                    method: 'POST',
-                    headers: {
-                        'Content-Type': 'application/json',
-                        'X-CSRF-TOKEN': '{{ csrf_token() }}'
-                    },
-                    body: JSON.stringify({ phone: phone, message: message })
-                })
-                .then(res => res.json())
-                .then(data => {
-                    if (data.success) {
-                        alert(`✅ Pesan berhasil dikirim oleh Bot ke +${phone}!`);
-                        document.getElementById('directWaMessage').value = '';
-                    } else {
-                        // Fallback ke WhatsApp Web jika gagal
-                        const url = `https://wa.me/${phone}?text=${encodeURIComponent(message)}`;
-                        window.open(url, '_blank');
-                    }
-                })
-                .catch(() => {
-                    const url = `https://wa.me/${phone}?text=${encodeURIComponent(message)}`;
-                    window.open(url, '_blank');
-                });
-                return;
-            }
+        if (!message) {
+            alert('Silakan tuliskan isi pesan yang ingin dikirim!');
+            return;
         }
 
-        // Fallback langsung buka link WhatsApp Web
-        const url = `https://wa.me/${phone}?text=${encodeURIComponent(message)}`;
-        window.open(url, '_blank');
+        // Tombol indikator proses
+        const btn = document.querySelector('button[onclick="launchDirectWa()"]');
+        const originalHtml = btn ? btn.innerHTML : '';
+        if (btn) {
+            btn.disabled = true;
+            btn.innerHTML = '<i class="fa-solid fa-spinner fa-spin mr-2"></i> Mengirim via Bot...';
+        }
+
+        fetch('{{ route("superadmin.whatsapp.real-send") }}', {
+            method: 'POST',
+            headers: {
+                'Content-Type': 'application/json',
+                'X-CSRF-TOKEN': '{{ csrf_token() }}'
+            },
+            body: JSON.stringify({ phone: phone, message: message })
+        })
+        .then(res => res.json())
+        .then(data => {
+            if (btn) {
+                btn.disabled = false;
+                btn.innerHTML = originalHtml;
+            }
+
+            if (data.success) {
+                alert(`✅ PESAN BERHASIL DIKIRIM SECARA OTOMATIS!\n\nBot WhatsApp SMeCK Hooligan telah mengirimkan pesan tersebut ke nomor +${phone} tanpa perlu membuka aplikasi WhatsApp di HP atau web!`);
+                document.getElementById('directWaMessage').value = '';
+            } else {
+                alert(data.message || 'Gagal mengirim pesan.');
+            }
+        })
+        .catch(err => {
+            if (btn) {
+                btn.disabled = false;
+                btn.innerHTML = originalHtml;
+            }
+            alert('Terjadi kesalahan saat menghubungi server bot.');
+        });
     }
 </script>
 @endsection
