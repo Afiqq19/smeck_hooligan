@@ -245,234 +245,147 @@
                     </div>
 
                     {{-- -------------------------------------------------- --}}
-                    {{-- BACK OF THE CARD: ULTRA-MODERN VIP SUPPORTER NFC HYBRID --}}
+                    {{-- TAMPAK BELAKANG KARTU DIGITAL ANGGOTA --}}
                     {{-- -------------------------------------------------- --}}
-                    <div class="card-face card-back p-3.5 sm:p-5 flex flex-col justify-between overflow-hidden border border-emerald-500/30 ring-1 ring-amber-400/20 shadow-2xl bg-gradient-to-br from-neutral-950 via-slate-950 to-neutral-950 text-white relative">
+                    <div class="card-face card-back p-4 sm:p-5 flex flex-col justify-between overflow-hidden border border-white/15 shadow-2xl bg-gradient-to-br from-neutral-950 via-slate-950 to-neutral-900 text-white relative">
                         
-                        {{-- Holographic Ambient Light Orbs --}}
-                        <div class="absolute -top-12 -right-12 w-40 h-40 bg-emerald-500/15 rounded-full blur-2xl pointer-events-none"></div>
-                        <div class="absolute -bottom-12 -left-12 w-40 h-40 bg-amber-500/10 rounded-full blur-2xl pointer-events-none"></div>
+                        {{-- Efek Kilau Halus --}}
+                        <div class="absolute inset-0 shimmer-effect opacity-20 pointer-events-none"></div>
 
-                        {{-- Holographic Sheen Layer --}}
-                        <div class="absolute inset-0 shimmer-effect opacity-30 pointer-events-none"></div>
-
-                        {{-- Watermark Rooster Crest --}}
-                        <div class="absolute right-4 bottom-4 w-36 h-36 rounded-full overflow-hidden opacity-[0.04] pointer-events-none">
-                            <img src="{{ asset('images/logo-crest.jpg') }}" alt="Watermark" class="w-full h-full object-cover">
-                        </div>
-
-                        {{-- TOP: Hi-Co Magnetic Stripe with Holographic Laser Micro-Text --}}
-                        <div class="-mx-3.5 -mt-3.5 sm:-mx-5 sm:-mt-5 relative">
-                            <div class="h-8 sm:h-9 holo-stripe border-b border-amber-400/20 shadow-inner flex items-center justify-between px-3 sm:px-5">
-                                <div class="flex items-center gap-2 overflow-hidden select-none whitespace-nowrap">
-                                    <span class="text-[7px] sm:text-[8px] font-mono tracking-widest text-white/50 uppercase font-semibold">
-                                        ★ SMeCK HOOLIGAN ★ PSMS MEDAN 1950 ★ OFFICIAL SUPPORTER IDENTITY ★ NFC DUAL-INTERFACE PASS ★ SADA ROHA ★
-                                    </span>
-                                </div>
-                                <div class="text-[7px] sm:text-[8px] font-mono text-amber-300/80 font-bold shrink-0 pl-2">
-                                    HI-CO 4000 Oe
-                                </div>
+                        {{-- 1. PITA MAGNETIK ATAS --}}
+                        <div class="-mx-4 -mt-4 sm:-mx-5 sm:-mt-5">
+                            <div class="h-9 bg-neutral-900 border-b border-white/10 flex items-center justify-between px-4 sm:px-5">
+                                <span class="text-[8px] sm:text-[9px] font-mono tracking-widest text-white/60 uppercase">
+                                    KARTU TANDA ANGGOTA DIGITAL • DPP SMECK HOOLIGAN
+                                </span>
+                                <span class="text-[8px] sm:text-[9px] font-display font-bold text-smeck-gold tracking-wider">
+                                    SADA ROHA
+                                </span>
                             </div>
 
-                            {{-- Technical Standard Sub-bar --}}
-                            <div class="px-3 sm:px-5 py-1 flex items-center justify-between bg-black/40 border-b border-white/5 text-[7px] sm:text-[8px] text-white/50 font-mono">
-                                <div class="flex items-center gap-1.5">
-                                    <span class="w-1.5 h-1.5 rounded-full bg-emerald-400"></span>
-                                    <span class="text-white/70 font-semibold">DPP SMECK OFFICIAL NFC PASS</span>
+                            {{-- Sub-bar Identitas --}}
+                            <div class="px-4 sm:px-5 py-1 bg-black/40 border-b border-white/5 flex items-center justify-between text-[8px] sm:text-[9px]">
+                                <div class="flex items-center gap-1.5 text-emerald-400 font-semibold">
+                                    <i class="fa-solid fa-circle-check text-[9px]"></i>
+                                    <span>Suporter Resmi PSMS Medan</span>
                                 </div>
-                                <div class="flex items-center gap-2">
-                                    <span>ISO/IEC 7810 ID-1</span>
-                                    <span>•</span>
-                                    <span class="text-emerald-400 flex items-center gap-1">
-                                        <i class="fa-solid fa-wifi rotate-90 text-[8px]"></i> 13.56 MHz
-                                    </span>
+                                <div class="text-white/50 font-mono flex items-center gap-1.5">
+                                    <i class="fa-solid fa-wifi rotate-90 text-[8px] text-emerald-400"></i>
+                                    <span>NFC Terhubung</span>
                                 </div>
                             </div>
                         </div>
 
-                        {{-- MIDDLE SECTION: Signature Panel + Barcode + Gate QR Scanner --}}
-                        <div class="my-auto py-1 sm:py-2 flex items-center justify-between gap-3 sm:gap-4 relative z-10">
+                        {{-- 2. KONTEN UTAMA: Tanda Tangan & QR Presensi --}}
+                        <div class="my-auto py-1 sm:py-2 flex items-center justify-between gap-3 sm:gap-5 relative z-10">
                             
-                            {{-- Left Column: Security Signature Strip & Barcode & Terms --}}
-                            <div class="flex-1 min-w-0 flex flex-col justify-between space-y-1.5 sm:space-y-2">
+                            {{-- Sisi Kiri: Tanda Tangan, Identitas & Ketentuan --}}
+                            <div class="flex-1 min-w-0 flex flex-col justify-between space-y-2">
                                 
-                                {{-- Signature Strip --}}
+                                {{-- Area Tanda Tangan --}}
                                 <div>
-                                    <div class="flex items-center justify-between text-[7px] sm:text-[8px] uppercase tracking-wider mb-0.5">
-                                        <span class="text-white/70 font-bold flex items-center gap-1">
-                                            <i class="fa-solid fa-signature text-emerald-400 text-[8px]"></i> Tanda Tangan Resmi Pemegang
-                                        </span>
-                                        <span class="text-[6px] sm:text-[7px] text-amber-300 font-mono">AUTHORIZED SIGNATURE</span>
+                                    <div class="text-[8px] sm:text-[9px] text-white/60 font-medium mb-1">
+                                        Tanda Tangan Pemegang Kartu:
                                     </div>
-                                    
-                                    <div class="flex items-center rounded-lg overflow-hidden border border-emerald-500/40 shadow-inner">
-                                        {{-- Guilloche Pattern Signature Area --}}
-                                        <div class="flex-1 h-7 sm:h-8 guilloche-bg flex items-center px-2.5 relative overflow-hidden">
-                                            {{-- Security micro-watermark --}}
-                                            <div class="absolute inset-0 flex items-center justify-around opacity-15 select-none pointer-events-none text-[6px] font-mono tracking-widest text-slate-800">
-                                                <span>SMECK</span><span>HOOLIGAN</span><span>VALID</span><span>MEMBER</span>
-                                            </div>
-                                            {{-- Cursive handwritten signature --}}
-                                            <span class="relative z-10 font-signature text-base sm:text-lg text-slate-900 font-bold select-none -rotate-1 tracking-wide truncate">
+                                    <div class="flex items-center rounded-lg overflow-hidden border border-white/15 bg-white shadow-sm">
+                                        <div class="flex-1 h-8 sm:h-9 bg-slate-50 flex items-center px-3">
+                                            <span class="font-signature text-base sm:text-lg text-slate-900 font-bold select-none -rotate-1 tracking-wide truncate">
                                                 {{ $user->name }}
                                             </span>
                                         </div>
-                                        
-                                        {{-- Embedded Security Code Pill (CVV Style) --}}
-                                        <div class="h-7 sm:h-8 px-2 sm:px-2.5 bg-gradient-to-br from-amber-300 via-amber-400 to-amber-500 text-slate-950 flex flex-col items-center justify-center border-l border-amber-600/40 shrink-0">
-                                            <span class="text-[6px] font-bold uppercase tracking-tighter opacity-70">SEC CODE</span>
-                                            <span class="font-mono font-black text-[9px] sm:text-[10px] tracking-wider leading-none">
-                                                {{ substr(crc32($user->id . 'smeck1950'), 0, 3) ?: '195' }}
+                                        <div class="px-2.5 h-8 sm:h-9 bg-emerald-600/15 border-l border-emerald-500/30 flex items-center justify-center">
+                                            <span class="text-[8px] sm:text-[9px] font-bold text-emerald-600 uppercase tracking-wider flex items-center gap-1">
+                                                <i class="fa-solid fa-shield-halved text-[9px]"></i> RESMI
                                             </span>
                                         </div>
                                     </div>
                                 </div>
 
-                                {{-- Laser Etched Barcode --}}
-                                <div class="pt-0.5">
-                                    <div class="h-4 sm:h-5 flex items-center gap-[1.5px] sm:gap-[2px] opacity-75 overflow-hidden">
-                                        {{-- Stylized Laser Barcode Lines --}}
-                                        @for($i = 0; $i < 38; $i++)
-                                            @php
-                                                $barWidth = ($i % 5 == 0 || $i % 7 == 0) ? 'w-1 sm:w-1.5' : (($i % 3 == 0) ? 'w-0.5 sm:w-1' : 'w-[1px]');
-                                                $barOpacity = ($i % 4 == 0) ? 'bg-white' : 'bg-emerald-300';
-                                            @endphp
-                                            <div class="{{ $barWidth }} h-full {{ $barOpacity }} rounded-full"></div>
-                                        @endfor
-                                    </div>
-                                    <div class="flex items-center justify-between text-[7px] sm:text-[8px] font-mono text-white/50 tracking-wider mt-0.5">
-                                        <span>* {{ $user->profile?->nia ?? 'SMCK-2024-1950' }} *</span>
-                                        <span class="text-amber-400/90 font-bold uppercase">SUPORTER TRIBUN RESMI</span>
-                                    </div>
+                                {{-- Ringkasan Identitas --}}
+                                <div class="flex items-center gap-3 text-[8px] sm:text-[9px] font-mono text-white/70">
+                                    <div>NIA: <strong class="text-smeck-gold">{{ $user->profile?->nia ?? 'SMCK-2024-1950' }}</strong></div>
+                                    <span>•</span>
+                                    <div>Basis: <strong class="text-white">{{ $user->chapter?->name ?? 'Medan Kota' }}</strong></div>
                                 </div>
 
-                                {{-- Official Terms --}}
-                                <div class="text-[7px] sm:text-[8px] text-white/45 leading-tight line-clamp-2">
-                                    Kartu ini adalah hak milik resmi DPP SMeCK Hooligan. Wajib ditunjukkan saat verifikasi gate Stadion Teladan & penukaran gelang matchday.
+                                {{-- Ketentuan Penggunaan (Bahasa Normal & Santun) --}}
+                                <div class="text-[7px] sm:text-[8px] text-white/50 leading-relaxed space-y-0.5">
+                                    <div>• Kartu ini adalah bukti keanggotaan sah DPP SMeCK Hooligan.</div>
+                                    <div>• Tunjukkan kartu saat presensi dan penukaran tiket di stadion.</div>
+                                    <div>• Jika menemukan kartu ini, harap kembalikan ke Sekretariat DPP.</div>
                                 </div>
                             </div>
 
-                            {{-- Right Column: Gate Access QR Scanner Box --}}
+                            {{-- Sisi Kanan: Kotak QR Presensi --}}
                             <div class="shrink-0 flex flex-col items-center">
-                                <div class="relative p-1.5 sm:p-2 rounded-xl bg-gradient-to-b from-slate-900 to-black border border-emerald-500/40 shadow-xl flex flex-col items-center">
-                                    
-                                    {{-- Viewfinder Corner Crosshairs --}}
-                                    <div class="absolute top-0.5 left-0.5 w-2 h-2 border-t-2 border-l-2 border-emerald-400 rounded-tl"></div>
-                                    <div class="absolute top-0.5 right-0.5 w-2 h-2 border-t-2 border-r-2 border-emerald-400 rounded-tr"></div>
-                                    <div class="absolute bottom-0.5 left-0.5 w-2 h-2 border-b-2 border-l-2 border-emerald-400 rounded-bl"></div>
-                                    <div class="absolute bottom-0.5 right-0.5 w-2 h-2 border-b-2 border-r-2 border-emerald-400 rounded-br"></div>
-
-                                    {{-- Status Pill --}}
-                                    <div class="flex items-center gap-1 px-1.5 py-0.5 mb-1 rounded-full bg-emerald-500/20 border border-emerald-500/30 text-[6px] sm:text-[7px] font-mono text-emerald-300 font-bold uppercase">
-                                        <span class="w-1.5 h-1.5 rounded-full bg-emerald-400 animate-pulse"></span>
-                                        <span>GATE TELADAN</span>
+                                <div class="p-2 rounded-xl bg-white/[0.04] border border-white/15 text-center flex flex-col items-center">
+                                    <div class="text-[7px] sm:text-[8px] font-bold text-emerald-400 uppercase tracking-wider mb-1 flex items-center gap-1">
+                                        <i class="fa-solid fa-qrcode text-[8px]"></i> QR Presensi
                                     </div>
-
-                                    {{-- QR Matrix Container --}}
-                                    <div class="w-16 h-16 sm:w-20 sm:h-20 bg-white rounded-lg p-1 shadow-md flex items-center justify-center relative overflow-hidden">
+                                    <div class="w-18 h-18 sm:w-20 sm:h-20 bg-white rounded-lg p-1.5 flex items-center justify-center shadow-md">
                                         <div id="dynamic-kta-qr" class="w-full h-full flex items-center justify-center">
-                                            {{-- High-Density SVG QR Matrix --}}
+                                            {{-- Matriks QR Bersih & Presisi --}}
                                             <svg class="w-full h-full" viewBox="0 0 100 100" fill="none">
                                                 <rect width="100" height="100" fill="white"/>
-                                                
-                                                {{-- Top-Left Finder Pattern --}}
                                                 <rect x="6" y="6" width="26" height="26" rx="2" fill="#052e16"/>
                                                 <rect x="10" y="10" width="18" height="18" fill="white"/>
                                                 <rect x="13" y="13" width="12" height="12" rx="1.5" fill="#052e16"/>
-
-                                                {{-- Top-Right Finder Pattern --}}
                                                 <rect x="68" y="6" width="26" height="26" rx="2" fill="#052e16"/>
                                                 <rect x="72" y="10" width="18" height="18" fill="white"/>
                                                 <rect x="75" y="13" width="12" height="12" rx="1.5" fill="#052e16"/>
-
-                                                {{-- Bottom-Left Finder Pattern --}}
                                                 <rect x="6" y="68" width="26" height="26" rx="2" fill="#052e16"/>
                                                 <rect x="10" y="72" width="18" height="18" fill="white"/>
                                                 <rect x="13" y="75" width="12" height="12" rx="1.5" fill="#052e16"/>
-
-                                                {{-- Timing & Alignment Patterns --}}
-                                                <rect x="36" y="10" width="4" height="4" fill="#052e16"/>
-                                                <rect x="44" y="10" width="4" height="4" fill="#052e16"/>
-                                                <rect x="52" y="10" width="4" height="4" fill="#052e16"/>
-                                                <rect x="60" y="10" width="4" height="4" fill="#052e16"/>
-
-                                                <rect x="10" y="36" width="4" height="4" fill="#052e16"/>
-                                                <rect x="10" y="44" width="4" height="4" fill="#052e16"/>
-                                                <rect x="10" y="52" width="4" height="4" fill="#052e16"/>
-                                                <rect x="10" y="60" width="4" height="4" fill="#052e16"/>
-
-                                                <rect x="70" y="70" width="16" height="16" rx="1" fill="#052e16"/>
-                                                <rect x="73" y="73" width="10" height="10" fill="white"/>
-                                                <rect x="76" y="76" width="4" height="4" fill="#052e16"/>
-
-                                                {{-- Data Modules --}}
-                                                <rect x="36" y="22" width="6" height="6" fill="#052e16"/>
-                                                <rect x="46" y="18" width="6" height="6" fill="#052e16"/>
-                                                <rect x="56" y="24" width="6" height="6" fill="#052e16"/>
-                                                
-                                                <rect x="22" y="38" width="6" height="6" fill="#052e16"/>
-                                                <rect x="32" y="34" width="6" height="6" fill="#052e16"/>
-                                                <rect x="62" y="38" width="6" height="6" fill="#052e16"/>
-                                                
-                                                <rect x="18" y="48" width="6" height="6" fill="#052e16"/>
-                                                <rect x="28" y="56" width="6" height="6" fill="#052e16"/>
-                                                <rect x="38" y="50" width="6" height="6" fill="#052e16"/>
-                                                <rect x="58" y="52" width="6" height="6" fill="#052e16"/>
-                                                <rect x="68" y="48" width="6" height="6" fill="#052e16"/>
-
-                                                <rect x="36" y="64" width="6" height="6" fill="#052e16"/>
-                                                <rect x="46" y="60" width="6" height="6" fill="#052e16"/>
-                                                <rect x="56" y="66" width="6" height="6" fill="#052e16"/>
-
-                                                <rect x="36" y="76" width="6" height="6" fill="#052e16"/>
-                                                <rect x="46" y="80" width="6" height="6" fill="#052e16"/>
-                                                <rect x="56" y="76" width="6" height="6" fill="#052e16"/>
-
-                                                {{-- Center Emblem Badge --}}
-                                                <circle cx="50" cy="50" r="10" fill="#052e16" stroke="white" stroke-width="2"/>
-                                                <path d="M47 45 L53 45 L55 52 L50 55 L45 52 Z" fill="#22c55e"/>
-                                                <circle cx="50" cy="48" r="2" fill="#fbbf24"/>
+                                                <rect x="36" y="10" width="5" height="5" fill="#052e16"/>
+                                                <rect x="48" y="10" width="5" height="5" fill="#052e16"/>
+                                                <rect x="58" y="10" width="5" height="5" fill="#052e16"/>
+                                                <rect x="10" y="36" width="5" height="5" fill="#052e16"/>
+                                                <rect x="10" y="48" width="5" height="5" fill="#052e16"/>
+                                                <rect x="10" y="58" width="5" height="5" fill="#052e16"/>
+                                                <rect x="36" y="24" width="6" height="6" fill="#052e16"/>
+                                                <rect x="46" y="20" width="6" height="6" fill="#052e16"/>
+                                                <rect x="56" y="26" width="6" height="6" fill="#052e16"/>
+                                                <rect x="22" y="40" width="6" height="6" fill="#052e16"/>
+                                                <rect x="34" y="36" width="6" height="6" fill="#052e16"/>
+                                                <rect x="64" y="40" width="6" height="6" fill="#052e16"/>
+                                                <rect x="20" y="50" width="6" height="6" fill="#052e16"/>
+                                                <rect x="30" y="58" width="6" height="6" fill="#052e16"/>
+                                                <rect x="40" y="52" width="6" height="6" fill="#052e16"/>
+                                                <rect x="60" y="54" width="6" height="6" fill="#052e16"/>
+                                                <rect x="70" y="50" width="6" height="6" fill="#052e16"/>
+                                                <rect x="36" y="66" width="6" height="6" fill="#052e16"/>
+                                                <rect x="48" y="62" width="6" height="6" fill="#052e16"/>
+                                                <rect x="58" y="68" width="6" height="6" fill="#052e16"/>
+                                                <rect x="36" y="78" width="6" height="6" fill="#052e16"/>
+                                                <rect x="48" y="82" width="6" height="6" fill="#052e16"/>
+                                                <rect x="58" y="78" width="6" height="6" fill="#052e16"/>
+                                                <circle cx="50" cy="50" r="9" fill="#052e16" stroke="white" stroke-width="1.5"/>
+                                                <path d="M47 46 L53 46 L54 52 L50 54 L46 52 Z" fill="#22c55e"/>
                                             </svg>
                                         </div>
                                     </div>
-
-                                    {{-- Micro Scan Prompt --}}
-                                    <div class="text-[6px] sm:text-[7px] text-white/70 font-mono font-bold mt-1 tracking-wider uppercase">
-                                        SCAN PRESENSI
+                                    <div class="text-[7px] text-white/50 font-mono mt-1">
+                                        Pindai di Gate Stadion
                                     </div>
                                 </div>
                             </div>
 
                         </div>
 
-                        {{-- BOTTOM FOOTER: DPP Emergency Hotline & Gold Foil Slogan --}}
-                        <div class="pt-1.5 sm:pt-2 border-t border-white/10 flex items-center justify-between text-[7px] sm:text-[9px] relative z-10">
-                            {{-- Hotline DPP --}}
-                            <div class="flex items-center gap-1.5 sm:gap-2">
-                                <div class="w-5 h-5 sm:w-6 sm:h-6 rounded-md bg-red-500/20 text-red-400 flex items-center justify-center text-[9px] sm:text-xs shrink-0 border border-red-500/30">
-                                    <i class="fa-solid fa-headset"></i>
-                                </div>
-                                <div>
-                                    <div class="text-[6px] sm:text-[7px] text-white/40 uppercase font-mono">Bantuan & Darurat DPP:</div>
-                                    <div class="font-mono text-[8px] sm:text-[10px] font-bold text-white tracking-wide">
-                                        {{ $user->profile?->emergency_contact_number ?? '0812-6543-2199' }}
-                                    </div>
-                                </div>
+                        {{-- 3. FOOTER: Hotline Sekretariat & Slogan --}}
+                        <div class="pt-1.5 sm:pt-2 border-t border-white/10 flex items-center justify-between text-[8px] sm:text-[9px] relative z-10">
+                            <div class="flex items-center gap-1.5">
+                                <i class="fa-solid fa-phone text-emerald-400 text-[10px]"></i>
+                                <span class="text-white/60">
+                                    Sekretariat DPP: <strong class="text-white font-mono">{{ $user->profile?->emergency_contact_number ?? '0812-6543-2199' }}</strong>
+                                </span>
                             </div>
-
-                            {{-- Holographic Security Emblem --}}
-                            <div class="hidden sm:flex items-center gap-1 px-2 py-0.5 rounded-full bg-white/[0.04] border border-white/10 text-[7px] font-mono text-white/60">
-                                <i class="fa-solid fa-shield-halved text-amber-400 text-[8px]"></i>
-                                <span>AUTHENTIC PASS</span>
-                            </div>
-
-                            {{-- Slogan --}}
                             <div class="text-right">
-                                <div class="font-display font-black text-[9px] sm:text-xs text-smeck-gold tracking-widest drop-shadow">
+                                <div class="font-display font-black text-[9px] sm:text-xs text-smeck-gold tracking-widest">
                                     "SALAM SADA ROHA"
                                 </div>
-                                <div class="text-[6px] sm:text-[7px] font-mono text-emerald-400 font-bold tracking-widest uppercase">
-                                    RIBAT SUDE • PSMS MEDAN
+                                <div class="text-[7px] text-white/40 uppercase tracking-wider">
+                                    Ayam Kinantan Juara
                                 </div>
                             </div>
                         </div>
@@ -823,48 +736,60 @@
                     <i class="fa-solid fa-qrcode"></i>
                     <span>Tampak Belakang (Back View & QR Presensi Gate)</span>
                 </div>
-                <div class="rounded-2xl p-4 sm:p-5 bg-gradient-to-br from-neutral-950 via-slate-950 to-neutral-950 border border-emerald-500/30 text-white shadow-xl relative overflow-hidden print:border-slate-800">
+                <div class="rounded-2xl p-4 sm:p-5 bg-gradient-to-br from-neutral-950 via-slate-950 to-neutral-900 border border-white/15 text-white shadow-xl relative overflow-hidden print:border-slate-800">
                     
-                    {{-- Magnetic Stripe --}}
-                    <div class="h-8 -mx-4 sm:-mx-5 -mt-4 sm:-mt-5 mb-3 holo-stripe border-b border-amber-400/20 shadow-inner flex items-center justify-between px-4">
-                        <span class="text-[7px] sm:text-[8px] font-mono tracking-widest text-white/50 uppercase font-semibold">
-                            ★ SMeCK HOOLIGAN ★ PSMS MEDAN 1950 ★ OFFICIAL SUPPORTER IDENTITY ★ NFC DUAL-INTERFACE PASS ★
+                    {{-- Pita Magnetik Atas --}}
+                    <div class="h-9 -mx-4 sm:-mx-5 -mt-4 sm:-mt-5 mb-3 bg-neutral-900 border-b border-white/10 flex items-center justify-between px-4 sm:px-5">
+                        <span class="text-[8px] sm:text-[9px] font-mono tracking-widest text-white/60 uppercase">
+                            KARTU TANDA ANGGOTA DIGITAL • DPP SMECK HOOLIGAN
                         </span>
-                        <span class="text-[7px] font-mono text-amber-300 font-bold shrink-0">HI-CO 4000 Oe</span>
+                        <span class="text-[8px] sm:text-[9px] font-display font-bold text-smeck-gold tracking-wider">
+                            SADA ROHA
+                        </span>
                     </div>
 
-                    {{-- Middle Body --}}
+                    {{-- Isi Kartu --}}
                     <div class="flex items-center justify-between gap-4">
                         <div class="flex-1 space-y-2">
-                            {{-- Signature Strip --}}
+                            {{-- Area Tanda Tangan --}}
                             <div>
-                                <div class="text-[8px] text-white/60 uppercase font-semibold mb-1 flex items-center justify-between">
-                                    <span>Tanda Tangan Suporter:</span>
-                                    <span class="text-[7px] text-amber-400 font-mono">AUTHORIZED SIGNATURE</span>
+                                <div class="text-[8px] sm:text-[9px] text-white/60 font-medium mb-1">
+                                    Tanda Tangan Pemegang Kartu:
                                 </div>
-                                <div class="flex items-center rounded-lg overflow-hidden border border-emerald-500/40">
-                                    <div class="flex-1 h-7 guilloche-bg flex items-center px-2.5">
+                                <div class="flex items-center rounded-lg overflow-hidden border border-white/15 bg-white">
+                                    <div class="flex-1 h-8 bg-slate-50 flex items-center px-3">
                                         <span class="font-signature text-base text-slate-900 font-bold select-none -rotate-1">
                                             {{ $user->name }}
                                         </span>
                                     </div>
-                                    <div class="h-7 px-2 bg-gradient-to-r from-amber-300 to-amber-500 text-slate-950 flex flex-col items-center justify-center font-mono font-black text-[9px] border-l border-amber-600/40">
-                                        <span>{{ substr(crc32($user->id . 'smeck1950'), 0, 3) ?: '195' }}</span>
+                                    <div class="px-2.5 h-8 bg-emerald-600/15 border-l border-emerald-500/30 flex items-center justify-center">
+                                        <span class="text-[8px] font-bold text-emerald-600 uppercase tracking-wider">
+                                            RESMI
+                                        </span>
                                     </div>
                                 </div>
                             </div>
 
+                            <div class="flex items-center gap-3 text-[8px] sm:text-[9px] font-mono text-white/70">
+                                <div>NIA: <strong class="text-smeck-gold">{{ $user->profile?->nia ?? 'SMCK-2024-1950' }}</strong></div>
+                                <span>•</span>
+                                <div>Basis: <strong class="text-white">{{ $user->chapter?->name ?? 'Medan Kota' }}</strong></div>
+                            </div>
+
                             <p class="text-[8px] text-white/50 leading-relaxed">
-                                Tunjukkan QR Code ini kepada panitia pintu Stadion Teladan untuk verifikasi hak akses tribun & presensi suporter resmi.
+                                Tunjukkan QR Code ini kepada panitia pintu Stadion Teladan untuk verifikasi keanggotaan resmi & presensi tribun matchday.
                             </p>
-                            <div class="text-[8px] text-amber-400 font-bold tracking-wider">
-                                SALAM SADA ROHA • RIBAT SUDE • KINANTAN JUARA
+                            <div class="text-[8px] text-smeck-gold font-bold tracking-wider">
+                                "SALAM SADA ROHA" • AYAM KINANTAN JUARA
                             </div>
                         </div>
 
-                        {{-- QR Viewfinder --}}
-                        <div class="p-1.5 rounded-xl bg-slate-900 border border-emerald-500/40 shrink-0 text-center">
-                            <div class="w-16 h-16 bg-white rounded-lg p-1 flex items-center justify-center">
+                        {{-- Kotak QR Presensi --}}
+                        <div class="p-2 rounded-xl bg-white/[0.04] border border-white/15 shrink-0 text-center flex flex-col items-center">
+                            <div class="text-[7px] sm:text-[8px] font-bold text-emerald-400 uppercase tracking-wider mb-1">
+                                QR Presensi
+                            </div>
+                            <div class="w-16 h-16 bg-white rounded-lg p-1 flex items-center justify-center shadow">
                                 <div id="modal-dynamic-qr" class="w-full h-full flex items-center justify-center">
                                     <svg class="w-full h-full" viewBox="0 0 100 100" fill="none">
                                         <rect width="100" height="100" fill="white"/>
@@ -877,12 +802,12 @@
                                         <rect x="6" y="68" width="26" height="26" rx="2" fill="#052e16"/>
                                         <rect x="10" y="72" width="18" height="18" fill="white"/>
                                         <rect x="13" y="75" width="12" height="12" rx="1.5" fill="#052e16"/>
-                                        <circle cx="50" cy="50" r="10" fill="#052e16" stroke="white" stroke-width="2"/>
-                                        <path d="M47 45 L53 45 L55 52 L50 55 L45 52 Z" fill="#22c55e"/>
+                                        <circle cx="50" cy="50" r="9" fill="#052e16" stroke="white" stroke-width="1.5"/>
+                                        <path d="M47 46 L53 46 L54 52 L50 54 L46 52 Z" fill="#22c55e"/>
                                     </svg>
                                 </div>
                             </div>
-                            <div class="text-[6px] text-white/70 font-mono font-bold mt-1 uppercase">PRESENSI GATE</div>
+                            <div class="text-[6px] text-white/50 font-mono mt-1">Pintu Masuk</div>
                         </div>
                     </div>
                 </div>
