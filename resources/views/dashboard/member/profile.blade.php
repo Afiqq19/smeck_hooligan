@@ -53,6 +53,26 @@
                     <span>Informasi yang Dapat Anda Perbarui</span>
                 </h4>
 
+                {{-- Unggah Pas Foto KTA --}}
+                <div class="p-4 rounded-2xl bg-white/[0.04] border border-white/10 flex flex-col sm:flex-row items-center gap-4 mb-5">
+                    <div class="w-16 h-16 rounded-2xl border-2 border-amber-400/80 bg-smeck-dark-800 overflow-hidden shrink-0 shadow flex items-center justify-center">
+                        @if($user->profile?->profile_photo_path)
+                            <img src="{{ asset('storage/' . $user->profile->profile_photo_path) }}" alt="{{ $user->name }}" class="w-full h-full object-cover">
+                        @else
+                            <div class="w-full h-full bg-gradient-to-br from-emerald-800 to-black flex items-center justify-center text-white text-xl">
+                                <i class="fa-solid fa-camera text-emerald-300"></i>
+                            </div>
+                        @endif
+                    </div>
+                    <div class="flex-1 text-center sm:text-left">
+                        <label class="block font-bold uppercase text-white/80 text-xs mb-1">
+                            <i class="fa-solid fa-image text-amber-300 mr-1"></i> Pas Foto Resmi KTA Digital
+                        </label>
+                        <p class="text-[11px] text-white/50 mb-2">Unggah pas foto tampak wajah jelas untuk dicetak di KTA (Maks. 3MB, format JPG/PNG/WebP).</p>
+                        <input type="file" name="profile_photo" accept="image/jpeg,image/png,image/jpg,image/webp" class="block w-full text-xs text-white/70 file:mr-3 file:py-1.5 file:px-3 file:rounded-xl file:border-0 file:text-xs file:font-bold file:bg-emerald-600 file:text-white hover:file:bg-emerald-500 cursor-pointer">
+                    </div>
+                </div>
+
                 <div class="grid grid-cols-1 md:grid-cols-3 gap-4 text-xs">
                     {{-- No WhatsApp --}}
                     <div>

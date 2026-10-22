@@ -174,7 +174,11 @@
                     <i class="fa-solid fa-rotate text-smeck-green-400"></i>
                     <span>Putar Kartu</span>
                 </button>
-                <button type="button" onclick="openDownloadKtaModal()" class="px-4 py-2.5 rounded-xl bg-amber-500/20 hover:bg-amber-500/30 text-amber-300 border border-amber-500/30 text-xs font-bold flex items-center gap-1.5 transition-all shadow">
+                <a href="{{ route('member.profile') }}" class="px-3.5 py-2.5 rounded-xl bg-white/10 hover:bg-white/15 text-white text-xs font-bold border border-white/10 flex items-center gap-1.5 transition-all" title="Unggah / Perbarui Pas Foto KTA Anda">
+                    <i class="fa-solid fa-camera text-amber-300"></i>
+                    <span>Pasang Pas Foto</span>
+                </a>
+                <button type="button" onclick="openDownloadKtaModal()" class="px-4 py-2.5 rounded-xl bg-emerald-600/30 hover:bg-emerald-600/40 text-emerald-300 border border-emerald-500/30 text-xs font-bold flex items-center gap-1.5 transition-all shadow">
                     <i class="fa-solid fa-download"></i>
                     <span>Unduh KTA (PNG / PDF)</span>
                 </button>
@@ -218,76 +222,86 @@
                             <img src="{{ asset('images/logo-crest.jpg') }}" alt="Watermark" class="w-full h-full object-cover">
                         </div>
 
-                        {{-- Card Header: Logos & Organization --}}
+                        {{-- Card Header: Logos & Mandiri Branding --}}
                         <div class="relative z-10 flex items-center justify-between">
                             <div class="flex items-center gap-3">
-                                <div class="w-10 h-10 sm:w-11 sm:h-11 rounded-xl overflow-hidden border border-smeck-gold/50 shadow-md flex items-center justify-center p-0.5 bg-black">
+                                <div class="w-10 h-10 sm:w-11 sm:h-11 rounded-xl overflow-hidden border border-emerald-400/50 shadow-md flex items-center justify-center p-0.5 bg-black shrink-0">
                                     <img src="{{ asset('images/logo-crest.jpg') }}" alt="Logo SMeCK" class="w-full h-full object-cover rounded-lg">
                                 </div>
                                 <div>
-                                    <div class="font-display font-black text-white text-sm sm:text-base tracking-wider uppercase">
+                                    <div class="font-display font-black text-white text-sm sm:text-base tracking-wider uppercase leading-tight">
                                         SMeCK HOOLIGAN
                                     </div>
-                                    <div class="text-[9px] sm:text-[10px] text-smeck-gold font-bold tracking-widest uppercase">
+                                    <div class="text-[8px] sm:text-[9px] text-emerald-300 font-bold tracking-widest uppercase mt-0.5">
                                         SUPORTER RESMI PSMS MEDAN
                                     </div>
                                 </div>
                             </div>
 
-                            {{-- NFC Contactless Waves + Card Status Badge --}}
-                            <div class="flex items-center gap-2">
-                                <div class="text-white/60 text-lg sm:text-xl">
-                                    <i class="fa-solid fa-wifi rotate-90"></i>
-                                </div>
-                                @if($user->nfcCard && $user->nfcCard->status === 'blocked')
-                                    <span class="px-2 py-0.5 rounded text-[9px] font-bold bg-red-500 text-white uppercase">DIBLOKIR</span>
-                                @else
-                                    <span class="px-2 py-0.5 rounded text-[9px] font-bold bg-smeck-green-500 text-white uppercase tracking-wider">AKTIF</span>
-                                @endif
+                            {{-- Brand Mandiri (Kanan Atas) --}}
+                            <div class="flex items-center gap-1.5 px-3 py-1.5 rounded-xl bg-white/10 backdrop-blur-md border border-white/20 shadow-md">
+                                <svg class="h-4 sm:h-5 w-auto" viewBox="0 0 100 28" fill="none" xmlns="http://www.w3.org/2000/svg">
+                                    <path d="M6 18 C12 8, 22 6, 28 8 C34 10, 36 16, 42 14" stroke="#f59e0b" stroke-width="3.5" stroke-linecap="round"/>
+                                    <path d="M11 20 C16 12, 24 10, 30 12 C36 14, 38 20, 44 18" stroke="#fbbf24" stroke-width="2" stroke-linecap="round"/>
+                                    <text x="46" y="20" fill="#ffffff" font-family="-apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif" font-weight="900" font-size="16" letter-spacing="-0.5">mandiri</text>
+                                </svg>
                             </div>
                         </div>
 
-                        {{-- Card Middle: Gold EMV Chip & Chapter --}}
-                        <div class="relative z-10 my-auto py-2 flex items-center justify-between">
-                            {{-- EMV Gold Chip Graphic --}}
-                            <div class="w-11 h-8 sm:w-12 sm:h-9 rounded-md bg-gradient-to-br from-amber-200 via-amber-400 to-amber-600 shadow-inner border border-amber-300/60 p-1 flex flex-col justify-between">
-                                <div class="h-[1px] bg-amber-800/40 w-full mt-1"></div>
-                                <div class="h-[1px] bg-amber-800/40 w-2/3 mx-auto"></div>
-                                <div class="h-[1px] bg-amber-800/40 w-full mb-1"></div>
+                        {{-- Card Middle: PSMS Medan Crest & Basis Chapter (Chip Emas Dihapus) --}}
+                        <div class="relative z-10 my-auto py-2 flex items-center justify-between gap-3">
+                            {{-- Logo PSMS Medan Club Crest --}}
+                            <div class="flex items-center gap-2.5 bg-black/40 backdrop-blur-sm px-3 py-1.5 rounded-xl border border-white/10 shadow-sm">
+                                <svg class="w-8 h-8 sm:w-9 sm:h-9 shrink-0" viewBox="0 0 100 110" fill="none" xmlns="http://www.w3.org/2000/svg">
+                                    <path d="M50 5 L88 22 C88 65, 50 98, 50 105 C50 98, 12 65, 12 22 Z" fill="#064e3b" stroke="#d4af37" stroke-width="3"/>
+                                    <path d="M50 11 L82 25 C82 62, 50 92, 50 98 C50 92, 18 62, 18 25 Z" fill="#052e16"/>
+                                    <path d="M28 35 C24 48, 26 64, 50 82 C74 64, 76 48, 72 35" stroke="#d4af37" stroke-width="2" stroke-dasharray="3 3"/>
+                                    <path d="M50 25 C50 25, 42 38, 50 58 C58 38, 50 25, 50 25 Z" fill="#22c55e" stroke="#ffffff" stroke-width="1"/>
+                                    <path d="M35 38 C35 38, 38 48, 50 54 C45 42, 35 38, 35 38 Z" fill="#16a34a"/>
+                                    <path d="M65 38 C65 38, 62 48, 50 54 C55 42, 65 38, 65 38 Z" fill="#16a34a"/>
+                                    <circle cx="50" cy="70" r="8" fill="#ffffff" stroke="#0f172a" stroke-width="1.5"/>
+                                    <rect x="22" y="80" width="56" height="13" rx="3" fill="#d4af37"/>
+                                    <text x="50" y="90" fill="#052e16" font-family="'Inter', sans-serif" font-weight="900" font-size="8.5" text-anchor="middle">PSMS MEDAN</text>
+                                </svg>
+                                <div>
+                                    <div class="text-[8px] text-amber-300 font-bold uppercase tracking-widest leading-none">PSMS MEDAN</div>
+                                    <div class="text-xs sm:text-sm font-black text-white font-display tracking-wide mt-0.5">AYAM KINANTAN</div>
+                                </div>
                             </div>
 
                             {{-- Chapter Badge --}}
                             <div class="text-right">
-                                <div class="text-[9px] text-white/40 uppercase font-bold tracking-widest">BASIS WILAYAH</div>
+                                <div class="text-[8px] sm:text-[9px] text-white/50 uppercase font-bold tracking-widest">BASIS CHAPTER</div>
                                 <div class="text-xs sm:text-sm font-bold text-smeck-green-300 font-display">
                                     {{ $user->chapter?->name ?? 'Chapter Medan Kota' }}
                                 </div>
                             </div>
                         </div>
 
-                        {{-- Card Bottom: Profile Photo, Name, NIA & Details --}}
-                        <div class="relative z-10 flex items-end justify-between pt-2 border-t border-white/10">
-                            <div class="flex items-center gap-3">
-                                {{-- Member Photo --}}
-                                <div class="w-12 h-12 sm:w-14 sm:h-14 rounded-xl border-2 border-smeck-green-400/80 bg-smeck-dark-800 overflow-hidden shrink-0 shadow-lg flex items-center justify-center">
+                        {{-- Card Bottom: Profile Photo, Name, NIA & Logo e-money (Nomor KTA Dipindah ke Belakang) --}}
+                        <div class="relative z-10 flex items-end justify-between pt-2 border-t border-white/10 gap-3">
+                            <div class="flex items-center gap-3 min-w-0">
+                                {{-- Member Photo / Pas Foto Anggota --}}
+                                <div class="w-12 h-12 sm:w-14 sm:h-14 rounded-xl border-2 border-amber-400/80 bg-smeck-dark-800 overflow-hidden shrink-0 shadow-lg flex items-center justify-center relative">
                                     @if($user->profile?->profile_photo_path)
                                         <img src="{{ asset('storage/' . $user->profile->profile_photo_path) }}" alt="{{ $user->name }}" class="w-full h-full object-cover">
                                     @else
-                                        <div class="w-full h-full bg-gradient-to-br from-smeck-green-700 to-smeck-dark-900 flex items-center justify-center font-display font-black text-xl text-white">
-                                            {{ strtoupper(substr($user->name, 0, 1)) }}
+                                        <div class="w-full h-full bg-gradient-to-br from-emerald-800 via-smeck-dark-900 to-black flex flex-col items-center justify-center text-white">
+                                            <i class="fa-solid fa-user text-lg text-emerald-300"></i>
+                                            <span class="text-[7px] text-white/50 mt-0.5 uppercase font-bold">FOTO</span>
                                         </div>
                                     @endif
                                 </div>
 
                                 {{-- Name & NIA --}}
-                                <div>
-                                    <div class="font-display font-black text-sm sm:text-base text-white tracking-wide truncate max-w-[180px] sm:max-w-[220px]">
+                                <div class="min-w-0">
+                                    <div class="font-display font-black text-sm sm:text-base text-white tracking-wide truncate max-w-[170px] sm:max-w-[210px]">
                                         {{ strtoupper($user->name) }}
                                     </div>
-                                    <div class="font-mono text-xs sm:text-sm text-smeck-gold font-bold tracking-wider">
+                                    <div class="font-mono text-xs sm:text-sm text-amber-300 font-bold tracking-wider">
                                         {{ $user->profile?->nia ?? 'SMCK-2024-1950' }}
                                     </div>
-                                    <div class="text-[9px] text-white/50 flex items-center gap-2 mt-0.5">
+                                    <div class="text-[8px] sm:text-[9px] text-white/50 flex items-center gap-2 mt-0.5">
                                         <span>GOL: <strong class="text-white">{{ $user->profile?->blood_type ?? 'O' }}</strong></span>
                                         <span>•</span>
                                         <span>EST: <strong class="text-white">{{ $user->profile?->joined_date?->format('Y') ?? '2024' }}</strong></span>
@@ -295,11 +309,18 @@
                                 </div>
                             </div>
 
-                            {{-- Nomor Kartu Fisik KTA --}}
-                            <div class="text-right">
-                                <div class="font-mono text-[9px] text-white/40 tracking-widest uppercase">No. Kartu KTA:</div>
-                                <div class="font-mono text-[10px] sm:text-xs text-smeck-gold font-bold tracking-wider">
-                                    {{ $user->nfcCard?->card_number ?? '6032-9800-2024-1950' }}
+                            {{-- Brand e-money & Contactless (Kanan Bawah) --}}
+                            <div class="flex items-center gap-2 shrink-0">
+                                <div class="text-white/60 text-base sm:text-lg" title="Contactless RFID/NFC">
+                                    <i class="fa-solid fa-wifi rotate-90"></i>
+                                </div>
+                                <div class="bg-white px-2.5 py-1 sm:px-3 sm:py-1.5 rounded-lg shadow-lg border border-white/60 flex items-center justify-center">
+                                    <svg class="h-4 sm:h-5 w-auto" viewBox="0 0 85 24" fill="none" xmlns="http://www.w3.org/2000/svg">
+                                        <text x="2" y="17" fill="#002d62" font-family="-apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif" font-weight="900" font-size="15">e-</text>
+                                        <text x="18" y="17" fill="#002d62" font-family="-apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif" font-weight="900" font-size="15">money</text>
+                                        <path d="M20 5 C25 2, 30 2, 35 5 C40 8, 45 8, 50 5 C55 2, 60 2, 65 5 C70 8, 75 8, 80 5" stroke="#f59e0b" stroke-width="2.5" stroke-linecap="round"/>
+                                        <path d="M23 7.5 C28 4.5, 33 4.5, 38 7.5 C43 10.5, 48 10.5, 53 7.5 C58 4.5, 63 4.5, 68 7.5 C73 10.5, 78 10.5, 82 8" stroke="#ea580c" stroke-width="1.5" stroke-linecap="round"/>
+                                    </svg>
                                 </div>
                             </div>
                         </div>
@@ -782,7 +803,7 @@
                         <img src="{{ $logoBase64 ?: asset('images/logo-crest.jpg') }}" alt="Watermark" class="w-full h-full object-cover">
                     </div>
 
-                    {{-- Header Kartu Depan --}}
+                    {{-- Header Kartu Depan: SMeCK & Mandiri --}}
                     <div class="relative z-10 flex items-center justify-between">
                         <div class="flex items-center gap-2.5">
                             <div class="w-9 h-9 sm:w-10 sm:h-10 rounded-xl overflow-hidden border border-emerald-400/60 p-0.5 bg-black shrink-0 shadow">
@@ -797,40 +818,59 @@
                                 </div>
                             </div>
                         </div>
-                        <div class="flex items-center gap-2">
-                            <i class="fa-solid fa-wifi rotate-90 text-white/50 text-xs sm:text-sm"></i>
-                            <span class="px-2 py-0.5 rounded text-[8px] sm:text-[9px] font-bold bg-smeck-green-500 text-white uppercase tracking-wider shadow-sm">
-                                RESMI & AKTIF
-                            </span>
+
+                        {{-- Brand Mandiri (Kanan Atas) --}}
+                        <div class="flex items-center gap-1 px-2.5 py-1 rounded-xl bg-white/10 backdrop-blur-md border border-white/20 shadow-sm">
+                            <svg class="h-3.5 sm:h-4 w-auto" viewBox="0 0 100 28" fill="none" xmlns="http://www.w3.org/2000/svg">
+                                <path d="M6 18 C12 8, 22 6, 28 8 C34 10, 36 16, 42 14" stroke="#f59e0b" stroke-width="3.5" stroke-linecap="round"/>
+                                <path d="M11 20 C16 12, 24 10, 30 12 C36 14, 38 20, 44 18" stroke="#fbbf24" stroke-width="2" stroke-linecap="round"/>
+                                <text x="46" y="20" fill="#ffffff" font-family="-apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif" font-weight="900" font-size="16" letter-spacing="-0.5">mandiri</text>
+                            </svg>
                         </div>
                     </div>
 
-                    {{-- Tengah: Gold Chip & Basis Chapter --}}
-                    <div class="relative z-10 flex items-center justify-between my-auto py-1">
-                        <div class="w-10 h-7 sm:w-11 sm:h-8 rounded bg-gradient-to-br from-amber-200 via-amber-400 to-amber-600 shadow-inner border border-amber-300/70 p-1 flex flex-col justify-between shrink-0">
-                            <div class="h-[1px] bg-amber-900/40 w-full mt-0.5"></div>
-                            <div class="h-[1px] bg-amber-900/40 w-2/3 mx-auto"></div>
-                            <div class="h-[1px] bg-amber-900/40 w-full mb-0.5"></div>
+                    {{-- Tengah: PSMS Medan Crest & Basis Chapter (Chip Emas Dihapus) --}}
+                    <div class="relative z-10 flex items-center justify-between my-auto py-1 gap-2.5">
+                        {{-- Logo PSMS Medan Club Crest --}}
+                        <div class="flex items-center gap-2 bg-black/40 backdrop-blur-sm px-2.5 py-1 rounded-xl border border-white/10 shadow-sm">
+                            <svg class="w-7 h-7 sm:w-8 sm:h-8 shrink-0" viewBox="0 0 100 110" fill="none" xmlns="http://www.w3.org/2000/svg">
+                                <path d="M50 5 L88 22 C88 65, 50 98, 50 105 C50 98, 12 65, 12 22 Z" fill="#064e3b" stroke="#d4af37" stroke-width="3"/>
+                                <path d="M50 11 L82 25 C82 62, 50 92, 50 98 C50 92, 18 62, 18 25 Z" fill="#052e16"/>
+                                <path d="M28 35 C24 48, 26 64, 50 82 C74 64, 76 48, 72 35" stroke="#d4af37" stroke-width="2" stroke-dasharray="3 3"/>
+                                <path d="M50 25 C50 25, 42 38, 50 58 C58 38, 50 25, 50 25 Z" fill="#22c55e" stroke="#ffffff" stroke-width="1"/>
+                                <path d="M35 38 C35 38, 38 48, 50 54 C45 42, 35 38, 35 38 Z" fill="#16a34a"/>
+                                <path d="M65 38 C65 38, 62 48, 50 54 C55 42, 65 38, 65 38 Z" fill="#16a34a"/>
+                                <circle cx="50" cy="70" r="8" fill="#ffffff" stroke="#0f172a" stroke-width="1.5"/>
+                                <rect x="22" y="80" width="56" height="13" rx="3" fill="#d4af37"/>
+                                <text x="50" y="90" fill="#052e16" font-family="'Inter', sans-serif" font-weight="900" font-size="8.5" text-anchor="middle">PSMS MEDAN</text>
+                            </svg>
+                            <div>
+                                <div class="text-[7px] text-amber-300 font-bold uppercase tracking-widest leading-none">PSMS MEDAN</div>
+                                <div class="text-[11px] sm:text-xs font-black text-white font-display tracking-wide mt-0.5">AYAM KINANTAN</div>
+                            </div>
                         </div>
+
                         <div class="text-right">
-                            <div class="text-[8px] text-white/40 uppercase font-bold tracking-widest">BASIS CHAPTER</div>
+                            <div class="text-[7px] sm:text-[8px] text-white/50 uppercase font-bold tracking-widest">BASIS CHAPTER</div>
                             <div class="text-xs sm:text-sm font-bold text-smeck-green-300 font-display">
                                 {{ $user->chapter?->name ?? 'Chapter Medan Kota' }}
                             </div>
                         </div>
                     </div>
 
-                    {{-- Footer Depan: Foto, Identitas, No Kartu --}}
+                    {{-- Footer Depan: Foto, Identitas & Logo e-money (Nomor Kartu Dipindah ke Belakang) --}}
                     <div class="relative z-10 flex items-end justify-between pt-2 border-t border-white/10 gap-2.5">
                         <div class="flex items-center gap-2.5 min-w-0">
-                            <div class="w-11 h-11 sm:w-12 sm:h-12 rounded-xl border-2 border-smeck-green-400/80 bg-smeck-dark-800 overflow-hidden shrink-0 shadow flex items-center justify-center">
+                            {{-- Pas Foto Anggota --}}
+                            <div class="w-11 h-11 sm:w-12 sm:h-12 rounded-xl border-2 border-amber-400/80 bg-smeck-dark-800 overflow-hidden shrink-0 shadow flex items-center justify-center relative">
                                 @if($photoBase64)
                                     <img src="{{ $photoBase64 }}" alt="{{ $user->name }}" class="w-full h-full object-cover">
                                 @elseif($user->profile?->profile_photo_path)
                                     <img src="{{ asset('storage/' . $user->profile->profile_photo_path) }}" alt="{{ $user->name }}" class="w-full h-full object-cover">
                                 @else
-                                    <div class="w-full h-full bg-gradient-to-br from-smeck-green-700 to-smeck-dark-900 flex items-center justify-center font-display font-black text-lg text-white">
-                                        {{ strtoupper(substr($user->name, 0, 1)) }}
+                                    <div class="w-full h-full bg-gradient-to-br from-emerald-800 via-smeck-dark-900 to-black flex flex-col items-center justify-center text-white">
+                                        <i class="fa-solid fa-user text-base text-emerald-300"></i>
+                                        <span class="text-[6px] text-white/50 mt-0.5 uppercase font-bold">FOTO</span>
                                     </div>
                                 @endif
                             </div>
@@ -838,7 +878,7 @@
                                 <div class="font-display font-black text-xs sm:text-sm text-white tracking-wide truncate max-w-[160px] sm:max-w-[200px]">
                                     {{ strtoupper($user->name) }}
                                 </div>
-                                <div class="font-mono text-[11px] sm:text-xs text-smeck-gold font-bold tracking-wider">
+                                <div class="font-mono text-[11px] sm:text-xs text-amber-300 font-bold tracking-wider">
                                     {{ $user->profile?->nia ?? 'SMCK-2024-1950' }}
                                 </div>
                                 <div class="text-[8px] sm:text-[9px] text-white/50 flex items-center gap-2 mt-0.5">
@@ -848,10 +888,19 @@
                                 </div>
                             </div>
                         </div>
-                        <div class="text-right shrink-0">
-                            <div class="font-mono text-[8px] text-white/40 tracking-widest uppercase">No. Kartu KTA:</div>
-                            <div class="font-mono text-[10px] sm:text-[11px] text-smeck-gold font-bold tracking-wider">
-                                {{ $user->nfcCard?->card_number ?? '6032-9800-2024-1950' }}
+
+                        {{-- Brand e-money & Contactless (Kanan Bawah) --}}
+                        <div class="flex items-center gap-1.5 shrink-0">
+                            <div class="text-white/60 text-xs sm:text-sm" title="Contactless RFID/NFC">
+                                <i class="fa-solid fa-wifi rotate-90"></i>
+                            </div>
+                            <div class="bg-white px-2 py-1 rounded-lg shadow-md border border-white/60 flex items-center justify-center">
+                                <svg class="h-3.5 sm:h-4 w-auto" viewBox="0 0 85 24" fill="none" xmlns="http://www.w3.org/2000/svg">
+                                    <text x="2" y="17" fill="#002d62" font-family="-apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif" font-weight="900" font-size="15">e-</text>
+                                    <text x="18" y="17" fill="#002d62" font-family="-apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif" font-weight="900" font-size="15">money</text>
+                                    <path d="M20 5 C25 2, 30 2, 35 5 C40 8, 45 8, 50 5 C55 2, 60 2, 65 5 C70 8, 75 8, 80 5" stroke="#f59e0b" stroke-width="2.5" stroke-linecap="round"/>
+                                    <path d="M23 7.5 C28 4.5, 33 4.5, 38 7.5 C43 10.5, 48 10.5, 53 7.5 C58 4.5, 63 4.5, 68 7.5 C73 10.5, 78 10.5, 82 8" stroke="#ea580c" stroke-width="1.5" stroke-linecap="round"/>
+                                </svg>
                             </div>
                         </div>
                     </div>
@@ -1007,7 +1056,7 @@
 {{-- ========================================================================= --}}
 <div id="kta-export-staging" style="position: fixed; left: -9999px; top: 0; width: 1016px; height: 635px; overflow: hidden; pointer-events: none; z-index: -9999;" class="print-hide">
     
-    {{-- EXPORT DEPAN: 1016 x 635 px --}}
+    {{-- EXPORT DEPAN: 1016 x 635 px (Standar Cetak PVC 300 DPI) --}}
     <div id="kta-export-front" style="width: 1016px; height: 635px; background: linear-gradient(135deg, #052e16 0%, #064e3b 35%, #0f172a 70%, #020617 100%); color: #ffffff; padding: 44px 48px; box-sizing: border-box; position: relative; font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Helvetica, Arial, sans-serif; display: flex; flex-direction: column; justify-content: space-between; border-radius: 28px; overflow: hidden; border: 3px solid rgba(255,255,255,0.2);">
         
         {{-- Watermark Logo --}}
@@ -1015,59 +1064,78 @@
             <img src="{{ $logoBase64 ?: asset('images/logo-crest.jpg') }}" alt="Watermark" style="width: 100%; height: 100%; object-fit: cover;">
         </div>
 
-        {{-- Header Depan --}}
+        {{-- Header Depan: SMeCK & Mandiri --}}
         <div style="position: relative; z-index: 10; display: flex; align-items: center; justify-content: space-between;">
             <div style="display: flex; align-items: center; gap: 20px;">
-                <div style="width: 80px; height: 80px; border-radius: 18px; border: 2.5px solid #fbbf24; background: #000; padding: 4px; box-sizing: border-box; overflow: hidden; display: flex; align-items: center; justify-content: center;">
+                <div style="width: 80px; height: 80px; border-radius: 18px; border: 2.5px solid #10b981; background: #000; padding: 4px; box-sizing: border-box; overflow: hidden; display: flex; align-items: center; justify-content: center;">
                     <img src="{{ $logoBase64 ?: asset('images/logo-crest.jpg') }}" alt="Logo" style="width: 100%; height: 100%; object-fit: cover; border-radius: 12px;">
                 </div>
                 <div>
                     <div style="font-size: 32px; font-weight: 900; letter-spacing: 2px; text-transform: uppercase; color: #ffffff; line-height: 1.1;">
                         SMeCK HOOLIGAN
                     </div>
-                    <div style="font-size: 15px; font-weight: 800; letter-spacing: 3px; color: #fbbf24; text-transform: uppercase; margin-top: 4px;">
+                    <div style="font-size: 15px; font-weight: 800; letter-spacing: 3px; color: #6ee7b7; text-transform: uppercase; margin-top: 4px;">
                         SUPORTER RESMI PSMS MEDAN
                     </div>
                 </div>
             </div>
-            <div style="display: flex; align-items: center; gap: 16px;">
-                <span style="background: #16a34a; color: #ffffff; font-size: 16px; font-weight: 800; letter-spacing: 2px; padding: 8px 20px; border-radius: 10px; text-transform: uppercase; box-shadow: 0 4px 12px rgba(22,163,74,0.4);">
-                    RESMI & AKTIF
-                </span>
+
+            {{-- Brand Mandiri (Kanan Atas) --}}
+            <div style="display: flex; align-items: center; gap: 10px; background: rgba(255,255,255,0.12); padding: 8px 24px; border-radius: 16px; border: 1.5px solid rgba(255,255,255,0.25);">
+                <svg width="150" height="42" viewBox="0 0 100 28" fill="none" xmlns="http://www.w3.org/2000/svg">
+                    <path d="M6 18 C12 8, 22 6, 28 8 C34 10, 36 16, 42 14" stroke="#f59e0b" stroke-width="3.5" stroke-linecap="round"/>
+                    <path d="M11 20 C16 12, 24 10, 30 12 C36 14, 38 20, 44 18" stroke="#fbbf24" stroke-width="2" stroke-linecap="round"/>
+                    <text x="46" y="20" fill="#ffffff" font-family="-apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif" font-weight="900" font-size="16" letter-spacing="-0.5">mandiri</text>
+                </svg>
             </div>
         </div>
 
-        {{-- Middle Depan: EMV Chip & Chapter --}}
+        {{-- Middle Depan: PSMS Medan Crest & Basis Chapter (Chip Emas Dihapus) --}}
         <div style="position: relative; z-index: 10; display: flex; align-items: center; justify-content: space-between; margin: auto 0; padding: 10px 0;">
-            <div style="width: 100px; height: 72px; border-radius: 12px; background: linear-gradient(135deg, #fef08a, #f59e0b, #b45309); border: 2px solid #fde68a; box-shadow: inset 0 2px 4px rgba(0,0,0,0.3); padding: 8px; box-sizing: border-box; display: flex; flex-direction: column; justify-content: space-between;">
-                <div style="height: 2px; background: rgba(146,64,14,0.5); width: 100%;"></div>
-                <div style="height: 2px; background: rgba(146,64,14,0.5); width: 70%; margin: 0 auto;"></div>
-                <div style="height: 2px; background: rgba(146,64,14,0.5); width: 100%;"></div>
+            {{-- PSMS Medan Club Crest --}}
+            <div style="display: flex; align-items: center; gap: 16px; background: rgba(0,0,0,0.45); padding: 10px 22px; border-radius: 18px; border: 1.5px solid rgba(255,255,255,0.12);">
+                <svg width="60" height="66" viewBox="0 0 100 110" fill="none" xmlns="http://www.w3.org/2000/svg">
+                    <path d="M50 5 L88 22 C88 65, 50 98, 50 105 C50 98, 12 65, 12 22 Z" fill="#064e3b" stroke="#d4af37" stroke-width="3"/>
+                    <path d="M50 11 L82 25 C82 62, 50 92, 50 98 C50 92, 18 62, 18 25 Z" fill="#052e16"/>
+                    <path d="M28 35 C24 48, 26 64, 50 82 C74 64, 76 48, 72 35" stroke="#d4af37" stroke-width="2" stroke-dasharray="3 3"/>
+                    <path d="M50 25 C50 25, 42 38, 50 58 C58 38, 50 25, 50 25 Z" fill="#22c55e" stroke="#ffffff" stroke-width="1"/>
+                    <path d="M35 38 C35 38, 38 48, 50 54 C45 42, 35 38, 35 38 Z" fill="#16a34a"/>
+                    <path d="M65 38 C65 38, 62 48, 50 54 C55 42, 65 38, 65 38 Z" fill="#16a34a"/>
+                    <circle cx="50" cy="70" r="8" fill="#ffffff" stroke="#0f172a" stroke-width="1.5"/>
+                    <rect x="22" y="80" width="56" height="13" rx="3" fill="#d4af37"/>
+                    <text x="50" y="90" fill="#052e16" font-family="'Inter', sans-serif" font-weight="900" font-size="8.5" text-anchor="middle">PSMS MEDAN</text>
+                </svg>
+                <div>
+                    <div style="font-size: 13px; font-weight: 800; letter-spacing: 2.5px; color: #fbbf24; text-transform: uppercase;">PSMS MEDAN</div>
+                    <div style="font-size: 22px; font-weight: 900; color: #ffffff; letter-spacing: 1px; margin-top: 2px;">AYAM KINANTAN</div>
+                </div>
             </div>
+
             <div style="text-align: right;">
-                <div style="font-size: 16px; font-weight: 800; letter-spacing: 3px; color: rgba(255,255,255,0.5); text-transform: uppercase;">
+                <div style="font-size: 15px; font-weight: 800; letter-spacing: 3px; color: rgba(255,255,255,0.5); text-transform: uppercase;">
                     BASIS CHAPTER
                 </div>
-                <div style="font-size: 28px; font-weight: 900; color: #86efac; margin-top: 4px;">
+                <div style="font-size: 26px; font-weight: 900; color: #86efac; margin-top: 4px;">
                     {{ $user->chapter?->name ?? 'Chapter Medan Kota' }}
                 </div>
             </div>
         </div>
 
-        {{-- Footer Depan: Foto, Identitas, No Kartu --}}
+        {{-- Footer Depan: Foto, Identitas, Logo e-money (Nomor KTA Dipindah ke Belakang) --}}
         <div style="position: relative; z-index: 10; display: flex; align-items: flex-end; justify-content: space-between; border-top: 2px solid rgba(255,255,255,0.15); padding-top: 20px;">
             <div style="display: flex; align-items: center; gap: 24px;">
-                <div style="width: 120px; height: 120px; border-radius: 20px; border: 3px solid #4ade80; background: #0f172a; overflow: hidden; display: flex; align-items: center; justify-content: center; box-shadow: 0 8px 24px rgba(0,0,0,0.5);">
+                <div style="width: 120px; height: 120px; border-radius: 20px; border: 3px solid #fbbf24; background: #0f172a; overflow: hidden; display: flex; align-items: center; justify-content: center; box-shadow: 0 8px 24px rgba(0,0,0,0.5);">
                     @if($photoBase64)
                         <img src="{{ $photoBase64 }}" alt="{{ $user->name }}" style="width: 100%; height: 100%; object-fit: cover;">
                     @else
-                        <div style="width: 100%; height: 100%; background: linear-gradient(135deg, #15803d, #022c22); display: flex; align-items: center; justify-content: center; font-size: 54px; font-weight: 900; color: #ffffff;">
-                            {{ strtoupper(substr($user->name, 0, 1)) }}
+                        <div style="width: 100%; height: 100%; background: linear-gradient(135deg, #064e3b, #022c22); display: flex; flex-direction: column; align-items: center; justify-content: center; color: #ffffff;">
+                            <div style="font-size: 42px;">👤</div>
+                            <div style="font-size: 11px; font-weight: 800; color: rgba(255,255,255,0.6); letter-spacing: 2px; margin-top: 2px;">PAS FOTO</div>
                         </div>
                     @endif
                 </div>
                 <div>
-                    <div style="font-size: 32px; font-weight: 900; color: #ffffff; letter-spacing: 1px; max-width: 440px; white-space: nowrap; overflow: hidden; text-overflow: ellipsis;">
+                    <div style="font-size: 32px; font-weight: 900; color: #ffffff; letter-spacing: 1px; max-width: 480px; white-space: nowrap; overflow: hidden; text-overflow: ellipsis;">
                         {{ strtoupper($user->name) }}
                     </div>
                     <div style="font-size: 24px; font-family: monospace; font-weight: 900; color: #fbbf24; letter-spacing: 2px; margin-top: 4px;">
@@ -1080,12 +1148,21 @@
                     </div>
                 </div>
             </div>
-            <div style="text-align: right;">
-                <div style="font-size: 15px; font-family: monospace; font-weight: 700; color: rgba(255,255,255,0.5); letter-spacing: 2px; text-transform: uppercase;">
-                    NO. KARTU KTA:
+
+            {{-- Brand e-money & Contactless Waves (Kanan Bawah) --}}
+            <div style="display: flex; align-items: center; gap: 14px;">
+                <div style="font-size: 28px; color: rgba(255,255,255,0.7); transform: rotate(90deg); display: inline-block;">
+                    <svg width="28" height="28" viewBox="0 0 24 24" fill="currentColor">
+                        <path d="M12 3c-4.97 0-9 4.03-9 9 0 2.12.74 4.07 1.97 5.61L6.44 16.2C5.55 14.96 5 13.55 5 12c0-3.86 3.14-7 7-7s7 3.14 7 7c0 1.55-.55 2.96-1.44 4.2l1.47 1.41C20.26 16.07 21 14.12 21 12c0-4.97-4.03-9-9-9zm0 4c-2.76 0-5 2.24-5 5 0 1.25.46 2.39 1.22 3.28l1.44-1.44C9.25 13.37 9 12.71 9 12c0-1.65 1.35-3 3-3s3 1.35 3 3c0 .71-.25 1.37-.66 1.84l1.44 1.44C16.54 14.39 17 13.25 17 12c0-2.76-2.24-5-5-5zm0 4c-.55 0-1 .45-1 1s.45 1 1 1 1-.45 1-1-.45-1-1-1z"/>
+                    </svg>
                 </div>
-                <div style="font-size: 24px; font-family: monospace; font-weight: 900; color: #fbbf24; letter-spacing: 2px; margin-top: 4px;">
-                    {{ $user->nfcCard?->card_number ?? '6032-9800-2024-1950' }}
+                <div style="background: #ffffff; padding: 10px 24px; border-radius: 14px; box-shadow: 0 4px 16px rgba(0,0,0,0.3); border: 1.5px solid rgba(255,255,255,0.8); display: flex; align-items: center; justify-content: center;">
+                    <svg width="130" height="38" viewBox="0 0 85 24" fill="none" xmlns="http://www.w3.org/2000/svg">
+                        <text x="2" y="17" fill="#002d62" font-family="-apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif" font-weight="900" font-size="15">e-</text>
+                        <text x="18" y="17" fill="#002d62" font-family="-apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif" font-weight="900" font-size="15">money</text>
+                        <path d="M20 5 C25 2, 30 2, 35 5 C40 8, 45 8, 50 5 C55 2, 60 2, 65 5 C70 8, 75 8, 80 5" stroke="#f59e0b" stroke-width="2.5" stroke-linecap="round"/>
+                        <path d="M23 7.5 C28 4.5, 33 4.5, 38 7.5 C43 10.5, 48 10.5, 53 7.5 C58 4.5, 63 4.5, 68 7.5 C73 10.5, 78 10.5, 82 8" stroke="#ea580c" stroke-width="1.5" stroke-linecap="round"/>
+                    </svg>
                 </div>
             </div>
         </div>
@@ -1403,34 +1480,55 @@
             ctx.font = '700 15px sans-serif';
             ctx.fillText('SUPORTER RESMI PSMS MEDAN', 145, 105);
 
-            ctx.fillStyle = '#16a34a';
+            // Brand Mandiri (Kanan Atas)
+            ctx.fillStyle = 'rgba(255, 255, 255, 0.12)';
             ctx.beginPath();
-            ctx.roundRect(830, 48, 138, 42, 8);
+            ctx.roundRect(800, 42, 168, 50, 12);
             ctx.fill();
-            ctx.fillStyle = '#ffffff';
-            ctx.font = '800 15px sans-serif';
-            ctx.fillText('RESMI & AKTIF', 845, 74);
-
-            const chipGrad = ctx.createLinearGradient(48, 190, 148, 255);
-            chipGrad.addColorStop(0, '#fde68a');
-            chipGrad.addColorStop(0.5, '#f59e0b');
-            chipGrad.addColorStop(1, '#b45309');
-            ctx.fillStyle = chipGrad;
-            ctx.beginPath();
-            ctx.roundRect(48, 190, 95, 65, 10);
-            ctx.fill();
-            ctx.strokeStyle = '#fef08a';
-            ctx.lineWidth = 2;
+            ctx.strokeStyle = 'rgba(255, 255, 255, 0.25)';
+            ctx.lineWidth = 1.5;
             ctx.stroke();
+
+            // Mandiri golden swoosh
+            ctx.strokeStyle = '#f59e0b';
+            ctx.lineWidth = 4;
+            ctx.beginPath();
+            ctx.arc(825, 68, 12, 1 * Math.PI, 1.8 * Math.PI);
+            ctx.stroke();
+            ctx.strokeStyle = '#fbbf24';
+            ctx.lineWidth = 2.5;
+            ctx.beginPath();
+            ctx.arc(827, 65, 8, 1 * Math.PI, 1.8 * Math.PI);
+            ctx.stroke();
+
+            ctx.fillStyle = '#ffffff';
+            ctx.font = '900 22px sans-serif';
+            ctx.fillText('mandiri', 848, 74);
+
+            // Middle: PSMS Medan Emblem (Chip Dihapus)
+            ctx.fillStyle = 'rgba(0, 0, 0, 0.45)';
+            ctx.beginPath();
+            ctx.roundRect(48, 185, 280, 80, 16);
+            ctx.fill();
+            ctx.strokeStyle = 'rgba(255, 255, 255, 0.12)';
+            ctx.lineWidth = 1.5;
+            ctx.stroke();
+
+            ctx.fillStyle = '#d4af37';
+            ctx.font = '800 13px sans-serif';
+            ctx.fillText('PSMS MEDAN 1950', 70, 218);
+            ctx.fillStyle = '#ffffff';
+            ctx.font = '900 22px sans-serif';
+            ctx.fillText('AYAM KINANTAN', 70, 246);
 
             ctx.textAlign = 'right';
             ctx.fillStyle = 'rgba(255, 255, 255, 0.5)';
-            ctx.font = '700 16px sans-serif';
-            ctx.fillText('BASIS CHAPTER', 968, 205);
+            ctx.font = '700 15px sans-serif';
+            ctx.fillText('BASIS CHAPTER', 968, 215);
 
             ctx.fillStyle = '#86efac';
-            ctx.font = '900 28px sans-serif';
-            ctx.fillText("{{ $user->chapter?->name ?? 'Chapter Medan Kota' }}", 968, 245);
+            ctx.font = '900 26px sans-serif';
+            ctx.fillText("{{ $user->chapter?->name ?? 'Chapter Medan Kota' }}", 968, 250);
             ctx.textAlign = 'left';
 
             ctx.strokeStyle = 'rgba(255, 255, 255, 0.15)';
@@ -1452,15 +1550,25 @@
             ctx.font = '16px sans-serif';
             ctx.fillText("GOL: {{ $user->profile?->blood_type ?? 'O' }}  •  EST: {{ $user->profile?->joined_date?->format('Y') ?? '2024' }}", 200, 585);
 
-            ctx.textAlign = 'right';
-            ctx.fillStyle = 'rgba(255, 255, 255, 0.4)';
-            ctx.font = '14px monospace';
-            ctx.fillText('NO. KARTU KTA:', 968, 545);
+            // Brand e-money (Kanan Bawah)
+            ctx.fillStyle = '#ffffff';
+            ctx.beginPath();
+            ctx.roundRect(810, 530, 158, 52, 14);
+            ctx.fill();
+            ctx.strokeStyle = 'rgba(255, 255, 255, 0.8)';
+            ctx.lineWidth = 2;
+            ctx.stroke();
 
-            ctx.fillStyle = '#fbbf24';
-            ctx.font = 'bold 22px monospace';
-            ctx.fillText("{{ $user->nfcCard?->card_number ?? '6032-9800-2024-1950' }}", 968, 575);
-            ctx.textAlign = 'left';
+            ctx.fillStyle = '#002d62';
+            ctx.font = '900 26px sans-serif';
+            ctx.fillText('e-money', 835, 567);
+
+            // e-money orange swoosh
+            ctx.strokeStyle = '#f59e0b';
+            ctx.lineWidth = 3.5;
+            ctx.beginPath();
+            ctx.arc(885, 545, 18, 1.1 * Math.PI, 1.8 * Math.PI);
+            ctx.stroke();
 
             const logoSrc = "{{ $logoBase64 }}";
             const photoSrc = "{{ $photoBase64 }}";
