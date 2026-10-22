@@ -148,15 +148,23 @@
     }
 
     $mandiriBase64 = '';
-    $mandiriPath = public_path('logoKTA/Bank_Mandiri_logo_2016.svg.webp');
+    $mandiriPath = public_path('logoKTA/logo_mandiri_resmi.png');
+    if (!file_exists($mandiriPath)) {
+        $mandiriPath = public_path('logoKTA/Bank_Mandiri_logo_2016.svg.webp');
+    }
     if (file_exists($mandiriPath)) {
-        $mandiriBase64 = 'data:image/webp;base64,' . base64_encode(file_get_contents($mandiriPath));
+        $mime = str_ends_with($mandiriPath, '.webp') ? 'image/webp' : 'image/png';
+        $mandiriBase64 = 'data:' . $mime . ';base64,' . base64_encode(file_get_contents($mandiriPath));
     }
 
     $emoneyBase64 = '';
-    $emoneyPath = public_path('logoKTA/logo-mandiri-e-money-png-svg.webp');
+    $emoneyPath = public_path('logoKTA/logo_emoney_resmi.png');
+    if (!file_exists($emoneyPath)) {
+        $emoneyPath = public_path('logoKTA/logo-mandiri-e-money-png-svg.webp');
+    }
     if (file_exists($emoneyPath)) {
-        $emoneyBase64 = 'data:image/webp;base64,' . base64_encode(file_get_contents($emoneyPath));
+        $mime = str_ends_with($emoneyPath, '.webp') ? 'image/webp' : 'image/png';
+        $emoneyBase64 = 'data:' . $mime . ';base64,' . base64_encode(file_get_contents($emoneyPath));
     }
 @endphp
 <div class="space-y-8 max-w-7xl mx-auto">
@@ -257,8 +265,8 @@
                             </div>
 
                             {{-- Brand Mandiri (Kanan Atas) --}}
-                            <div class="flex items-center px-2.5 py-1 sm:px-3 sm:py-1.5 rounded-xl bg-white/95 backdrop-blur-md border border-white/60 shadow-md shrink-0">
-                                <img src="{{ $mandiriBase64 ?: asset('logoKTA/Bank_Mandiri_logo_2016.svg.webp') }}" alt="Bank Mandiri" class="h-3.5 sm:h-4.5 w-auto object-contain">
+                            <div class="flex items-center px-3 py-1.5 rounded-xl bg-white/95 backdrop-blur-md border border-white/60 shadow-md shrink-0">
+                                <img src="{{ $mandiriBase64 ?: asset('logoKTA/logo_mandiri_resmi.png') }}" alt="Bank Mandiri" class="h-4 sm:h-5 w-auto object-contain">
                             </div>
                         </div>
 
@@ -315,14 +323,9 @@
                                 </div>
                             </div>
 
-                            {{-- Brand e-money & Contactless (Kanan Bawah) --}}
-                            <div class="flex items-center gap-2 shrink-0">
-                                <div class="text-white/60 text-base sm:text-lg" title="Contactless RFID/NFC">
-                                    <i class="fa-solid fa-wifi rotate-90"></i>
-                                </div>
-                                <div class="bg-white px-2 py-1 sm:px-2.5 sm:py-1 rounded-xl shadow-lg border border-white/60 flex items-center justify-center overflow-hidden">
-                                    <img src="{{ $emoneyBase64 ?: asset('logoKTA/logo-mandiri-e-money-png-svg.webp') }}" alt="e-money" class="h-6 sm:h-7 w-auto object-contain rounded-md">
-                                </div>
+                            {{-- Brand e-money (Bawah Sebelah Kanan) --}}
+                            <div class="bg-white px-3 py-1.5 sm:px-3.5 sm:py-2 rounded-xl shadow-lg border border-white/80 flex items-center justify-center shrink-0">
+                                <img src="{{ $emoneyBase64 ?: asset('logoKTA/logo_emoney_resmi.png') }}" alt="e-money" class="h-5 sm:h-6 w-auto object-contain">
                             </div>
                         </div>
 
@@ -821,8 +824,8 @@
                         </div>
 
                         {{-- Brand Mandiri (Kanan Atas) --}}
-                        <div class="flex items-center px-2 py-0.5 sm:px-2.5 sm:py-1 rounded-xl bg-white/95 backdrop-blur-md border border-white/60 shadow-sm shrink-0">
-                            <img src="{{ $mandiriBase64 ?: asset('logoKTA/Bank_Mandiri_logo_2016.svg.webp') }}" alt="Bank Mandiri" class="h-3 sm:h-3.5 w-auto object-contain">
+                        <div class="flex items-center px-2.5 py-1 rounded-xl bg-white/95 backdrop-blur-md border border-white/60 shadow-sm shrink-0">
+                            <img src="{{ $mandiriBase64 ?: asset('logoKTA/logo_mandiri_resmi.png') }}" alt="Bank Mandiri" class="h-3.5 sm:h-4 w-auto object-contain">
                         </div>
                     </div>
 
@@ -878,14 +881,9 @@
                             </div>
                         </div>
 
-                        {{-- Brand e-money & Contactless (Kanan Bawah) --}}
-                        <div class="flex items-center gap-1.5 shrink-0">
-                            <div class="text-white/60 text-xs sm:text-sm" title="Contactless RFID/NFC">
-                                <i class="fa-solid fa-wifi rotate-90"></i>
-                            </div>
-                            <div class="bg-white px-1.5 py-0.5 sm:px-2 sm:py-1 rounded-lg shadow-md border border-white/60 flex items-center justify-center overflow-hidden">
-                                <img src="{{ $emoneyBase64 ?: asset('logoKTA/logo-mandiri-e-money-png-svg.webp') }}" alt="e-money" class="h-5 sm:h-6 w-auto object-contain rounded">
-                            </div>
+                        {{-- Brand e-money (Bawah Sebelah Kanan) --}}
+                        <div class="bg-white px-2.5 py-1 rounded-lg shadow-md border border-white/80 flex items-center justify-center shrink-0">
+                            <img src="{{ $emoneyBase64 ?: asset('logoKTA/logo_emoney_resmi.png') }}" alt="e-money" class="h-4.5 sm:h-5 w-auto object-contain">
                         </div>
                     </div>
                 </div>
@@ -1065,8 +1063,8 @@
             </div>
 
             {{-- Brand Mandiri (Kanan Atas) --}}
-            <div style="display: flex; align-items: center; background: rgba(255,255,255,0.95); padding: 6px 18px; border-radius: 14px; border: 1.5px solid rgba(255,255,255,0.8); box-shadow: 0 4px 16px rgba(0,0,0,0.3);">
-                <img src="{{ $mandiriBase64 ?: asset('logoKTA/Bank_Mandiri_logo_2016.svg.webp') }}" alt="Bank Mandiri" style="height: 34px; width: auto; object-fit: contain;">
+            <div style="display: flex; align-items: center; background: rgba(255,255,255,0.95); padding: 8px 24px; border-radius: 16px; border: 1.5px solid rgba(255,255,255,0.8); box-shadow: 0 4px 16px rgba(0,0,0,0.3);">
+                <img src="{{ $mandiriBase64 ?: asset('logoKTA/logo_mandiri_resmi.png') }}" alt="Bank Mandiri" style="height: 38px; width: auto; object-fit: contain;">
             </div>
         </div>
 
@@ -1121,16 +1119,9 @@
                 </div>
             </div>
 
-            {{-- Brand e-money & Contactless Waves (Kanan Bawah) --}}
-            <div style="display: flex; align-items: center; gap: 14px;">
-                <div style="font-size: 28px; color: rgba(255,255,255,0.7); transform: rotate(90deg); display: inline-block;">
-                    <svg width="28" height="28" viewBox="0 0 24 24" fill="currentColor">
-                        <path d="M12 3c-4.97 0-9 4.03-9 9 0 2.12.74 4.07 1.97 5.61L6.44 16.2C5.55 14.96 5 13.55 5 12c0-3.86 3.14-7 7-7s7 3.14 7 7c0 1.55-.55 2.96-1.44 4.2l1.47 1.41C20.26 16.07 21 14.12 21 12c0-4.97-4.03-9-9-9zm0 4c-2.76 0-5 2.24-5 5 0 1.25.46 2.39 1.22 3.28l1.44-1.44C9.25 13.37 9 12.71 9 12c0-1.65 1.35-3 3-3s3 1.35 3 3c0 .71-.25 1.37-.66 1.84l1.44 1.44C16.54 14.39 17 13.25 17 12c0-2.76-2.24-5-5-5zm0 4c-.55 0-1 .45-1 1s.45 1 1 1 1-.45 1-1-.45-1-1-1z"/>
-                    </svg>
-                </div>
-                <div style="background: #ffffff; padding: 6px 14px; border-radius: 14px; box-shadow: 0 4px 16px rgba(0,0,0,0.3); border: 1.5px solid rgba(255,255,255,0.8); display: flex; align-items: center; justify-content: center; overflow: hidden;">
-                    <img src="{{ $emoneyBase64 ?: asset('logoKTA/logo-mandiri-e-money-png-svg.webp') }}" alt="e-money" style="height: 52px; width: auto; object-fit: contain; border-radius: 8px;">
-                </div>
+            {{-- Brand e-money (Bawah Sebelah Kanan) --}}
+            <div style="background: #ffffff; padding: 10px 24px; border-radius: 16px; box-shadow: 0 4px 16px rgba(0,0,0,0.3); border: 1.5px solid rgba(255,255,255,0.8); display: flex; align-items: center; justify-content: center;">
+                <img src="{{ $emoneyBase64 ?: asset('logoKTA/logo_emoney_resmi.png') }}" alt="e-money" style="height: 48px; width: auto; object-fit: contain;">
             </div>
         </div>
     </div>
