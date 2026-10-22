@@ -222,7 +222,7 @@
                         </div>
                         <div class="text-right">
                             <div class="text-[8px] text-white/40 uppercase font-bold">BASIS WILAYAH</div>
-                            <div class="text-[11px] font-bold text-smeck-green-300">{{ $c->user->chapter?->name ?? 'DPP Pusat' }}</div>
+                            <div class="text-[11px] font-bold text-smeck-green-300">{{ $c->user->chapter?->name ?? 'Chapter Pusat' }}</div>
                         </div>
                     </div>
 

@@ -1,7 +1,7 @@
 @extends('layouts.app')
 
 @section('title', 'Dashboard Utama Pusat')
-@section('header_title', 'Dashboard DPP Pusat SMeCK Hooligan')
+@section('header_title', 'Dashboard Pengurus Pusat SMeCK Hooligan')
 @section('header_subtitle', 'Pusat komando statistik keanggotaan nasional, monitoring chapter, dan peredaran KTA NFC')
 
 @section('content')
@@ -18,7 +18,7 @@
                 </div>
                 <div>
                     <div class="inline-flex items-center gap-2 px-3 py-1 rounded-full bg-red-500/20 text-red-300 text-xs font-bold uppercase tracking-wider mb-2">
-                        <i class="fa-solid fa-crown mr-1"></i> Komando Pusat DPP SMeCK Hooligan Indonesia
+                        <i class="fa-solid fa-crown mr-1"></i> Komando Pengurus Pusat SMeCK Hooligan Indonesia
                     </div>
                     <h1 class="font-display font-black text-2xl sm:text-3xl text-white">
                         Statistik Nasional Suporter PSMS Medan
@@ -36,7 +36,7 @@
                 </a>
                 <a href="{{ route('superadmin.broadcast') }}" class="px-4 py-2.5 rounded-xl bg-white/10 hover:bg-white/15 text-white font-bold text-xs border border-white/10 flex items-center gap-2 transition-all">
                     <i class="fa-solid fa-bullhorn"></i>
-                    <span>Broadcast DPP</span>
+                    <span>Broadcast Pengumuman</span>
                 </a>
             </div>
         </div>
@@ -210,7 +210,7 @@
                                 <div class="min-w-0">
                                     <div class="text-xs font-bold text-white truncate">{{ $m->name }}</div>
                                     <div class="text-[10px] text-white/40 truncate">
-                                        {{ $m->chapter?->name ?? 'DPP Pusat' }} • <span class="text-smeck-gold font-mono">{{ $m->profile?->nia ?? '-' }}</span>
+                                        {{ $m->chapter?->name ?? 'Chapter Pusat' }} • <span class="text-smeck-gold font-mono">{{ $m->profile?->nia ?? '-' }}</span>
                                     </div>
                                 </div>
                             </div>

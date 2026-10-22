@@ -204,7 +204,7 @@
                 {{-- Group 1: Utama & Data Basis --}}
                 <div class="space-y-1">
                     <div class="px-3 mb-2 text-[10px] font-bold uppercase tracking-wider text-red-400 flex items-center justify-between">
-                        <span>Pusat DPP · Keanggotaan</span>
+                        <span>Pengurus Pusat · Keanggotaan</span>
                         <span class="px-1.5 py-0.5 rounded text-[9px] bg-red-500/20 text-red-300 font-mono">PUSAT</span>
                     </div>
                     <nav class="space-y-1">
@@ -278,7 +278,7 @@
                     <nav class="space-y-1">
                         <a href="{{ route('superadmin.broadcast') }}" class="flex items-center gap-3 px-3.5 py-2.5 rounded-xl text-xs font-semibold transition-all {{ request()->routeIs('superadmin.broadcast*') ? 'bg-red-600 text-white shadow-lg shadow-red-700/30' : 'text-white/70 hover:text-white hover:bg-white/5' }}">
                             <i class="fa-solid fa-bullhorn w-5 text-center text-red-400 {{ request()->routeIs('superadmin.broadcast*') ? 'text-white' : '' }}"></i>
-                            <span>Broadcast Maklumat DPP</span>
+                            <span>Broadcast Maklumat Resmi</span>
                         </a>
 
                         <a href="{{ route('superadmin.standings') }}" class="flex items-center gap-3 px-3.5 py-2.5 rounded-xl text-xs font-semibold transition-all {{ request()->routeIs('superadmin.standings*') ? 'bg-red-600 text-white shadow-lg shadow-red-700/30' : 'text-white/70 hover:text-white hover:bg-white/5' }}">

@@ -148,7 +148,7 @@
                         Horas, <span class="text-gradient-smeck">{{ $user->name }}</span>!
                     </h1>
                     <p class="text-sm text-white/60 mt-1 max-w-xl">
-                        KTA Digital Anda terverifikasi resmi oleh Pengurus Pusat SMeCK Hooligan. Tunjukkan QR Code atau tap kartu fisik NFC di gate masuk Stadion Teladan.
+                        KTA Digital Anda terverifikasi resmi oleh Pengurus {{ $user->chapter?->name ?? 'Chapter' }} SMeCK Hooligan. Tunjukkan QR Code atau tap kartu fisik NFC di gate masuk Stadion Teladan.
                     </p>
                 </div>
             </div>
@@ -302,7 +302,7 @@
                         <div class="-mx-4 -mt-4 sm:-mx-5 sm:-mt-5">
                             <div class="h-9 bg-neutral-900 border-b border-white/10 flex items-center justify-between px-4 sm:px-5">
                                 <span class="text-[8px] sm:text-[9px] font-mono tracking-widest text-white/60 uppercase">
-                                    KARTU TANDA ANGGOTA DIGITAL • DPP SMECK HOOLIGAN
+                                    KARTU TANDA ANGGOTA DIGITAL • {{ strtoupper($user->chapter?->name ?? 'CHAPTER SMECK HOOLIGAN') }}
                                 </span>
                                 <span class="text-[8px] sm:text-[9px] font-display font-bold text-smeck-gold tracking-wider">
                                     SADA ROHA
@@ -356,9 +356,9 @@
 
                                 {{-- Ketentuan Penggunaan (Bahasa Normal & Santun) --}}
                                 <div class="text-[7px] sm:text-[8px] text-white/50 leading-relaxed space-y-0.5">
-                                    <div>• Kartu ini adalah bukti keanggotaan sah DPP SMeCK Hooligan.</div>
+                                    <div>• Kartu ini adalah bukti keanggotaan sah SMeCK Hooligan {{ $user->chapter?->name ? '('.$user->chapter->name.')' : '' }}.</div>
                                     <div>• Tunjukkan kartu saat presensi dan penukaran tiket di stadion.</div>
-                                    <div>• Jika menemukan kartu ini, harap kembalikan ke Sekretariat DPP.</div>
+                                    <div>• Jika menemukan kartu ini, harap kembalikan ke Pengurus {{ $user->chapter?->name ?? 'Chapter' }}.</div>
                                 </div>
                             </div>
 
@@ -423,7 +423,7 @@
                             <div class="flex items-center gap-1.5">
                                 <i class="fa-solid fa-phone text-emerald-400 text-[10px]"></i>
                                 <span class="text-white/60">
-                                    Sekretariat DPP: <strong class="text-white font-mono">{{ $user->profile?->emergency_contact_number ?? '0812-6543-2199' }}</strong>
+                                    Pengurus {{ $user->chapter?->name ?? 'Chapter' }}: <strong class="text-white font-mono">{{ $user->profile?->emergency_contact_number ?? '0812-6543-2199' }}</strong>
                                 </span>
                             </div>
                             <div class="text-right">
@@ -842,7 +842,7 @@
                     {{-- Pita Magnetik Atas --}}
                     <div class="h-8 sm:h-9 -mx-4 sm:-mx-5 -mt-4 sm:-mt-5 mb-2 bg-neutral-900 border-b border-white/10 flex items-center justify-between px-4 sm:px-5">
                         <span class="text-[8px] sm:text-[9px] font-mono tracking-widest text-white/60 uppercase">
-                            KARTU TANDA ANGGOTA DIGITAL • DPP SMECK HOOLIGAN
+                            KARTU TANDA ANGGOTA DIGITAL • {{ strtoupper($user->chapter?->name ?? 'CHAPTER SMECK HOOLIGAN') }}
                         </span>
                         <span class="text-[8px] sm:text-[9px] font-display font-bold text-smeck-gold tracking-wider">
                             SADA ROHA
@@ -878,8 +878,9 @@
                             </div>
 
                             <div class="text-[7px] sm:text-[8px] text-white/50 leading-tight space-y-0.5">
-                                <div>• Bukti keanggotaan sah DPP SMeCK Hooligan suporter PSMS Medan.</div>
+                                <div>• Bukti keanggotaan sah SMeCK Hooligan {{ $user->chapter?->name ? '('.$user->chapter->name.')' : '' }} suporter PSMS Medan.</div>
                                 <div>• Tunjukkan saat verifikasi tiket dan gate masuk Stadion Teladan.</div>
+                                <div>• Jika menemukan kartu ini, harap kembalikan ke Pengurus {{ $user->chapter?->name ?? 'Chapter' }}.</div>
                             </div>
                         </div>
 
@@ -913,7 +914,7 @@
                     {{-- Footer Belakang --}}
                     <div class="pt-1.5 border-t border-white/10 flex items-center justify-between text-[7px] sm:text-[8px]">
                         <span class="text-white/60">
-                            Sekretariat DPP: <strong class="text-white font-mono">{{ $user->profile?->emergency_contact_number ?? '0812-6543-2199' }}</strong>
+                            Pengurus {{ $user->chapter?->name ?? 'Chapter' }}: <strong class="text-white font-mono">{{ $user->profile?->emergency_contact_number ?? '0812-6543-2199' }}</strong>
                         </span>
                         <span class="font-display font-bold text-smeck-gold tracking-wider">
                             "SALAM SADA ROHA"

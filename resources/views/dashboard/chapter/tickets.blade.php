@@ -326,7 +326,7 @@
                     <div class="font-bold">Divisi Awaydays Pusat</div>
                     <div class="h-16"></div>
                     <div class="font-bold underline">(...................................)</div>
-                    <div class="text-[10px] text-slate-500">DPP SMeCK Hooligan</div>
+                    <div class="text-[10px] text-slate-500">Pengurus Pusat SMeCK Hooligan</div>
                 </div>
             </div>
         </div>

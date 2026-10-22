@@ -49,7 +49,7 @@
             <i class="fa-solid fa-circle-plus text-red-500"></i>
             <span>Daftarkan Basis / Chapter Baru</span>
         </h3>
-        <p class="text-xs text-white/50 mb-6">Daftarkan korwil dan basecamp basis wilayah baru untuk pembagian alokasi tiket, verifikasi anggota, dan jalur koordinasi DPP.</p>
+        <p class="text-xs text-white/50 mb-6">Daftarkan korwil dan basecamp basis wilayah baru untuk pembagian alokasi tiket, verifikasi anggota, dan jalur koordinasi pengurus pusat.</p>
 
         <form action="{{ route('superadmin.chapters.store') }}" method="POST" class="space-y-4">
             @csrf
@@ -86,7 +86,7 @@
         <div class="flex items-center justify-between mb-4">
             <div>
                 <h3 class="font-display font-bold text-lg text-white">Daftar Basis / Chapter Resmi Aktif</h3>
-                <p class="text-xs text-white/40">Seluruh cabang suporter SMeCK Hooligan yang terverifikasi di DPP</p>
+                <p class="text-xs text-white/40">Seluruh cabang suporter SMeCK Hooligan yang terverifikasi resmi</p>
             </div>
             <span class="text-xs text-white/50 font-mono">{{ $totalChapters }} Basis Terdaftar</span>
         </div>

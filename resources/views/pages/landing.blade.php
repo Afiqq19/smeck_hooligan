@@ -107,7 +107,7 @@
                 </div>
 
                 <h3 class="font-display font-bold text-xl text-white mb-2">Berita & Maklumat Pers</h3>
-                <p class="text-white/50 text-xs sm:text-sm leading-relaxed mb-4">Rilis resmi komando DPP SMeCK Hooligan, kabar PSMS Medan, dan info awaydays.</p>
+                <p class="text-white/50 text-xs sm:text-sm leading-relaxed mb-4">Rilis resmi pengurus dan basis Chapter SMeCK Hooligan, kabar PSMS Medan, dan info awaydays.</p>
 
                 <div class="space-y-2.5">
                     @forelse($latestNews ?? [] as $news)
@@ -117,7 +117,7 @@
                                     @if($news->category === 'Maklumat DPP') bg-amber-500/20 text-amber-300
                                     @elseif($news->category === 'Info Pertandingan') bg-emerald-500/20 text-emerald-300
                                     @else bg-blue-500/20 text-blue-300 @endif">
-                                    {{ $news->category }}
+                                    {{ $news->category === 'Maklumat DPP' ? 'Maklumat Resmi' : $news->category }}
                                 </span>
                                 <span class="text-[10px] text-white/40 font-mono">
                                     {{ $news->published_at ? $news->published_at->format('d/m/Y') : '' }}
@@ -351,7 +351,7 @@
                                 🟡 Korwil Tembung (NIA)
                             </button>
                             <button onclick="checkSample('SMCK-2003-0001')" class="px-2.5 py-1 rounded-lg bg-white/5 hover:bg-white/10 text-white/70 hover:text-white border border-white/10 text-[11px] font-mono transition-colors">
-                                🔴 Ketua Umum DPP
+                                🔴 Ketua Umum SMeCK
                             </button>
                         </div>
                     </div>
@@ -386,7 +386,7 @@
                     <div id="kta-banner-status" class="p-4 rounded-2xl bg-smeck-green-500/20 border border-smeck-green-500/30 text-smeck-green-300 text-xs font-semibold flex items-center justify-between">
                         <div class="flex items-center gap-2">
                             <i id="kta-banner-icon" class="fa-solid fa-circle-check text-base text-smeck-green-400"></i>
-                            <span id="kta-banner-text">ANGGOTA RESMI TERVERIFIKASI DPP SMeCK HOOLIGAN</span>
+                            <span id="kta-banner-text">ANGGOTA RESMI TERVERIFIKASI CHAPTER SMECK HOOLIGAN</span>
                         </div>
                         <span class="text-[10px] font-mono opacity-60">LIVE VERIFIED</span>
                     </div>
@@ -554,7 +554,7 @@
         } else {
             bannerBox.className = 'p-4 rounded-2xl bg-smeck-green-500/20 border border-smeck-green-500/30 text-smeck-green-300 text-xs font-semibold flex items-center justify-between';
             bannerIcon.className = 'fa-solid fa-circle-check text-base text-smeck-green-400';
-            bannerText.innerText = 'ANGGOTA RESMI TERVERIFIKASI DPP SMeCK HOOLIGAN';
+            bannerText.innerText = 'ANGGOTA RESMI TERVERIFIKASI CHAPTER SMECK HOOLIGAN';
             statusLabel.className = 'font-bold text-smeck-green-400';
             statusLabel.innerText = 'AKTIF & BERLAKU RESMI';
         }

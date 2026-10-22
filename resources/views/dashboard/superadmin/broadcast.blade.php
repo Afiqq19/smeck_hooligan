@@ -1,7 +1,7 @@
 @extends('layouts.app')
 
-@section('title', 'Broadcast Pengumuman DPP')
-@section('header_title', 'Broadcast Maklumat & Pengumuman Resmi DPP')
+@section('title', 'Broadcast Pengumuman Resmi')
+@section('header_title', 'Broadcast Maklumat & Pengumuman Resmi')
 @section('header_subtitle', 'Kirim instruksi tribun, maklumat organisasi, dan rilis jadwal langsung ke dashboard seluruh anggota dan portal resmi')
 
 @section('content')
@@ -17,7 +17,7 @@
                 </div>
             </div>
             <div class="font-display font-black text-3xl text-white mt-2">{{ $totalBroadcasts ?? $recentBroadcasts->total() }}</div>
-            <div class="text-[11px] text-red-400 mt-1 font-medium">Instruksi resmi DPP SMeCK Hooligan</div>
+            <div class="text-[11px] text-red-400 mt-1 font-medium">Instruksi resmi Pengurus SMeCK Hooligan</div>
         </div>
 
         <div class="p-6 rounded-3xl bg-smeck-dark-900 border border-white/10 shadow-xl">
@@ -47,9 +47,9 @@
     <div class="p-6 sm:p-8 rounded-3xl bg-smeck-dark-900 border border-white/10 shadow-xl">
         <h3 class="font-display font-bold text-lg text-white mb-1.5 flex items-center gap-2">
             <i class="fa-solid fa-paper-plane text-red-500"></i>
-            <span>Formulir Siaran Maklumat Baru DPP Pusat</span>
+            <span>Formulir Siaran Maklumat Baru Pengurus Pusat</span>
         </h3>
-        <p class="text-xs text-white/50 mb-6">Pesan ini akan langsung disimpan ke database nasional, disiarkan ke portal anggota, dan diprioritaskan sebagai Maklumat DPP di web resmi.</p>
+        <p class="text-xs text-white/50 mb-6">Pesan ini akan langsung disimpan ke database nasional, disiarkan ke portal anggota, dan diprioritaskan sebagai Maklumat Resmi di web resmi.</p>
 
         <form action="{{ route('superadmin.broadcast.send') }}" method="POST" class="space-y-4">
             @csrf
@@ -70,7 +70,7 @@
 
                 <div class="md:col-span-3">
                     <label class="block text-xs font-bold uppercase text-white/60 mb-1.5">Isi Maklumat / Pesan Instruksi Lengkap <span class="text-red-400">*</span></label>
-                    <textarea name="message" rows="6" required placeholder="Tuliskan isi instruksi, tata tertib tribun, atau maklumat resmi dari DPP SMeCK Hooligan..." class="w-full px-4 py-2.5 bg-white/5 border border-white/10 rounded-xl text-white text-sm focus:border-red-400 focus:outline-none font-sans"></textarea>
+                    <textarea name="message" rows="6" required placeholder="Tuliskan isi instruksi, tata tertib tribun, atau maklumat resmi dari pengurus SMeCK Hooligan..." class="w-full px-4 py-2.5 bg-white/5 border border-white/10 rounded-xl text-white text-sm focus:border-red-400 focus:outline-none font-sans"></textarea>
                 </div>
             </div>
 
@@ -87,11 +87,11 @@
         </form>
     </div>
 
-    {{-- Tabel Riwayat Broadcast Maklumat DPP --}}
+    {{-- Tabel Riwayat Broadcast Maklumat Resmi --}}
     <div class="p-6 sm:p-8 rounded-3xl bg-smeck-dark-900 border border-white/10 shadow-xl">
         <div class="flex items-center justify-between mb-4">
             <div>
-                <h3 class="font-display font-bold text-lg text-white">Riwayat Maklumat & Siaran DPP</h3>
+                <h3 class="font-display font-bold text-lg text-white">Riwayat Maklumat & Siaran Resmi</h3>
                 <p class="text-xs text-white/40">Daftar maklumat resmi yang telah disiarkan ke portal suporter</p>
             </div>
             <span class="text-xs text-white/50 font-mono">{{ $recentBroadcasts->total() }} Maklumat Tercatat</span>

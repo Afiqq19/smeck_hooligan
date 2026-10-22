@@ -157,14 +157,14 @@
 
     </div>
 
-    {{-- Alokasi Tiket Stadion dari DPP Pusat --}}
+    {{-- Alokasi Tiket Stadion dari Pengurus Pusat --}}
     @if(isset($allocations) && $allocations->isNotEmpty())
         <div class="p-6 sm:p-8 rounded-3xl bg-smeck-dark-900 border border-white/10 shadow-xl space-y-4">
             <div class="flex items-center justify-between">
                 <div>
                     <h3 class="font-display font-bold text-lg text-white flex items-center gap-2">
                         <i class="fa-solid fa-ticket text-smeck-gold"></i>
-                        <span>Alokasi Jatah Tiket Stadion dari DPP Pusat</span>
+                        <span>Alokasi Jatah Tiket Stadion dari Pengurus Pusat</span>
                     </h3>
                     <p class="text-xs text-white/40">Kuota resmi gelang/tiket tribun Stadion Teladan yang dialokasikan untuk basis ini</p>
                 </div>

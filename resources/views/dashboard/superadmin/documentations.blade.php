@@ -1,7 +1,7 @@
 @extends('layouts.app')
 
 @section('title', 'Galeri Koreo & Dokumentasi')
-@section('header_title', 'Galeri Koreo & Arsip Dokumentasi DPP')
+@section('header_title', 'Galeri Koreo & Arsip Dokumentasi SMeCK')
 @section('header_subtitle', 'Pusat arsip dokumentasi atraksi koreo tribun Stadion Teladan, nobar, awaydays, dan kegiatan baksos seluruh chapter')
 
 @section('content')
@@ -102,7 +102,7 @@
                         <div>
                             <div class="text-[11px] text-smeck-green-400 font-bold mb-1 flex items-center gap-1">
                                 <i class="fa-solid fa-location-dot text-[10px]"></i>
-                                <span>{{ $doc->chapter?->name ?? 'DPP Pusat' }}</span>
+                                <span>{{ $doc->chapter?->name ?? 'Chapter Pusat' }}</span>
                             </div>
                             <h4 class="font-display font-bold text-white text-base leading-snug mb-2">
                                 {{ $doc->title }}

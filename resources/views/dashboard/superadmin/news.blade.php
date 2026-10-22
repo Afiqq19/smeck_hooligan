@@ -1,7 +1,7 @@
 @extends('layouts.app')
 
-@section('title', 'Manajemen Berita & Maklumat DPP')
-@section('header_title', 'Manajemen Berita & Maklumat DPP')
+@section('title', 'Manajemen Berita & Maklumat Resmi')
+@section('header_title', 'Manajemen Berita & Maklumat Resmi')
 @section('header_subtitle', 'Publikasikan rilis pers resmi suporter, kabar PSMS Medan, dan himbauan komando tribun ke landing page')
 
 @section('content')
@@ -86,7 +86,7 @@
             <select name="category" onchange="this.form.submit()"
                 class="px-3 py-2 bg-smeck-dark-900 border border-white/10 rounded-xl text-xs text-white/80 focus:outline-none focus:border-emerald-500">
                 <option value="">Semua Kategori</option>
-                <option value="Maklumat DPP" {{ request('category') == 'Maklumat DPP' ? 'selected' : '' }}>Maklumat DPP</option>
+                <option value="Maklumat DPP" {{ request('category') == 'Maklumat DPP' ? 'selected' : '' }}>Maklumat Resmi</option>
                 <option value="Info Pertandingan" {{ request('category') == 'Info Pertandingan' ? 'selected' : '' }}>Info Pertandingan</option>
                 <option value="Aksi Sosial" {{ request('category') == 'Aksi Sosial' ? 'selected' : '' }}>Aksi Sosial</option>
                 <option value="Liputan Basis" {{ request('category') == 'Liputan Basis' ? 'selected' : '' }}>Liputan Basis</option>
@@ -151,7 +151,7 @@
                                     @elseif($item->category === 'Info Pertandingan') bg-emerald-500/20 text-emerald-300 border border-emerald-500/30
                                     @elseif($item->category === 'Aksi Sosial') bg-blue-500/20 text-blue-300 border border-blue-500/30
                                     @else bg-purple-500/20 text-purple-300 border border-purple-500/30 @endif">
-                                    {{ $item->category }}
+                                    {{ $item->category === 'Maklumat DPP' ? 'Maklumat Resmi' : $item->category }}
                                 </span>
                             </td>
 
@@ -257,7 +257,7 @@
             {{-- Judul Berita --}}
             <div>
                 <label class="block text-xs font-semibold text-white/70 mb-1.5">Judul Berita / Maklumat <span class="text-emerald-400">*</span></label>
-                <input type="text" name="title" id="newsTitleInput" required placeholder="Contoh: Maklumat Resmi DPP SMeCK Jelang Laga Derby"
+                <input type="text" name="title" id="newsTitleInput" required placeholder="Contoh: Maklumat Resmi SMeCK Jelang Laga Derby"
                     class="w-full px-3.5 py-2.5 bg-black/40 border border-white/10 rounded-xl text-xs text-white placeholder-white/40 focus:outline-none focus:border-emerald-500">
             </div>
 
@@ -267,7 +267,7 @@
                     <label class="block text-xs font-semibold text-white/70 mb-1.5">Kategori Rilis <span class="text-emerald-400">*</span></label>
                     <select name="category" id="newsCategoryInput" required
                         class="w-full px-3.5 py-2.5 bg-black/40 border border-white/10 rounded-xl text-xs text-white focus:outline-none focus:border-emerald-500">
-                        <option value="Maklumat DPP">Maklumat DPP</option>
+                        <option value="Maklumat DPP">Maklumat Resmi</option>
                         <option value="Info Pertandingan">Info Pertandingan</option>
                         <option value="Aksi Sosial">Aksi Sosial</option>
                         <option value="Liputan Basis">Liputan Basis</option>
@@ -278,7 +278,7 @@
                 {{-- Penulis --}}
                 <div>
                     <label class="block text-xs font-semibold text-white/70 mb-1.5">Nama Penulis / Rilis Oleh <span class="text-emerald-400">*</span></label>
-                    <input type="text" name="author_name" id="newsAuthorInput" value="Humas DPP SMeCK Hooligan" required
+                    <input type="text" name="author_name" id="newsAuthorInput" value="Humas SMeCK Hooligan" required
                         class="w-full px-3.5 py-2.5 bg-black/40 border border-white/10 rounded-xl text-xs text-white placeholder-white/40 focus:outline-none focus:border-emerald-500">
                 </div>
             </div>
@@ -344,7 +344,7 @@
         document.getElementById('newsId').value = '';
         document.getElementById('newsTitleInput').value = '';
         document.getElementById('newsCategoryInput').value = 'Maklumat DPP';
-        document.getElementById('newsAuthorInput').value = 'Humas DPP SMeCK Hooligan';
+        document.getElementById('newsAuthorInput').value = 'Humas SMeCK Hooligan';
         document.getElementById('newsSummaryInput').value = '';
         document.getElementById('newsContentInput').value = '';
         document.getElementById('newsImageUrlInput').value = '';

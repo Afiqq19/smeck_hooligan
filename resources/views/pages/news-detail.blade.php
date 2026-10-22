@@ -23,7 +23,7 @@
                     @elseif($article->category === 'Info Pertandingan') bg-emerald-500/20 text-emerald-300 border border-emerald-500/30
                     @elseif($article->category === 'Aksi Sosial') bg-blue-500/20 text-blue-300 border border-blue-500/30
                     @else bg-purple-500/20 text-purple-300 border border-purple-500/30 @endif">
-                    {{ $article->category }}
+                    {{ $article->category === 'Maklumat DPP' ? 'Maklumat Resmi' : $article->category }}
                 </span>
                 @if($article->is_featured)
                     <span class="px-2.5 py-1 rounded-full bg-amber-500/20 text-amber-400 border border-amber-500/30 text-[10px] font-bold flex items-center gap-1">

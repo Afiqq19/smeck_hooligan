@@ -164,7 +164,7 @@
                                         NIA: {{ $order->user?->profile?->nia ?? 'Anggota Terdaftar' }}
                                     </div>
                                     <div class="text-[10px] text-white/50">
-                                        Basis: {{ $order->chapter?->name ?? 'DPP Pusat' }}
+                                        Basis: {{ $order->chapter?->name ?? 'Chapter Pusat' }}
                                     </div>
                                 </td>
 

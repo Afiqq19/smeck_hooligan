@@ -62,7 +62,7 @@
                     <p class="text-xs text-white/60 leading-relaxed">{{ $doc->description }}</p>
                     <div class="text-[11px] text-smeck-green-400 pt-2 border-t border-white/10 flex items-center gap-1.5">
                         <i class="fa-solid fa-circle-check"></i>
-                        <span>Tercatat Resmi di Database DPP Pusat</span>
+                        <span>Tercatat Resmi di Database Pusat</span>
                     </div>
                 </div>
             @empty

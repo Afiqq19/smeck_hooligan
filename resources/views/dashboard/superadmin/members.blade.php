@@ -129,7 +129,7 @@
                         <th class="py-4 px-5">Kontak & Medis</th>
                         <th class="py-4 px-5 text-center">Peran (Role)</th>
                         <th class="py-4 px-5 text-center">Status</th>
-                        <th class="py-4 px-5 text-right">Aksi DPP Pusat</th>
+                        <th class="py-4 px-5 text-right">Aksi Manajemen</th>
                     </tr>
                 </thead>
                 <tbody class="divide-y divide-white/5">
@@ -149,7 +149,7 @@
                                         <div class="text-[11px] text-white/50 truncate">{{ $m->email }}</div>
                                         <div class="text-[11px] text-smeck-green-400 mt-0.5 flex items-center gap-1.5 font-medium">
                                             <i class="fa-solid fa-location-dot text-[10px]"></i>
-                                            <span>{{ $m->chapter?->name ?? 'DPP Pusat Teladan' }}</span>
+                                            <span>{{ $m->chapter?->name ?? 'Chapter Teladan (Pusat)' }}</span>
                                         </div>
                                     </div>
                                 </div>
@@ -231,7 +231,7 @@
                                 @endif
                             </td>
 
-                            {{-- 6. Aksi DPP Pusat --}}
+                            {{-- 6. Aksi Manajemen --}}
                             <td class="py-4 px-5 text-right">
                                 <div class="flex items-center justify-end gap-1.5">
                                     {{-- Approval Action if Pending --}}
@@ -358,7 +358,7 @@
                 <div>
                     <label class="block text-xs font-bold uppercase text-white/60 mb-1.5">Basis / Chapter Wilayah</label>
                     <select id="edit_chapter_id" name="chapter_id" class="w-full px-4 py-2.5 bg-white/5 border border-white/10 rounded-xl text-white text-sm focus:border-blue-400 focus:outline-none">
-                        <option value="" class="bg-smeck-dark-900">DPP Pusat Teladan</option>
+                        <option value="" class="bg-smeck-dark-900">Chapter Teladan (Pusat)</option>
                         @foreach($chapters as $c)
                             <option value="{{ $c->id }}" class="bg-smeck-dark-900">{{ $c->name }}</option>
                         @endforeach

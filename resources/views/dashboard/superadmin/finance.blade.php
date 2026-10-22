@@ -56,7 +56,7 @@
                 <h3 class="font-display font-bold text-lg text-white">Akumulasi Kas per Basis Wilayah</h3>
                 <p class="text-xs text-white/40">Peringkat kontribusi iuran kas sukarela terverifikasi per chapter</p>
             </div>
-            <span class="text-xs text-smeck-gold font-bold">Transparansi DPP SMeCK</span>
+            <span class="text-xs text-smeck-gold font-bold">Transparansi SMeCK Hooligan</span>
         </div>
 
         <div class="space-y-4">
@@ -115,7 +115,7 @@
                                 <div class="font-mono text-[10px] text-smeck-gold">{{ $due->user?->profile?->nia ?? '-' }}</div>
                             </td>
                             <td class="py-4 px-5 text-white/80">
-                                {{ $due->chapter?->name ?? 'DPP Pusat' }}
+                                {{ $due->chapter?->name ?? 'Chapter Pusat' }}
                             </td>
                             <td class="py-4 px-5 font-mono font-bold text-smeck-green-400 text-sm">
                                 Rp {{ number_format($due->amount, 0, ',', '.') }}
