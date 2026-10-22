@@ -545,12 +545,12 @@
         const bannerText = document.getElementById('kta-banner-text');
         const statusLabel = document.getElementById('res-status');
 
-        if (data.card_status === 'blocked') {
-            bannerBox.className = 'p-4 rounded-2xl bg-red-500/20 border border-red-500/40 text-red-300 text-xs font-semibold flex items-center justify-between animate-pulse';
-            bannerIcon.className = 'fa-solid fa-ban text-base text-red-400';
-            bannerText.innerText = 'PERINGATAN: KARTU INI DILAPORKAN HILANG / DIBLOKIR!';
-            statusLabel.className = 'font-bold text-red-400';
-            statusLabel.innerText = 'DIBLOKIR / HILANG';
+        if (data.card_status === 'blocked' || data.card_status === 'suspended' || data.user_status === 'suspended' || data.is_suspended) {
+            bannerBox.className = 'p-4 rounded-2xl bg-red-500/25 border-2 border-red-500/60 text-red-200 text-xs font-bold flex items-center justify-between animate-pulse';
+            bannerIcon.className = 'fa-solid fa-triangle-exclamation text-lg text-red-400';
+            bannerText.innerText = data.status_message || 'PERINGATAN KERAS: KTA INI TIDAK AKTIF / DITANGGUHKAN (SUSPENDED)!';
+            statusLabel.className = 'font-black text-red-400 uppercase tracking-wider';
+            statusLabel.innerText = 'DIBEKUKAN / SUSPENDED';
         } else {
             bannerBox.className = 'p-4 rounded-2xl bg-smeck-green-500/20 border border-smeck-green-500/30 text-smeck-green-300 text-xs font-semibold flex items-center justify-between';
             bannerIcon.className = 'fa-solid fa-circle-check text-base text-smeck-green-400';

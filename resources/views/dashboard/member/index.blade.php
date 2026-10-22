@@ -663,57 +663,7 @@
     </div>
 </div>
 
-{{-- MODAL PRESENSI MANDIRI SUPORTER (SOLUSI 3) --}}
-<div id="modalMemberCheckin" class="fixed inset-0 z-50 bg-black/85 backdrop-blur-md hidden flex items-center justify-center p-4 overflow-y-auto">
-    <div class="bg-smeck-dark-900 border border-smeck-green-500/40 text-white rounded-3xl max-w-md w-full p-6 sm:p-8 shadow-2xl relative">
-        <button onclick="closeMemberCheckinModal()" class="absolute top-5 right-5 text-white/40 hover:text-white text-2xl">&times;</button>
 
-        <div class="text-center mb-6">
-            <div class="w-16 h-16 mx-auto rounded-2xl bg-smeck-green-500/20 text-smeck-green-400 flex items-center justify-center text-3xl mb-3 shadow-lg shadow-smeck-green-900/30">
-                <i class="fa-solid fa-qrcode"></i>
-            </div>
-            <h3 class="font-display font-black text-xl text-white">Presensi Mandiri Suporter</h3>
-            <p class="text-xs text-white/50 mt-1">
-                Arahkan kamera HP Anda ke Banner QR yang dipasang panitia di gerbang stadion, bus awaydays, atau lokasi nobar.
-            </p>
-        </div>
-
-        @if(isset($upcomingMatch))
-            {{-- Quick 1-Click Check-in for Today's Match --}}
-            <div class="p-4 rounded-2xl bg-smeck-green-500/10 border border-smeck-green-500/30 mb-4 text-center">
-                <div class="text-[10px] text-smeck-green-400 font-bold uppercase tracking-wider mb-1">
-                    Pertandingan Aktif Hari Ini
-                </div>
-                <div class="font-bold text-white text-sm">
-                    {{ $upcomingMatch->match_title }}
-                </div>
-                <div class="text-[11px] text-white/50 mt-0.5">
-                    {{ $upcomingMatch->match_time->translatedFormat('d M Y, H:i') }} WIB @ {{ $upcomingMatch->stadium }}
-                </div>
-                <a href="{{ route('member.checkin.self', ['event_name' => 'Laga: ' . $upcomingMatch->match_title]) }}" class="mt-3 w-full py-2.5 px-4 rounded-xl bg-smeck-green-500 hover:bg-smeck-green-400 text-white font-bold text-xs shadow-md transition-colors flex items-center justify-center gap-2">
-                    <i class="fa-solid fa-check"></i>
-                    <span>Konfirmasi Hadir di Laga Ini</span>
-                </a>
-            </div>
-        @endif
-
-        {{-- Form Input Acara / URL Token --}}
-        <form action="{{ route('member.checkin.self') }}" method="GET" class="space-y-3">
-            <div>
-                <label class="block text-[11px] font-bold uppercase text-white/60 mb-1">Atau Ketik Nama Acara / Kopdar:</label>
-                <input type="text" name="event_name" placeholder="Contoh: Nobar Akbar PSMS Medan" class="w-full px-4 py-2.5 bg-white/5 border border-white/10 rounded-xl text-white text-xs focus:border-smeck-green-400 focus:outline-none">
-            </div>
-            <button type="submit" class="w-full py-2.5 rounded-xl bg-white/10 hover:bg-white/15 text-white font-bold text-xs transition-colors flex items-center justify-center gap-2 cursor-pointer">
-                <i class="fa-solid fa-location-dot text-amber-400"></i>
-                <span>Check-In Acara Ini</span>
-            </button>
-        </form>
-
-        <div class="mt-4 pt-3 border-t border-white/10 text-center text-[10px] text-white/40">
-            <i class="fa-solid fa-camera mr-1 text-smeck-green-400"></i> Anda juga bisa langsung membuka aplikasi kamera HP bawaan dan scan poster QR yang dipajang panitia.
-        </div>
-    </div>
-</div>
 @endsection
 
 @push('scripts')

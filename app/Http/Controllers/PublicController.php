@@ -173,6 +173,10 @@ class PublicController extends Controller
             ? $parts[0] . ' •••• •••• ' . $parts[3]
             : substr($displayCardNo, 0, 4) . ' •••• •••• ' . substr($displayCardNo, -4);
 
+        // Cek status keaktifan suporter & kartu
+        $isSuspended = ($user->status === 'suspended') || ($card?->status === 'blocked');
+        $effectiveCardStatus = $isSuspended ? 'suspended' : ($card?->status ?? 'active');
+
         return response()->json([
             'success' => true,
             'data' => [
@@ -188,10 +192,14 @@ class PublicController extends Controller
                 'card_number' => $displayCardNo,
                 'card_number_masked' => $maskedCard,
                 'card_vendor' => strtoupper($card?->card_vendor ?? 'Digital Official'),
-                'card_status' => $card?->status ?? 'active',
+                'card_status' => $effectiveCardStatus,
                 'user_status' => $user->status,
                 'avatar_letter' => strtoupper(substr($user->name, 0, 1)),
-                'is_verified' => true,
+                'is_verified' => ! $isSuspended,
+                'is_suspended' => $isSuspended,
+                'status_message' => $isSuspended
+                    ? 'PERINGATAN: KTA INI TIDAK AKTIF / DITANGGUHKAN (SUSPENDED) KARENA SANKSI DISIPLIN ORGANISASI!'
+                    : 'ANGGOTA RESMI TERVERIFIKASI DPP SMECK HOOLIGAN',
             ],
         ]);
     }

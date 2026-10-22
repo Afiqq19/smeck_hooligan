@@ -90,8 +90,12 @@ class ChapterDashboardController extends Controller
      */
     public function approveMember(Request $request, int $id): RedirectResponse
     {
-        $user = User::findOrFail($id);
+        $user = User::with('nfcCard')->findOrFail($id);
         $user->update(['status' => 'active']);
+
+        if ($user->nfcCard) {
+            $user->nfcCard->update(['status' => 'active']);
+        }
 
         // Pastikan punya NIA
         if ($user->profile && empty($user->profile->nia)) {
@@ -109,8 +113,12 @@ class ChapterDashboardController extends Controller
      */
     public function rejectMember(Request $request, int $id): RedirectResponse
     {
-        $user = User::findOrFail($id);
+        $user = User::with('nfcCard')->findOrFail($id);
         $user->update(['status' => 'suspended']);
+
+        if ($user->nfcCard) {
+            $user->nfcCard->update(['status' => 'blocked']);
+        }
 
         return back()->with('success', "Pendaftaran {$user->name} telah ditolak / ditangguhkan untuk revisi berkas.");
     }
@@ -154,7 +162,7 @@ class ChapterDashboardController extends Controller
                 ->orWhereRaw('REPLACE(LOWER(nia), "-", "") = ?', [$cleanInput])
                 ->first();
             if ($profile) {
-                $card = NfcCard::where('user_id', $profile->user_id)->first();
+                $card = NfcCard::where('user_id', $profile->user_id)->with('user.profile')->first();
             }
         }
 
@@ -162,8 +170,9 @@ class ChapterDashboardController extends Controller
             return back()->with('error', "Identitas '{$validated['uid_number']}' tidak terdaftar dalam database anggota SMeCK!");
         }
 
-        if ($card->status === 'blocked') {
-            return back()->with('error', "PERINGATAN DARURAT: Kartu ini dilaporkan HILANG / DIBLOKIR!");
+        if ($card->status === 'blocked' || $card->user?->status === 'suspended') {
+            $reason = ($card->user?->status === 'suspended') ? 'DITANGGUHKAN / SUSPENDED OLEH PENGURUS' : 'DIBLOKIR / HILANG';
+            return back()->with('error', "PERINGATAN SANKSI DISIPLIN: KTA suporter {$card->user?->name} berstatus {$reason}! Akses ditolak.");
         }
 
         EventAttendance::create([

@@ -275,6 +275,12 @@
                             <i class="fa-solid fa-newspaper w-5 text-center text-red-400 {{ request()->routeIs('superadmin.news*') ? 'text-white' : '' }}"></i>
                             <span>12. Manajemen Berita</span>
                         </a>
+
+                        {{-- 13. WhatsApp Bot Gateway (Auto Cek KTA & Jadwal) --}}
+                        <a href="{{ route('superadmin.whatsapp') }}" class="flex items-center gap-3 px-3.5 py-2 rounded-xl text-xs font-semibold transition-all {{ request()->routeIs('superadmin.whatsapp*') ? 'bg-red-600 text-white shadow-lg shadow-red-700/30' : 'text-white/70 hover:text-white hover:bg-white/5' }}">
+                            <i class="fa-brands fa-whatsapp w-5 text-center text-emerald-400 {{ request()->routeIs('superadmin.whatsapp*') ? 'text-white' : '' }}"></i>
+                            <span>13. WhatsApp Bot Gateway</span>
+                        </a>
                     </nav>
                 </div>
             @endif

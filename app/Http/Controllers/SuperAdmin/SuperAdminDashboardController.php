@@ -18,6 +18,8 @@ use App\Models\TicketAllocation;
 use App\Models\User;
 use App\Models\VoluntaryDue;
 use App\Services\PtLibScraperService;
+use App\Services\WhatsAppBotService;
+use Illuminate\Http\JsonResponse;
 use Illuminate\Http\RedirectResponse;
 use Illuminate\Http\Request;
 use Illuminate\View\View;
@@ -132,13 +134,20 @@ class SuperAdminDashboardController extends Controller
      */
     public function toggleMemberStatus(Request $request, int $id): RedirectResponse
     {
-        $user = User::findOrFail($id);
+        $user = User::with('nfcCard')->findOrFail($id);
         $newStatus = $user->status === 'active' ? 'suspended' : 'active';
         $user->update(['status' => $newStatus]);
 
-        $statusLabel = $newStatus === 'active' ? 'DIAKTIFKAN' : 'DIBEKUKAN (SUSPEND)';
+        // Sinkronkan status Kartu KTA NFC secara otomatis
+        if ($user->nfcCard) {
+            $user->nfcCard->update([
+                'status' => $newStatus === 'suspended' ? 'blocked' : 'active',
+            ]);
+        }
 
-        return back()->with('success', "Status akun suporter {$user->name} berhasil {$statusLabel}!");
+        $statusLabel = $newStatus === 'active' ? 'DIAKTIFKAN KEMBALI' : 'DIBEKUKAN / SUSPEND (KTA Otomatis Nonaktif)';
+
+        return back()->with('success', "Status akun & KTA suporter {$user->name} berhasil {$statusLabel}!");
     }
 
     /**
@@ -675,6 +684,70 @@ class SuperAdminDashboardController extends Controller
 
         $status = $article->is_published ? 'dipublikasikan' : 'diarsipkan (Draft)';
         return back()->with('success', "Status berita berhasil diubah menjadi {$status}.");
+    }
+
+    /**
+     * 13. Modul WhatsApp Bot Gateway Resmi SMeCK Hooligan.
+     */
+    public function whatsappBot(Request $request): View
+    {
+        $totalMembers = User::where('role', 'member')->count();
+        $totalActiveCards = NfcCard::where('status', 'active')->count();
+        $botNumber = config('services.whatsapp.bot_number', '0812-6000-1950 (Nomor Resmi SMeCK)');
+        $webhookUrl = url('/api/whatsapp/webhook');
+
+        return view('dashboard.superadmin.whatsapp-bot', compact(
+            'totalMembers',
+            'totalActiveCards',
+            'botNumber',
+            'webhookUrl'
+        ));
+    }
+
+    /**
+     * Simulator Chat Bot Interaktif di Panel Admin.
+     */
+    public function simulateBotChat(Request $request, WhatsAppBotService $bot): JsonResponse
+    {
+        $message = trim($request->input('message', ''));
+
+        if (empty($message)) {
+            return response()->json([
+                'success' => false,
+                'reply' => 'Pesan tidak boleh kosong.',
+            ], 400);
+        }
+
+        $reply = $bot->handleIncomingMessage('628123456789', $message);
+
+        return response()->json([
+            'success' => true,
+            'user_message' => $message,
+            'bot_reply' => $reply,
+            'bot_reply_html' => nl2br(e($reply)),
+            'timestamp' => now()->format('H:i'),
+        ]);
+    }
+
+    /**
+     * Webhook Endpoint API untuk Integrasi Node.js Baileys / WhatsApp-Web.js.
+     */
+    public function apiWhatsAppWebhook(Request $request, WhatsAppBotService $bot): JsonResponse
+    {
+        $sender = $request->input('from', $request->input('sender', 'unknown'));
+        $message = $request->input('message', $request->input('body', $request->input('text', '')));
+
+        if (empty($message)) {
+            return response()->json(['status' => 'ignored', 'message' => 'Empty message']);
+        }
+
+        $reply = $bot->handleIncomingMessage($sender, $message);
+
+        return response()->json([
+            'status' => 'success',
+            'reply' => $reply,
+            'to' => $sender,
+        ]);
     }
 }
 

@@ -168,11 +168,19 @@ Route::middleware(['auth', 'role:super_admin'])->prefix('superadmin')->name('sup
     Route::delete('/news/{id}', [SuperAdminDashboardController::class, 'deleteNews'])->name('news.delete');
     Route::post('/news/{id}/featured', [SuperAdminDashboardController::class, 'toggleNewsFeatured'])->name('news.featured');
     Route::post('/news/{id}/toggle', [SuperAdminDashboardController::class, 'toggleNewsPublished'])->name('news.toggle');
+
+    // 13. Modul WhatsApp Bot Gateway Resmi (Node.js Baileys / Direct WA)
+    Route::get('/whatsapp-bot', [SuperAdminDashboardController::class, 'whatsappBot'])->name('whatsapp');
+    Route::post('/whatsapp-bot/simulate', [SuperAdminDashboardController::class, 'simulateBotChat'])->name('whatsapp.simulate');
 });
 
 // Rute Baca Berita Publik
 Route::get('/berita/{slug}', [PublicController::class, 'showNews'])->name('news.show');
 Route::get('/api/news/{id}', [PublicController::class, 'getNewsJson'])->name('api.news.show');
+
+// Webhook WhatsApp Bot API (Incoming messages)
+Route::post('/api/whatsapp/webhook', [SuperAdminDashboardController::class, 'apiWhatsAppWebhook'])->name('api.whatsapp.webhook');
+Route::get('/api/whatsapp/webhook', [SuperAdminDashboardController::class, 'apiWhatsAppWebhook']);
 
 // =========================================================================
 // 7. ROUTE DEPLOYMENT & SERVER UTILITY (AUTO DEPLOY & STORAGE FALLBACK)
