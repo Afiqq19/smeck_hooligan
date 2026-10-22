@@ -313,7 +313,7 @@ class WhatsAppBotService
                 "• *Nomor Kartu KTA:* {$displayCardNo}\n" .
                 "• *Basis Chapter:* " . ($user->chapter?->name ?? 'DPP SMeCK Hooligan') . "\n" .
                 "• *Tgl Bergabung:* {$joinedDate}\n" .
-                "• *Status Keanggotaan:* ❌ DIBEKUKAN / SUSPENDED\n" .
+                "• *Status Keanggotaan:* ❌ SUSPENDED\n" .
                 "• *Alasan Sanksi:* ⚠️ {$reason}\n\n" .
                 "⚠️ *PERHATIAN:* Akun ini sedang dalam masa sanksi penangguhan organisasi DPP SMeCK Hooligan. Hak akses tribun suporter, diskon tiket, dan kartu KTA chip NFC *TIDAK BERLAKU* sementara. Silakan hubungi Korlap Basis Anda untuk penyelesaian sanksi.";
         }
@@ -327,7 +327,7 @@ class WhatsAppBotService
             "• *Basis / Wilayah:* " . ($user->chapter?->name ?? 'DPP SMeCK Hooligan') . "\n" .
             "• *Golongan Darah:* " . ($profile?->blood_type ?? '-') . " (Siap Medis Tribun)\n" .
             "• *Nomor Kartu KTA:* {$displayCardNo}\n" .
-            "• *Status Kartu NFC:* 🟢 AKTIF & SAH DIGUNAKAN\n" .
+            "• *Status Kartu NFC:* 🟢 ACTIVE\n" .
             "• *Tgl Bergabung:* {$joinedDate}\n\n" .
             "Salam Sada Roha! Ayam Kinantan Selamanya! 🐓💚";
     }
