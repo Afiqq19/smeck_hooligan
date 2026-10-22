@@ -169,6 +169,11 @@
                                 <span class="px-2.5 py-0.5 rounded-full text-[10px] font-bold uppercase {{ $m->status === 'active' ? 'bg-smeck-green-500/20 text-smeck-green-400' : 'bg-red-500/20 text-red-400' }}">
                                     {{ $m->status }}
                                 </span>
+                                @if($m->status === 'suspended')
+                                    <div class="text-[10px] text-red-400/90 mt-1 max-w-[140px] truncate mx-auto font-medium" title="{{ $m->suspension_reason ?? 'Pelanggaran Kode Etik' }}">
+                                        <i class="fa-solid fa-triangle-exclamation mr-1 text-red-500"></i>{{ $m->suspension_reason ?? 'Sanksi Disiplin' }}
+                                    </div>
+                                @endif
                             </td>
 
                             {{-- Aksi DPP --}}
@@ -184,9 +189,10 @@
                                     </form>
 
                                     {{-- Status Toggle --}}
-                                    <form action="{{ route('superadmin.members.status', $m->id) }}" method="POST" onsubmit="return confirm('Ubah status suporter {{ addslashes($m->name) }}?')">
+                                    <form action="{{ route('superadmin.members.status', $m->id) }}" method="POST" id="form-status-{{ $m->id }}">
                                         @csrf
-                                        <button type="submit" class="px-2.5 py-1 rounded-lg {{ $m->status === 'active' ? 'bg-red-500/10 hover:bg-red-500 text-red-400 hover:text-white' : 'bg-smeck-green-500/10 hover:bg-smeck-green-500 text-smeck-green-400 hover:text-white' }} font-semibold text-[11px] transition-colors">
+                                        <input type="hidden" name="suspension_reason" id="reason-{{ $m->id }}" value="">
+                                        <button type="button" onclick="handleStatusToggle({{ $m->id }}, '{{ addslashes($m->name) }}', '{{ $m->status }}')" class="px-2.5 py-1 rounded-lg {{ $m->status === 'active' ? 'bg-red-500/10 hover:bg-red-500 text-red-400 hover:text-white' : 'bg-smeck-green-500/10 hover:bg-smeck-green-500 text-smeck-green-400 hover:text-white' }} font-semibold text-[11px] transition-colors">
                                             {{ $m->status === 'active' ? 'Suspend' : 'Aktifkan' }}
                                         </button>
                                     </form>
@@ -213,4 +219,32 @@
     </div>
 
 </div>
+
+<script>
+function handleStatusToggle(userId, userName, currentStatus) {
+    const form = document.getElementById('form-status-' + userId);
+    const reasonInput = document.getElementById('reason-' + userId);
+
+    if (currentStatus === 'active') {
+        const reason = prompt(
+            '⚠️ MASUKKAN ALASAN SANKSI SUSPEND UNTUK ' + userName + ':\n\n' +
+            'Contoh alasan:\n' +
+            '1. Pelanggaran Kode Etik Organisasi & Tata Tertib Tribun SMeCK Hooligan\n' +
+            '2. Keributan / Anarkisme di Tribun Suporter\n' +
+            '3. Penyalahgunaan KTA / Pemalsuan Fasilitas Tiket\n' +
+            '4. Sanksi Disiplin Basis Chapter\n\n' +
+            'Alasan ini akan otomatis tampil saat KTA dicek via Bot WhatsApp & Web Portal.',
+            'Pelanggaran Kode Etik Organisasi & Tata Tertib Tribun SMeCK Hooligan'
+        );
+
+        if (reason === null) return; // User batalkan
+        reasonInput.value = reason.trim() || 'Pelanggaran Kode Etik Organisasi & Tata Tertib Tribun SMeCK Hooligan';
+        form.submit();
+    } else {
+        if (confirm('Pulihkan status akun suporter ' + userName + ' menjadi AKTIF kembali? Kartu KTA NFC otomatis akan aktif.')) {
+            form.submit();
+        }
+    }
+}
+</script>
 @endsection

@@ -138,7 +138,19 @@ class SuperAdminDashboardController extends Controller
     {
         $user = User::with('nfcCard')->findOrFail($id);
         $newStatus = $user->status === 'active' ? 'suspended' : 'active';
-        $user->update(['status' => $newStatus]);
+        
+        $reason = null;
+        if ($newStatus === 'suspended') {
+            $reason = trim($request->input('suspension_reason', ''));
+            if (empty($reason)) {
+                $reason = 'Pelanggaran Kode Etik Organisasi & Tata Tertib Tribun SMeCK Hooligan';
+            }
+        }
+
+        $user->update([
+            'status' => $newStatus,
+            'suspension_reason' => $reason,
+        ]);
 
         // Sinkronkan status Kartu KTA NFC secara otomatis
         if ($user->nfcCard) {
@@ -147,7 +159,7 @@ class SuperAdminDashboardController extends Controller
             ]);
         }
 
-        $statusLabel = $newStatus === 'active' ? 'DIAKTIFKAN KEMBALI' : 'DIBEKUKAN / SUSPEND (KTA Otomatis Nonaktif)';
+        $statusLabel = $newStatus === 'active' ? 'DIAKTIFKAN KEMBALI' : "DIBEKUKAN / SUSPEND (Alasan: {$reason})";
 
         return back()->with('success', "Status akun & KTA suporter {$user->name} berhasil {$statusLabel}!");
     }

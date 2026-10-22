@@ -23,6 +23,7 @@ class User extends Authenticatable implements MustVerifyEmail
         'chapter_id',
         'role', // super_admin, admin_chapter, member
         'status', // active, pending_approval, suspended
+        'suspension_reason',
     ];
 
     protected $hidden = [

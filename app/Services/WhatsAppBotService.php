@@ -28,22 +28,27 @@ class WhatsAppBotService
         // ATURAN 1: PROTEKSI GRUP WHATSAPP (isGroup === true)
         // =========================================================================
         // Di dalam grup, bot TIDAK BOLEH membalas obrolan biasa sesama anggota!
-        // Bot HANYA merespon jika dipanggil dengan: "bot", "!bot", ATAU perintah resmi suporter ("cek kta", "jadwal", "klasemen", "menu", "chant", "daftar", "1"-"6").
+        // Bot HANYA merespon jika dipanggil dengan: "@admin", "admin", "@bot", "bot", tag kontak (@nomor), ATAU perintah resmi suporter ("cek kta", "jadwal", "klasemen", "menu", dll).
         if ($isGroup) {
             $isBotTriggered = false;
             $cleanText = $text;
 
-            // 1. Panggilan langsung dengan kata "bot" atau prefix tanda baca (!bot, /bot, .bot, smeck)
-            if (preg_match('/^(!bot|\/bot|#bot|\.bot|bot|!smeck|smeck)\b\s*(.*)$/i', $text, $matches)) {
+            // 1. Panggilan langsung dengan tag @admin, admin, @bot, bot, @smeck, @min, min, !bot, dll.
+            if (preg_match('/^(@admin|admin|@bot|bot|@smeck|smeck|@min|min|!bot|\/bot|#bot|\.bot)\b\s*(.*)$/i', $text, $matches)) {
                 $isBotTriggered = true;
                 $cleanText = trim($matches[2]);
             }
-            // 2. Perintah ber-prefix (!menu, !jadwal, !cek, dll)
+            // 2. Tag nomor HP bot WhatsApp (misal: @6283140435796 [perintah])
+            elseif (preg_match('/^@\d+\b\s*(.*)$/i', $text, $matches)) {
+                $isBotTriggered = true;
+                $cleanText = trim($matches[1]);
+            }
+            // 3. Perintah ber-prefix (!menu, !jadwal, !cek, dll)
             elseif (preg_match('/^(!|\/|#|\.)(menu|bantuan|help|jadwal|klasemen|cek|kta|daftar|chant)\b\s*(.*)$/i', $text, $matches)) {
                 $isBotTriggered = true;
                 $cleanText = trim($matches[2] . ' ' . $matches[3]);
             }
-            // 3. Perintah resmi suporter langsung tanpa prefix di grup
+            // 4. Perintah resmi suporter langsung tanpa prefix di grup
             elseif (preg_match('/^(cek\s+kta|cek\b|kta\b|jadwal|klasemen|daftar|chant|anthem|lagu|menu|bantuan|help|info|panduan|[1-6]$|smc-|6032)/i', $text)) {
                 $isBotTriggered = true;
                 $cleanText = $text;
@@ -54,15 +59,18 @@ class WhatsAppBotService
                 return null;
             }
 
-            // Jika di grup hanya mengetik "bot" atau "!bot" tanpa perintah lanjutan:
+            // Jika di grup hanya memanggil "@admin", "admin", "@bot", "bot" tanpa perintah lanjutan:
             if (empty($cleanText)) {
-                return "🤖 *BOT SMECK HOOLIGAN SIAP!* 💚\n\n" .
-                    "Halo Saudaraku! Langsung ketik perintah berikut di grup suporter:\n" .
-                    "• *jadwal* ➔ Cek laga terdekat PSMS\n" .
-                    "• *klasemen* ➔ Cek klasemen Liga 2\n" .
-                    "• *cek kta nama/nomor* ➔ Cek keaslian KTA (Contoh: `cek kta syafiq` atau `cek kta 1950`)\n" .
-                    "• *chant* ➔ Lirik lagu suporter\n" .
-                    "• *menu* ➔ Panduan lengkap bot";
+                return "🤖 *SIAP SAUDARAKU! ADMIN BOT SMECK HOOLIGAN HADIR!* 💚\n\n" .
+                    "Ada yang bisa kami bantu untuk suporter PSMS Medan?\n" .
+                    "Silakan gunakan perintah berikut di grup:\n" .
+                    "• *cek kta nama/nomor* ➔ Cek keaslian & status KTA suporter\n" .
+                    "• *jadwal* ➔ Cek jadwal laga terdekat PSMS Medan\n" .
+                    "• *klasemen* ➔ Cek klasemen sementara Liga 2\n" .
+                    "• *chant* ➔ Lirik lagu anthem tribun\n" .
+                    "• *daftar* ➔ Registrasi anggota baru & KTA resmi\n" .
+                    "• *menu* ➔ Panduan lengkap seluruh fitur\n\n" .
+                    "💡 *Contoh:* `@admin cek kta syafiq` atau langsung ketik `cek kta syafiq`! 🐓";
             }
 
             // Lanjutkan pemrosesan menggunakan teks yang sudah dibersihkan
@@ -74,8 +82,8 @@ class WhatsAppBotService
         // ATURAN 2: CHAT PRIBADI (JAPRI)
         // =========================================================================
         if (! $isGroup) {
-            // Bersihkan jika diawali "bot " atau "!bot "
-            if (preg_match('/^(!bot|\/bot|bot)\s+(.*)$/i', $text, $matches)) {
+            // Bersihkan jika diawali "@admin", "admin", "@bot", "bot", atau "!bot"
+            if (preg_match('/^(@admin|admin|@bot|bot|!bot|\/bot)\s+(.*)$/i', $text, $matches)) {
                 $text = trim($matches[2]);
                 $upper = strtoupper($text);
             }
@@ -105,8 +113,8 @@ class WhatsAppBotService
             return $this->handleHelp();
         }
 
-        // 2. Salam Pembuka Suporter (Khusus jika menyapa bot)
-        if (in_array($upper, ['P', 'HALO', 'HAI', 'ASSALAMUALAIKUM', 'SALAM SADA ROHA', 'TES', 'TEST', 'PING'])) {
+        // 2. Salam Pembuka Suporter (Khusus jika menyapa bot / admin)
+        if (in_array($upper, ['P', 'HALO', 'HAI', 'ASSALAMUALAIKUM', 'SALAM SADA ROHA', 'TES', 'TEST', 'PING', '@ADMIN', 'ADMIN', '@BOT', 'BOT', '@MIN', 'MIN'])) {
             return $this->handleHelp();
         }
 
@@ -278,12 +286,17 @@ class WhatsAppBotService
         $isSuspended = ($user->status === 'suspended') || ($card?->status === 'blocked');
 
         if ($isSuspended) {
+            $reason = ! empty($user->suspension_reason)
+                ? $user->suspension_reason
+                : 'Pelanggaran Kode Etik Organisasi & Tata Tertib Tribun SMeCK Hooligan';
+
             return "🚨 *PERINGATAN SANKSI: KTA DITANGGUHKAN (SUSPENDED)*\n\n" .
                 "• *Nama Suporter:* {$user->name}\n" .
                 "• *Nomor NIA:* " . ($profile?->nia ?? '-') . "\n" .
                 "• *Basis Chapter:* " . ($user->chapter?->name ?? 'DPP SMeCK Hooligan') . "\n" .
-                "• *Status Keanggotaan:* ❌ DIBEKUKAN / SUSPENDED\n\n" .
-                "⚠️ *PERHATIAN:* Akun ini sedang dalam sanksi penangguhan organisasi DPP SMeCK Hooligan. Hak akses tribun suporter, diskon tiket, dan kartu NFC *TIDAK BERLAKU* sementara. Silakan hubungi Korlap Basis Anda untuk penyelesaian sanksi.";
+                "• *Status Keanggotaan:* ❌ DIBEKUKAN / SUSPENDED\n" .
+                "• *Alasan Sanksi:* ⚠️ {$reason}\n\n" .
+                "⚠️ *PERHATIAN:* Akun ini sedang dalam masa sanksi penangguhan organisasi DPP SMeCK Hooligan. Hak akses tribun suporter, diskon tiket, dan kartu KTA chip NFC *TIDAK BERLAKU* sementara. Silakan hubungi Korlap Basis Anda untuk penyelesaian sanksi.";
         }
 
         $displayCardNo = $card?->card_number ?? '6032-••••-••••-1950';

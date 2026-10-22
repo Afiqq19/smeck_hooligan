@@ -171,8 +171,10 @@ class ChapterDashboardController extends Controller
         }
 
         if ($card->status === 'blocked' || $card->user?->status === 'suspended') {
-            $reason = ($card->user?->status === 'suspended') ? 'DITANGGUHKAN / SUSPENDED OLEH PENGURUS' : 'DIBLOKIR / HILANG';
-            return back()->with('error', "PERINGATAN SANKSI DISIPLIN: KTA suporter {$card->user?->name} berstatus {$reason}! Akses ditolak.");
+            $reason = ($card->user?->status === 'suspended') 
+                ? ($card->user?->suspension_reason ?: 'Pelanggaran Kode Etik Organisasi & Tata Tertib Tribun SMeCK Hooligan') 
+                : 'DIBLOKIR / HILANG';
+            return back()->with('error', "PERINGATAN SANKSI DISIPLIN: KTA suporter {$card->user?->name} DITANGGUHKAN! Alasan: {$reason}. Akses ditolak.");
         }
 
         EventAttendance::create([

@@ -176,6 +176,9 @@ class PublicController extends Controller
         // Cek status keaktifan suporter & kartu
         $isSuspended = ($user->status === 'suspended') || ($card?->status === 'blocked');
         $effectiveCardStatus = $isSuspended ? 'suspended' : ($card?->status ?? 'active');
+        $suspensionReason = $isSuspended 
+            ? ($user->suspension_reason ?: 'Pelanggaran Kode Etik Organisasi & Tata Tertib Tribun SMeCK Hooligan')
+            : null;
 
         return response()->json([
             'success' => true,
@@ -197,8 +200,9 @@ class PublicController extends Controller
                 'avatar_letter' => strtoupper(substr($user->name, 0, 1)),
                 'is_verified' => ! $isSuspended,
                 'is_suspended' => $isSuspended,
+                'suspension_reason' => $suspensionReason,
                 'status_message' => $isSuspended
-                    ? 'PERINGATAN: KTA INI TIDAK AKTIF / DITANGGUHKAN (SUSPENDED) KARENA SANKSI DISIPLIN ORGANISASI!'
+                    ? "PERINGATAN: KTA TIDAK AKTIF / DITANGGUHKAN (SUSPENDED)! Alasan: {$suspensionReason}"
                     : 'ANGGOTA RESMI TERVERIFIKASI DPP SMECK HOOLIGAN',
             ],
         ]);

@@ -188,10 +188,22 @@ async function startWhatsApp() {
 
             if (!messageText) continue;
 
+            // Cek apakah bot di-tag via fitur mention kontak WhatsApp (@Nomor)
+            const contextInfo = m.message?.extendedTextMessage?.contextInfo;
+            const mentionedJids = contextInfo?.mentionedJid || [];
+            const botPhone = connectedUser.phone;
+            const isBotMentioned = botPhone && mentionedJids.some(jid => jid.includes(botPhone));
+
             // PROTEKSI ANTI-SPAM GRUP DI LEVEL GATEWAY:
-            // Tanggapi jika pesan diawali panggilan bot ("bot", "!bot") ATAU perintah resmi suporter ("cek kta", "jadwal", "klasemen", dll)
+            // Tanggapi jika:
+            // 1. Bot di-mention kontak WhatsApp (@Nomor)
+            // 2. Teks diawali panggilan "@admin", "admin", "@bot", "bot", "@min", "min", "@smeck", "!bot", dll.
+            // 3. Teks berisi perintah resmi suporter ("cek kta", "jadwal", "klasemen", "menu", "chant", "daftar", "1"-"6", dll)
             if (isGroup) {
-                const isBotCall = /^(!|\/|#|\.|bot\b|smeck\b|cek\s+kta|cek\b|kta\b|jadwal|klasemen|daftar|chant|anthem|lagu|menu|bantuan|help|info|panduan|[1-6]$|smc-|6032)/i.test(messageText);
+                const isExplicitCall = /^(@admin|admin\b|@bot|bot\b|@smeck|smeck\b|@min|min\b|@\d+|!|\/|#|\.)/i.test(messageText);
+                const isOfficialCommand = /^(cek\s+kta|cek\b|kta\b|jadwal|klasemen|daftar|chant|anthem|lagu|menu|bantuan|help|info|panduan|[1-6]$|smc-|6032)/i.test(messageText);
+                const isBotCall = isBotMentioned || isExplicitCall || isOfficialCommand;
+
                 if (!isBotCall) {
                     // Abaikan obrolan santai sesama anggota grup tanpa menyentuh webhook
                     continue;
