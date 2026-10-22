@@ -147,7 +147,7 @@ class SuperAdminDashboardController extends Controller
             'name' => ['required', 'string', 'max:255'],
             'email' => ['required', 'email', 'max:255', 'unique:users,email,' . $user->id],
             'nik_ktp' => ['required', 'string', 'max:25', 'unique:member_profiles,nik_ktp,' . ($profileId ?? 'NULL') . ',id'],
-            'phone_number' => ['required', 'string', 'max:25'],
+            'phone_number' => ['required', 'string', 'max:25', 'unique:member_profiles,phone_number,' . ($profileId ?? 'NULL') . ',id'],
             'chapter_id' => ['nullable', 'exists:chapters,id'],
             'blood_type' => ['nullable', 'in:A,B,AB,O,-'],
             'shirt_size' => ['nullable', 'in:S,M,L,XL,XXL,3XL,-'],
@@ -156,6 +156,10 @@ class SuperAdminDashboardController extends Controller
             'date_of_birth' => ['nullable', 'date'],
             'address' => ['nullable', 'string'],
             'password' => ['nullable', 'string', 'min:6'],
+        ], [
+            'email.unique' => 'Alamat email ini sudah terdaftar pada anggota lain. Silakan gunakan email lain.',
+            'phone_number.unique' => 'Nomor WhatsApp / HP ini sudah terdaftar pada anggota lain. Silakan gunakan nomor HP lain.',
+            'nik_ktp.unique' => 'Nomor NIK KTP ini sudah terdaftar pada anggota lain. Silakan periksa kembali NIK yang dimasukkan.',
         ]);
 
         $userData = [
