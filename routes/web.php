@@ -33,6 +33,11 @@ Route::middleware('guest')->group(function () {
     Route::post('/register', [AuthController::class, 'register']);
 });
 
+// Verifikasi Email Anggota Baru
+Route::get('/email/verify', [AuthController::class, 'showVerifyNotice'])->name('verification.notice');
+Route::get('/email/verify/{id}/{hash}', [AuthController::class, 'verifyEmail'])->name('verification.verify');
+Route::post('/email/verification-notification', [AuthController::class, 'resendVerification'])->name('verification.send');
+
 Route::post('/logout', [AuthController::class, 'logout'])->name('logout')->middleware('auth');
 
 // =========================================================================
@@ -156,7 +161,18 @@ Route::middleware(['auth', 'role:super_admin'])->prefix('superadmin')->name('sup
     Route::get('/standings', [SuperAdminDashboardController::class, 'standings'])->name('standings');
     Route::post('/standings/sync', [SuperAdminDashboardController::class, 'syncStandings'])->name('standings.sync');
     Route::post('/standings/{id}/update', [SuperAdminDashboardController::class, 'updateStanding'])->name('standings.update');
+
+    // 12. Manajemen Berita & Maklumat Pers DPP (Pilihan 3)
+    Route::get('/news', [SuperAdminDashboardController::class, 'news'])->name('news');
+    Route::post('/news', [SuperAdminDashboardController::class, 'storeNews'])->name('news.store');
+    Route::delete('/news/{id}', [SuperAdminDashboardController::class, 'deleteNews'])->name('news.delete');
+    Route::post('/news/{id}/featured', [SuperAdminDashboardController::class, 'toggleNewsFeatured'])->name('news.featured');
+    Route::post('/news/{id}/toggle', [SuperAdminDashboardController::class, 'toggleNewsPublished'])->name('news.toggle');
 });
+
+// Rute Baca Berita Publik
+Route::get('/berita/{slug}', [PublicController::class, 'showNews'])->name('news.show');
+Route::get('/api/news/{id}', [PublicController::class, 'getNewsJson'])->name('api.news.show');
 
 // =========================================================================
 // 7. ROUTE DEPLOYMENT & SERVER UTILITY (AUTO DEPLOY & STORAGE FALLBACK)

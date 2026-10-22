@@ -269,6 +269,12 @@
                             <i class="fa-solid fa-ranking-star w-5 text-center text-red-400 {{ request()->routeIs('superadmin.standings*') ? 'text-white' : '' }}"></i>
                             <span>11. Klasemen PT LIB</span>
                         </a>
+
+                        {{-- 12. Manajemen Berita & Maklumat DPP (Pilihan 3) --}}
+                        <a href="{{ route('superadmin.news') }}" class="flex items-center gap-3 px-3.5 py-2 rounded-xl text-xs font-semibold transition-all {{ request()->routeIs('superadmin.news*') ? 'bg-red-600 text-white shadow-lg shadow-red-700/30' : 'text-white/70 hover:text-white hover:bg-white/5' }}">
+                            <i class="fa-solid fa-newspaper w-5 text-center text-red-400 {{ request()->routeIs('superadmin.news*') ? 'text-white' : '' }}"></i>
+                            <span>12. Manajemen Berita</span>
+                        </a>
                     </nav>
                 </div>
             @endif

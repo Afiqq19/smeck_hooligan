@@ -102,6 +102,23 @@
 
                             <td class="py-4 px-4 text-right">
                                 <div class="flex items-center justify-end gap-2">
+                                    @php
+                                        $cleanPhone = preg_replace('/[^0-9]/', '', $u->profile?->phone_number ?? '');
+                                        if (str_starts_with($cleanPhone, '0')) {
+                                            $cleanPhone = '62' . substr($cleanPhone, 1);
+                                        }
+                                        $chapterName = auth()->user()->chapter?->name ?? 'SMeCK Hooligan';
+                                        $waMsg = urlencode("Halo Saudaraku {$u->name}! 💚\n\nKami dari Pengurus {$chapterName} ingin mengonfirmasi pendaftaran anggota resmi SMeCK Hooligan Anda.\n\nData NIK & identitas Anda sedang kami tinjau untuk penerbitan KTA Digital resmi.\n\nSalam Sada Roha!");
+                                        $waUrl = "https://wa.me/{$cleanPhone}?text={$waMsg}";
+                                    @endphp
+
+                                    @if($cleanPhone)
+                                        <a href="{{ $waUrl }}" target="_blank" title="Kirim Notif WhatsApp (100% Gratis)" class="px-2.5 py-1.5 rounded-xl bg-emerald-600/20 hover:bg-emerald-600/30 text-emerald-400 font-semibold text-[11px] transition-colors flex items-center gap-1 border border-emerald-500/30">
+                                            <i class="fa-brands fa-whatsapp text-sm"></i>
+                                            <span>WA</span>
+                                        </a>
+                                    @endif
+
                                     <button type="button" onclick='openReviewModal({!! $applicantJson !!})' class="px-3 py-1.5 rounded-xl bg-white/10 hover:bg-white/20 text-white font-semibold text-[11px] transition-colors flex items-center gap-1.5">
                                         <i class="fa-regular fa-eye text-amber-400"></i>
                                         <span>Review Data</span>

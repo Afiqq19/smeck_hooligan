@@ -6,9 +6,11 @@ use App\Models\Chant;
 use App\Models\Chapter;
 use App\Models\LeagueStanding;
 use App\Models\MatchTicket;
+use App\Models\NewsArticle;
 use App\Models\SmeckPartner;
 use App\Services\PtLibScraperService;
 use Illuminate\Contracts\View\View;
+use Illuminate\Http\JsonResponse;
 use Illuminate\Http\Request;
 
 class PublicController extends Controller
@@ -31,14 +33,71 @@ class PublicController extends Controller
         }
         $psmsStanding = $standings->firstWhere('is_our_team', true);
 
+        // Pilihan 3: Berita Terkini & Maklumat DPP
+        $latestNews = NewsArticle::where('is_published', true)
+            ->orderBy('is_featured', 'desc')
+            ->latest()
+            ->take(5)
+            ->get();
+
         return view('pages.landing', compact(
             'featuredChants',
             'upcomingMatch',
             'chaptersCount',
             'partners',
             'standings',
-            'psmsStanding'
+            'psmsStanding',
+            'latestNews'
         ));
+    }
+
+    /**
+     * Halaman Publik Baca Berita / Maklumat Pers DPP.
+     */
+    public function showNews(string $slug): View
+    {
+        $article = NewsArticle::where('slug', $slug)->where('is_published', true)->firstOrFail();
+        $article->increment('views_count');
+
+        $relatedNews = NewsArticle::where('is_published', true)
+            ->where('id', '!=', $article->id)
+            ->latest()
+            ->take(3)
+            ->get();
+
+        return view('pages.news-detail', compact('article', 'relatedNews'));
+    }
+
+    /**
+     * API Get Data Berita untuk Modal Baca Cepat di Landing Page.
+     */
+    public function getNewsJson(int $id): JsonResponse
+    {
+        $article = NewsArticle::where('id', $id)->where('is_published', true)->first();
+
+        if (! $article) {
+            return response()->json(['success' => false, 'message' => 'Berita tidak ditemukan.'], 404);
+        }
+
+        $article->increment('views_count');
+
+        return response()->json([
+            'success' => true,
+            'article' => [
+                'id' => $article->id,
+                'title' => $article->title,
+                'slug' => $article->slug,
+                'category' => $article->category,
+                'summary' => $article->summary,
+                'content' => nl2br(e($article->content)),
+                'raw_content' => $article->content,
+                'image_url' => $article->image_url,
+                'author_name' => $article->author_name,
+                'views_count' => $article->views_count,
+                'published_date' => $article->published_at ? $article->published_at->format('d M Y') : $article->created_at->format('d M Y'),
+                'share_url' => route('news.show', $article->slug),
+            ]
+        ]);
     }
 
     /**

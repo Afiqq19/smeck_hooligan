@@ -89,11 +89,12 @@
                     <span>Simpan KTA (HD)</span>
                 </button>
                 @php
-                    $waShareText = urlencode("Halo kawan-kawan suporter! Saya telah memiliki KTA Digital Resmi SMeCK Hooligan dengan NIA: " . ($user->profile?->nia ?? 'SMCK-1950') . " (Basis " . ($user->chapter->name ?? 'Medan') . "). Salam Sada Roha! Cek verifikasi identitas resmi saya di portal suporter SMeCK Hooligan: https://projek2.xie.my.id/");
+                    $niaText = $user->profile?->nia ?? 'SMCK-1950';
+                    $waShareText = urlencode("🟢 *KTA DIGITAL RESMI SMECK HOOLIGAN*\n\nNama: {$user->name}\nNIA: {$niaText}\nBasis: " . ($user->chapter->name ?? 'Pusat') . "\nGol. Darah: " . ($user->profile?->blood_type ?? '-') . "\nStatus: AKTIF TERVERIFIKASI ✅\n\nVerifikasi Kartu Asli:\n" . url('/api/check-kta?query=' . $niaText) . "\n\nSalam Sada Roha! 🐓⚽");
                 @endphp
-                <a href="https://api.whatsapp.com/send?text={{ $waShareText }}" target="_blank" class="px-4 py-2.5 rounded-xl bg-emerald-600/30 hover:bg-emerald-600/50 text-emerald-300 border border-emerald-500/40 text-xs font-bold flex items-center gap-1.5 transition-all">
+                <a href="https://wa.me/?text={{ $waShareText }}" target="_blank" class="px-4 py-2.5 rounded-xl bg-emerald-600/30 hover:bg-emerald-600/50 text-emerald-300 border border-emerald-500/40 text-xs font-bold flex items-center gap-1.5 transition-all">
                     <i class="fa-brands fa-whatsapp text-sm"></i>
-                    <span>Bagikan Status</span>
+                    <span>Share KTA ke WA</span>
                 </a>
                 <a href="{{ route('member.tickets') }}" class="px-5 py-2.5 rounded-xl bg-smeck-green-600 hover:bg-smeck-green-500 text-white text-xs font-bold shadow-lg shadow-smeck-green-700/30 flex items-center gap-2 transition-all">
                     <i class="fa-solid fa-ticket"></i>

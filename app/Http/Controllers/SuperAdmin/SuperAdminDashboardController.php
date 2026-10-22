@@ -10,6 +10,7 @@ use App\Models\EventAttendance;
 use App\Models\LeagueStanding;
 use App\Models\MatchTicket;
 use App\Models\MemberProfile;
+use App\Models\NewsArticle;
 use App\Models\NfcCard;
 use App\Models\SmeckPartner;
 use App\Models\StoreProduct;
@@ -557,6 +558,123 @@ class SuperAdminDashboardController extends Controller
         }
 
         return back()->with('success', "Statistik klasemen tim '{$standing->team_name}' berhasil disesuaikan!");
+    }
+
+    /**
+     * 12. Manajemen Berita, Artikel & Maklumat Pers DPP.
+     */
+    public function news(Request $request): View
+    {
+        $query = NewsArticle::query();
+
+        if ($search = $request->get('search')) {
+            $query->where(function ($q) use ($search) {
+                $q->where('title', 'like', "%{$search}%")
+                    ->orWhere('summary', 'like', "%{$search}%")
+                    ->orWhere('author_name', 'like', "%{$search}%");
+            });
+        }
+
+        if ($category = $request->get('category')) {
+            $query->where('category', $category);
+        }
+
+        $articles = $query->orderBy('is_featured', 'desc')->latest()->paginate(10);
+        $totalArticles = NewsArticle::count();
+        $publishedCount = NewsArticle::where('is_published', true)->count();
+        $featuredCount = NewsArticle::where('is_featured', true)->count();
+        $totalViews = NewsArticle::sum('views_count');
+
+        return view('dashboard.superadmin.news', compact(
+            'articles',
+            'totalArticles',
+            'publishedCount',
+            'featuredCount',
+            'totalViews'
+        ));
+    }
+
+    /**
+     * Simpan / Perbarui Berita atau Maklumat.
+     */
+    public function storeNews(Request $request): RedirectResponse
+    {
+        $validated = $request->validate([
+            'id' => ['nullable', 'exists:news_articles,id'],
+            'title' => ['required', 'string', 'max:255'],
+            'category' => ['required', 'string', 'max:50'],
+            'summary' => ['nullable', 'string', 'max:500'],
+            'content' => ['required', 'string'],
+            'author_name' => ['required', 'string', 'max:100'],
+            'image_url' => ['nullable', 'string'],
+            'image_file' => ['nullable', 'image', 'mimes:jpg,jpeg,png,webp', 'max:4096'],
+            'is_featured' => ['nullable', 'boolean'],
+            'is_published' => ['nullable', 'boolean'],
+        ]);
+
+        $data = [
+            'title' => $validated['title'],
+            'category' => $validated['category'],
+            'summary' => $validated['summary'] ?? \Illuminate\Support\Str::limit(strip_tags($validated['content']), 180),
+            'content' => $validated['content'],
+            'author_name' => $validated['author_name'],
+            'is_featured' => $request->boolean('is_featured'),
+            'is_published' => $request->has('is_published') ? $request->boolean('is_published') : true,
+        ];
+
+        if ($request->hasFile('image_file')) {
+            $path = $request->file('image_file')->store('news', 'public');
+            $data['image_url'] = asset('storage/' . $path);
+        } elseif (! empty($validated['image_url'])) {
+            $data['image_url'] = $validated['image_url'];
+        }
+
+        if (! empty($validated['id'])) {
+            $article = NewsArticle::findOrFail($validated['id']);
+            $article->update($data);
+            $msg = 'Berita / Maklumat berhasil diperbarui!';
+        } else {
+            $data['published_at'] = now();
+            $article = NewsArticle::create($data);
+            $msg = 'Berita / Maklumat baru berhasil dipublikasikan!';
+        }
+
+        return back()->with('success', $msg);
+    }
+
+    /**
+     * Hapus Berita.
+     */
+    public function deleteNews(int $id): RedirectResponse
+    {
+        $article = NewsArticle::findOrFail($id);
+        $article->delete();
+
+        return back()->with('success', "Berita '{$article->title}' berhasil dihapus.");
+    }
+
+    /**
+     * Toggle status Featured (Unggulan).
+     */
+    public function toggleNewsFeatured(int $id): RedirectResponse
+    {
+        $article = NewsArticle::findOrFail($id);
+        $article->update(['is_featured' => ! $article->is_featured]);
+
+        $status = $article->is_featured ? 'dijadikan Berita Utama (Featured)' : 'dihapus dari Berita Utama';
+        return back()->with('success', "Berita '{$article->title}' berhasil {$status}.");
+    }
+
+    /**
+     * Toggle status Publikasi (Publish/Draft).
+     */
+    public function toggleNewsPublished(int $id): RedirectResponse
+    {
+        $article = NewsArticle::findOrFail($id);
+        $article->update(['is_published' => ! $article->is_published]);
+
+        $status = $article->is_published ? 'dipublikasikan' : 'diarsipkan (Draft)';
+        return back()->with('success', "Status berita berhasil diubah menjadi {$status}.");
     }
 }
 

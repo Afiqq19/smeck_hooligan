@@ -89,6 +89,9 @@
                                     placeholder="nama@domain.com"
                                     class="w-full px-4 py-3 bg-neutral-50 border border-neutral-300 rounded-xl text-neutral-900 placeholder-neutral-400 text-sm focus:outline-none focus:bg-white focus:border-smeck-green-600 focus:ring-2 focus:ring-smeck-green-500/20 transition-all"
                                 >
+                                <p class="text-[11px] text-smeck-green-700 mt-1 flex items-center gap-1 font-medium">
+                                    <i class="fa-solid fa-circle-info"></i> Tautan aktivasi akun & login otomatis akan dikirim ke email ini.
+                                </p>
                             </div>
 
                             {{-- Nomor Handphone / WhatsApp --}}

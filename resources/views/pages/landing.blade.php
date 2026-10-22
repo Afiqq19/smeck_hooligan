@@ -106,30 +106,40 @@
                     </svg>
                 </div>
 
-                <h3 class="font-display font-bold text-xl text-white mb-3">Berita Terkini</h3>
-                <p class="text-white/50 text-sm leading-relaxed mb-6">Update terbaru seputar PSMS Medan, kegiatan SMeCK Hooligan, dan informasi pertandingan.</p>
+                <h3 class="font-display font-bold text-xl text-white mb-2">Berita & Maklumat Pers</h3>
+                <p class="text-white/50 text-xs sm:text-sm leading-relaxed mb-4">Rilis resmi komando DPP SMeCK Hooligan, kabar PSMS Medan, dan info awaydays.</p>
 
-                <div class="space-y-3">
-                    <div class="flex items-center gap-3 p-3 rounded-xl bg-white/5 hover:bg-white/8 transition-colors cursor-pointer">
-                        <div class="w-2 h-2 bg-smeck-green-400 rounded-full flex-shrink-0"></div>
-                        <span class="text-white/70 text-sm truncate">PSMS Medan siap hadapi laga derby...</span>
-                    </div>
-                    <div class="flex items-center gap-3 p-3 rounded-xl bg-white/5 hover:bg-white/8 transition-colors cursor-pointer">
-                        <div class="w-2 h-2 bg-smeck-green-400 rounded-full flex-shrink-0"></div>
-                        <span class="text-white/70 text-sm truncate">Registrasi anggota baru gelombang 3...</span>
-                    </div>
-                    <div class="flex items-center gap-3 p-3 rounded-xl bg-white/5 hover:bg-white/8 transition-colors cursor-pointer">
-                        <div class="w-2 h-2 bg-smeck-gold rounded-full flex-shrink-0"></div>
-                        <span class="text-white/70 text-sm truncate">Launching kartu anggota NFC resmi</span>
-                    </div>
+                <div class="space-y-2.5">
+                    @forelse($latestNews ?? [] as $news)
+                        <div onclick="openNewsModal({{ $news->id }})" class="p-3 rounded-xl bg-white/5 hover:bg-white/10 border border-white/5 hover:border-smeck-green-500/30 transition-all cursor-pointer group/item">
+                            <div class="flex items-center justify-between gap-2 mb-1">
+                                <span class="px-2 py-0.5 rounded text-[9px] font-bold uppercase tracking-wider
+                                    @if($news->category === 'Maklumat DPP') bg-amber-500/20 text-amber-300
+                                    @elseif($news->category === 'Info Pertandingan') bg-emerald-500/20 text-emerald-300
+                                    @else bg-blue-500/20 text-blue-300 @endif">
+                                    {{ $news->category }}
+                                </span>
+                                <span class="text-[10px] text-white/40 font-mono">
+                                    {{ $news->published_at ? $news->published_at->format('d/m/Y') : '' }}
+                                </span>
+                            </div>
+                            <div class="text-white/80 group-hover/item:text-white font-semibold text-xs truncate transition-colors">
+                                {{ $news->title }}
+                            </div>
+                        </div>
+                    @empty
+                        <div class="text-xs text-white/40 py-4 text-center">Belum ada rilis berita terbaru.</div>
+                    @endforelse
                 </div>
 
-                <a href="#" class="mt-6 inline-flex items-center gap-2 text-smeck-green-400 text-sm font-medium hover:text-smeck-green-300 transition-colors group/link">
-                    Lihat Semua Berita
-                    <svg class="w-4 h-4 group-hover/link:translate-x-1 transition-transform" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5l7 7-7 7"/>
-                    </svg>
-                </a>
+                @if(isset($latestNews) && $latestNews->isNotEmpty())
+                    <a href="{{ route('news.show', $latestNews->first()->slug) }}" class="mt-5 inline-flex items-center gap-2 text-smeck-green-400 text-xs font-bold hover:text-smeck-green-300 transition-colors group/link">
+                        <span>Baca Maklumat Terbaru</span>
+                        <svg class="w-4 h-4 group-hover/link:translate-x-1 transition-transform" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5l7 7-7 7"/>
+                        </svg>
+                    </a>
+                @endif
             </div>
 
             {{-- Card: Jadwal Pertandingan --}}
@@ -849,6 +859,61 @@
     </div>
 </div>
 
+{{-- MODAL BACA BERITA CEPAT DI LANDING PAGE --}}
+<div id="modalBacaBerita" class="fixed inset-0 z-50 bg-black/85 backdrop-blur-md hidden items-center justify-center p-4 overflow-y-auto">
+    <div class="relative w-full max-w-2xl bg-smeck-dark-900 border border-white/15 rounded-3xl p-6 sm:p-8 shadow-2xl my-8">
+        {{-- Close Button --}}
+        <button onclick="closeNewsModal()" class="absolute top-5 right-5 w-8 h-8 rounded-xl bg-white/5 hover:bg-white/10 text-white/60 hover:text-white flex items-center justify-center transition-colors">
+            <i class="fa-solid fa-xmark"></i>
+        </button>
+
+        {{-- Category & Date --}}
+        <div class="flex items-center gap-2 mb-3">
+            <span id="modalNewsCategory" class="px-2.5 py-0.5 rounded-full text-[10px] font-bold uppercase tracking-wider bg-emerald-500/20 text-emerald-300">
+                Kategori
+            </span>
+            <span class="text-white/30">•</span>
+            <span id="modalNewsDate" class="text-xs text-white/50 font-mono">Tanggal</span>
+        </div>
+
+        {{-- Title --}}
+        <h3 id="modalNewsTitle" class="font-display font-black text-xl sm:text-2xl text-white leading-snug mb-3">
+            Memuat Judul...
+        </h3>
+
+        {{-- Author & Views --}}
+        <div class="flex items-center gap-4 text-xs text-white/50 pb-4 border-b border-white/10 mb-4">
+            <span id="modalNewsAuthor" class="text-emerald-400 font-semibold">Penulis</span>
+            <span>•</span>
+            <span id="modalNewsViews" class="text-cyan-400 font-mono">0 views</span>
+        </div>
+
+        {{-- Image --}}
+        <div id="modalNewsImageContainer" class="w-full h-48 sm:h-64 rounded-2xl overflow-hidden bg-black/40 border border-white/10 mb-5 hidden">
+            <img id="modalNewsImage" src="" alt="Thumbnail Berita" class="w-full h-full object-cover">
+        </div>
+
+        {{-- Content --}}
+        <div id="modalNewsContent" class="text-white/80 text-xs sm:text-sm leading-relaxed space-y-3 max-h-72 overflow-y-auto pr-2 custom-scrollbar">
+            Memuat konten...
+        </div>
+
+        {{-- Footer Actions --}}
+        <div class="mt-6 pt-4 border-t border-white/10 flex items-center justify-between gap-3">
+            <a id="modalNewsWaShare" href="#" target="_blank"
+                class="px-4 py-2.5 rounded-xl bg-emerald-600 hover:bg-emerald-500 text-white font-bold text-xs flex items-center gap-2 transition-all">
+                <i class="fa-brands fa-whatsapp text-sm"></i>
+                <span>Share ke WhatsApp</span>
+            </a>
+
+            <a id="modalNewsFullLink" href="#" class="px-4 py-2.5 rounded-xl bg-white/5 hover:bg-white/10 text-white/70 hover:text-white text-xs font-semibold flex items-center gap-2 transition-colors">
+                <span>Halaman Penuh</span>
+                <i class="fa-solid fa-arrow-up-right-from-square text-[10px]"></i>
+            </a>
+        </div>
+    </div>
+</div>
+
 <script>
     function openStandingsModal() {
         const modal = document.getElementById('modal-full-standings');
@@ -862,6 +927,51 @@
         const modal = document.getElementById('modal-full-standings');
         if (modal) {
             modal.classList.add('hidden');
+            document.body.classList.remove('overflow-hidden');
+        }
+    }
+
+    function openNewsModal(id) {
+        fetch('/api/news/' + id)
+            .then(res => res.json())
+            .then(data => {
+                if (!data.success) return;
+                const a = data.article;
+                document.getElementById('modalNewsCategory').innerText = a.category;
+                document.getElementById('modalNewsDate').innerText = a.published_date;
+                document.getElementById('modalNewsTitle').innerText = a.title;
+                document.getElementById('modalNewsAuthor').innerText = a.author_name;
+                document.getElementById('modalNewsViews').innerText = a.views_count + ' kali dibaca';
+                document.getElementById('modalNewsContent').innerHTML = a.content;
+                document.getElementById('modalNewsFullLink').href = a.share_url;
+
+                const imgContainer = document.getElementById('modalNewsImageContainer');
+                const img = document.getElementById('modalNewsImage');
+                if (a.image_url) {
+                    img.src = a.image_url;
+                    imgContainer.classList.remove('hidden');
+                } else {
+                    imgContainer.classList.add('hidden');
+                }
+
+                const waText = encodeURIComponent('📢 *' + a.title + '*\n\n' + (a.summary || '') + '\n\nBaca rilis selengkapnya:\n' + a.share_url);
+                document.getElementById('modalNewsWaShare').href = 'https://wa.me/?text=' + waText;
+
+                const modal = document.getElementById('modalBacaBerita');
+                modal.classList.remove('hidden');
+                modal.classList.add('flex');
+                document.body.classList.add('overflow-hidden');
+            })
+            .catch(err => {
+                console.error(err);
+            });
+    }
+
+    function closeNewsModal() {
+        const modal = document.getElementById('modalBacaBerita');
+        if (modal) {
+            modal.classList.add('hidden');
+            modal.classList.remove('flex');
             document.body.classList.remove('overflow-hidden');
         }
     }

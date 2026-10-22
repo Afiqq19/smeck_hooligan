@@ -34,6 +34,20 @@ class AuthController extends Controller
         $remember = $request->boolean('remember');
 
         if (Auth::attempt(['email' => $credentials['email'], 'password' => $credentials['password']], $remember)) {
+            $user = Auth::user();
+
+            // Cek apakah email sudah diverifikasi (khusus role member)
+            if (! $user->hasVerifiedEmail() && $user->role === 'member') {
+                session([
+                    'registered_email' => $user->email,
+                    'verify_user_id' => $user->id,
+                ]);
+                Auth::logout();
+
+                return redirect()->route('verification.notice')
+                    ->with('error', 'Alamat email Anda belum diverifikasi. Silakan periksa inbox email Anda atau kirim ulang tautan verifikasi.');
+            }
+
             $request->session()->regenerate();
 
             return redirect()->intended(route('dashboard'));
@@ -71,14 +85,14 @@ class AuthController extends Controller
             'gender' => ['required', 'in:L,P'],
         ]);
 
-        // Buat Akun Pengguna
+        // Buat Akun Pengguna (email_verified_at tetap NULL sampai klik link di email)
         $user = User::create([
             'name' => $validated['name'],
             'email' => $validated['email'],
             'password' => Hash::make($validated['password']),
             'chapter_id' => $validated['chapter_id'],
             'role' => 'member',
-            'status' => 'active', // langsung aktif untuk kemudahan demo
+            'status' => 'active',
         ]);
 
         // Generate NIA (Nomor Induk Anggota SMeCK)
@@ -98,10 +112,113 @@ class AuthController extends Controller
             'joined_date' => now(),
         ]);
 
+        // Kirim email notifikasi verifikasi
+        try {
+            $user->sendEmailVerificationNotification();
+        } catch (\Throwable $e) {
+            \Illuminate\Support\Facades\Log::warning('Email verification send failed: '.$e->getMessage());
+        }
+
+        // Simpan info registrasi di session
+        session([
+            'registered_email' => $user->email,
+            'verify_user_id' => $user->id,
+        ]);
+
+        return redirect()->route('verification.notice')
+            ->with('success', 'Pendaftaran berhasil! Kami telah mengirimkan tautan verifikasi ke email Anda. Silakan klik link tersebut untuk langsung login.');
+    }
+
+    /**
+     * Tampilkan Halaman Pemberitahuan Verifikasi Email.
+     */
+    public function showVerifyNotice(Request $request): View|RedirectResponse
+    {
+        $userId = session('verify_user_id') ?? auth()->id();
+        $user = $userId ? User::find($userId) : null;
+
+        if ($user && $user->hasVerifiedEmail()) {
+            return redirect()->route('member.dashboard');
+        }
+
+        $demoVerificationUrl = null;
+        if ($user) {
+            $demoVerificationUrl = \Illuminate\Support\Facades\URL::temporarySignedRoute(
+                'verification.verify',
+                now()->addMinutes(60),
+                [
+                    'id' => $user->id,
+                    'hash' => sha1($user->getEmailForVerification()),
+                ]
+            );
+        }
+
+        return view('auth.verify-email', compact('demoVerificationUrl'));
+    }
+
+    /**
+     * Proses Verifikasi Email melalui Link Bertanda Tangan (Signed URL).
+     * Saat diklik, langsung verifikasi dan login otomatis.
+     */
+    public function verifyEmail(Request $request, $id, $hash): RedirectResponse
+    {
+        $user = User::findOrFail($id);
+
+        if (! hash_equals((string) $hash, sha1($user->getEmailForVerification()))) {
+            abort(403, 'Tautan verifikasi tidak valid atau telah dimodifikasi.');
+        }
+
+        if (! $request->hasValidSignature()) {
+            session([
+                'registered_email' => $user->email,
+                'verify_user_id' => $user->id,
+            ]);
+
+            return redirect()->route('verification.notice')
+                ->with('error', 'Tautan verifikasi telah kedaluwarsa. Silakan klik tombol kirim ulang di bawah ini.');
+        }
+
+        if (! $user->hasVerifiedEmail()) {
+            $user->markEmailAsVerified();
+        }
+
+        // Login otomatis pengguna setelah verifikasi berhasil
         Auth::login($user);
         $request->session()->regenerate();
 
-        return redirect()->route('member.dashboard')->with('success', 'Selamat bergabung di keluarga besar SMeCK Hooligan! Salam Sada Roha!');
+        return redirect()->route('member.dashboard')
+            ->with('success', 'Email berhasil diverifikasi! Selamat datang di Portal Resmi SMeCK Hooligan.');
+    }
+
+    /**
+     * Kirim Ulang Tautan Verifikasi Email.
+     */
+    public function resendVerification(Request $request): RedirectResponse
+    {
+        $email = $request->input('email') ?? session('registered_email') ?? auth()->user()?->email;
+        $user = $email ? User::where('email', $email)->first() : null;
+
+        if (! $user) {
+            return back()->with('error', 'Akun pengguna tidak ditemukan.');
+        }
+
+        if ($user->hasVerifiedEmail()) {
+            return redirect()->route('member.dashboard');
+        }
+
+        try {
+            $user->sendEmailVerificationNotification();
+        } catch (\Throwable $e) {
+            \Illuminate\Support\Facades\Log::warning('Email verification resend failed: '.$e->getMessage());
+        }
+
+        session([
+            'registered_email' => $user->email,
+            'verify_user_id' => $user->id,
+        ]);
+
+        return back()->with('status', 'verification-link-sent')
+            ->with('success', 'Tautan verifikasi baru berhasil dikirim ke alamat email: '.$user->email);
     }
 
     /**

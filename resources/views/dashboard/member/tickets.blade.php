@@ -109,6 +109,14 @@
                                         <i class="fa-solid fa-print text-amber-400"></i>
                                         <span>Cetak Tiket (Offline)</span>
                                     </button>
+
+                                    @php
+                                        $ticketWaText = urlencode("🎫 *BOARDING PASS / TIKET RESMI SMECK HOOLIGAN*\n\n⚽ Pertandingan: " . ($order->matchTicket->match_title ?? 'Laga PSMS Medan') . "\n🏟️ Lokasi: " . ($order->matchTicket->stadium ?? 'Stadion Teladan') . "\n👤 Suporter: " . auth()->user()->name . "\n🆔 Kode Booking: " . $bookingCode . "\n🎟️ Jumlah: " . ($order->quantity ?? 1) . " Tiket\n\nTunjukkan pesan ini & KTA di pintu tribun / bus rombongan.\nSalam Sada Roha! 💚");
+                                    @endphp
+                                    <a href="https://wa.me/?text={{ $ticketWaText }}" target="_blank" class="w-full py-2 rounded-xl bg-emerald-600/25 hover:bg-emerald-600/40 text-emerald-300 font-bold text-xs border border-emerald-500/40 transition-colors flex items-center justify-center gap-1.5">
+                                        <i class="fa-brands fa-whatsapp text-sm"></i>
+                                        <span>Simpan di WhatsApp</span>
+                                    </a>
                                 </div>
                             </div>
 
