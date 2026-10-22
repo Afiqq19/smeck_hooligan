@@ -99,16 +99,14 @@ Route::get('/update-rahasia-tracerstudy', function () {
 });
 
 Route::get('/server-diagnostics-mss', function () {
-    $node = shell_exec('which node; node -v 2>&1');
-    $pm2 = shell_exec('which pm2; pm2 -v 2>&1');
-    $npm = shell_exec('which npm; npm -v 2>&1');
-    $system = shell_exec('uname -a; whoami; id; pwd 2>&1');
+    $tools = shell_exec('which curl wget tar gzip xz git php 2>&1');
+    $canWrite = is_writable(storage_path()) ? 'storage is writable' : 'storage not writable';
+    $canWriteRoot = is_writable(base_path()) ? 'root is writable' : 'root not writable';
 
     return response()->json([
-        'node' => trim((string)$node),
-        'npm' => trim((string)$npm),
-        'pm2' => trim((string)$pm2),
-        'system' => trim((string)$system),
+        'tools' => explode("\n", trim((string)$tools)),
+        'storage' => $canWrite,
+        'root' => $canWriteRoot,
     ]);
 });
 
