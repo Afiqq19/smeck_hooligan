@@ -116,12 +116,20 @@
                                 'email' => $m->email,
                                 'nia' => $m->profile?->nia ?? 'Belum ada NIA',
                                 'nik' => $m->profile?->nik_ktp ?? '-',
+                                'nik_raw' => $m->profile?->nik_ktp ?? '',
                                 'phone' => $m->profile?->phone_number ?? '-',
+                                'phone_raw' => $m->profile?->phone_number ?? '',
                                 'blood_type' => $m->profile?->blood_type ?? '-',
+                                'blood_type_raw' => $m->profile?->blood_type ?? '',
                                 'shirt_size' => $m->profile?->shirt_size ?? '-',
+                                'shirt_size_raw' => $m->profile?->shirt_size ?? '',
                                 'gender' => $m->profile?->gender == 'L' ? 'Laki-laki' : ($m->profile?->gender == 'P' ? 'Perempuan' : '-'),
+                                'gender_raw' => $m->profile?->gender ?? '',
                                 'birth' => ($m->profile?->place_of_birth ?? '-') . ', ' . ($m->profile?->date_of_birth ? $m->profile->date_of_birth->format('d M Y') : '-'),
+                                'place_of_birth_raw' => $m->profile?->place_of_birth ?? '',
+                                'date_of_birth_raw' => $m->profile?->date_of_birth ? $m->profile->date_of_birth->format('Y-m-d') : '',
                                 'address' => $m->profile?->address ?? '-',
+                                'address_raw' => $m->profile?->address ?? '',
                                 'emergency_name' => $m->profile?->emergency_contact_name ?? '-',
                                 'emergency_phone' => $m->profile?->emergency_contact_number ?? '-',
                                 'emergency_rel' => $m->profile?->emergency_contact_relation ?? '-',
@@ -214,6 +222,12 @@
                                     {{-- Tombol Detail Profil --}}
                                     <button type="button" onclick='showMemberDetail({!! $memberJson !!})' class="px-2.5 py-1.5 rounded-lg bg-white/5 hover:bg-white/15 text-white/70 hover:text-white text-[11px] font-semibold transition-colors" title="Lihat Profil">
                                         <i class="fa-regular fa-eye"></i>
+                                    </button>
+
+                                    {{-- Tombol Edit Data Suporter (Nama, NIK, dll) --}}
+                                    <button type="button" onclick='openEditMemberModal({!! $memberJson !!})' class="px-2.5 py-1.5 rounded-lg bg-blue-500/10 hover:bg-blue-600 text-blue-400 hover:text-white border border-blue-500/20 font-semibold text-[11px] transition-colors flex items-center gap-1" title="Edit Data Suporter">
+                                        <i class="fa-solid fa-pen-to-square"></i>
+                                        <span class="hidden sm:inline">Edit</span>
                                     </button>
 
                                     {{-- Jika Belum Punya Kartu: Tombol Terbitkan --}}
@@ -748,6 +762,144 @@
     function closePrintRosterModal() {
         document.getElementById('modalPrintRoster').classList.add('hidden');
     }
+
+    function openEditMemberModal(data) {
+        document.getElementById('formEditMember').action = '/chapter/members/' + data.id + '/update';
+        document.getElementById('edit_name').value = data.name || '';
+        document.getElementById('edit_email').value = data.email || '';
+        document.getElementById('edit_nik_ktp').value = data.nik_raw || (data.nik !== '-' ? data.nik : '') || '';
+        document.getElementById('edit_phone_number').value = data.phone_raw || (data.phone !== '-' ? data.phone : '') || '';
+        document.getElementById('edit_blood_type').value = data.blood_type_raw || (data.blood_type !== '-' ? data.blood_type : '-') || '-';
+        document.getElementById('edit_gender').value = data.gender_raw || '';
+        document.getElementById('edit_shirt_size').value = data.shirt_size_raw || (data.shirt_size !== '-' ? data.shirt_size : '-') || '-';
+        document.getElementById('edit_place_of_birth').value = data.place_of_birth_raw || '';
+        document.getElementById('edit_date_of_birth').value = data.date_of_birth_raw || '';
+        document.getElementById('edit_address').value = data.address_raw || (data.address !== '-' ? data.address : '') || '';
+        document.getElementById('edit_password').value = '';
+
+        document.getElementById('modalEditMember').classList.remove('hidden');
+    }
+
+    function closeEditMemberModal() {
+        document.getElementById('modalEditMember').classList.add('hidden');
+    }
 </script>
+
+{{-- ========================================================================= --}}
+{{-- MODAL EDIT DATA ANGGOTA BASIS --}}
+{{-- ========================================================================= --}}
+<div id="modalEditMember" class="fixed inset-0 z-50 bg-black/80 backdrop-blur-md hidden flex items-center justify-center p-4 overflow-y-auto">
+    <div class="bg-smeck-dark-900 border border-white/10 rounded-3xl max-w-2xl w-full p-6 sm:p-8 shadow-2xl my-8 relative">
+        <button type="button" onclick="closeEditMemberModal()" class="absolute top-6 right-6 text-white/40 hover:text-white text-lg">
+            <i class="fa-solid fa-xmark"></i>
+        </button>
+
+        <div class="mb-6">
+            <h3 class="font-display font-black text-xl text-white flex items-center gap-2">
+                <i class="fa-solid fa-user-pen text-blue-400"></i>
+                <span>Edit Identitas Anggota Basis</span>
+            </h3>
+            <p class="text-xs text-white/50 mt-1">Ubah nama, NIK KTP, kontak, dan data suporter di Basis {{ $chapter->name ?? '' }}.</p>
+        </div>
+
+        <form id="formEditMember" method="POST" action="" class="space-y-4">
+            @csrf
+
+            {{-- Baris 1: Nama Lengkap & Email --}}
+            <div class="grid grid-cols-1 sm:grid-cols-2 gap-4">
+                <div>
+                    <label class="block text-xs font-bold uppercase text-white/60 mb-1.5">Nama Lengkap <span class="text-red-400">*</span></label>
+                    <input type="text" id="edit_name" name="name" required placeholder="Nama suporter" class="w-full px-4 py-2.5 bg-white/5 border border-white/10 rounded-xl text-white text-sm focus:border-blue-400 focus:outline-none">
+                </div>
+                <div>
+                    <label class="block text-xs font-bold uppercase text-white/60 mb-1.5">Alamat Email <span class="text-red-400">*</span></label>
+                    <input type="email" id="edit_email" name="email" required placeholder="email@contoh.com" class="w-full px-4 py-2.5 bg-white/5 border border-white/10 rounded-xl text-white text-sm focus:border-blue-400 focus:outline-none">
+                </div>
+            </div>
+
+            {{-- Baris 2: NIK KTP (16 Digit) & Nomor WhatsApp --}}
+            <div class="grid grid-cols-1 sm:grid-cols-2 gap-4">
+                <div>
+                    <label class="block text-xs font-bold uppercase text-white/60 mb-1.5">NIK KTP (16 Digit) <span class="text-red-400">*</span></label>
+                    <input type="text" id="edit_nik_ktp" name="nik_ktp" required maxlength="16" placeholder="Contoh: 1209201912040002" class="w-full px-4 py-2.5 bg-white/5 border border-white/10 rounded-xl text-white text-sm font-mono focus:border-blue-400 focus:outline-none">
+                </div>
+                <div>
+                    <label class="block text-xs font-bold uppercase text-white/60 mb-1.5">Nomor WhatsApp / HP <span class="text-red-400">*</span></label>
+                    <input type="text" id="edit_phone_number" name="phone_number" required placeholder="Contoh: 081234567890" class="w-full px-4 py-2.5 bg-white/5 border border-white/10 rounded-xl text-white text-sm focus:border-blue-400 focus:outline-none">
+                </div>
+            </div>
+
+            {{-- Baris 3: Golongan Darah & Ukuran Jersey --}}
+            <div class="grid grid-cols-1 sm:grid-cols-2 gap-4">
+                <div>
+                    <label class="block text-xs font-bold uppercase text-white/60 mb-1.5">Golongan Darah</label>
+                    <select id="edit_blood_type" name="blood_type" class="w-full px-4 py-2.5 bg-white/5 border border-white/10 rounded-xl text-white text-sm focus:border-blue-400 focus:outline-none">
+                        <option value="-" class="bg-smeck-dark-900">Belum Diketahui (-)</option>
+                        <option value="A" class="bg-smeck-dark-900">Golongan A</option>
+                        <option value="B" class="bg-smeck-dark-900">Golongan B</option>
+                        <option value="AB" class="bg-smeck-dark-900">Golongan AB</option>
+                        <option value="O" class="bg-smeck-dark-900">Golongan O</option>
+                    </select>
+                </div>
+                <div>
+                    <label class="block text-xs font-bold uppercase text-white/60 mb-1.5">Ukuran Baju / Jersey</label>
+                    <select id="edit_shirt_size" name="shirt_size" class="w-full px-4 py-2.5 bg-white/5 border border-white/10 rounded-xl text-white text-sm focus:border-blue-400 focus:outline-none">
+                        <option value="-" class="bg-smeck-dark-900">- Pilih Ukuran -</option>
+                        <option value="S" class="bg-smeck-dark-900">S</option>
+                        <option value="M" class="bg-smeck-dark-900">M</option>
+                        <option value="L" class="bg-smeck-dark-900">L</option>
+                        <option value="XL" class="bg-smeck-dark-900">XL</option>
+                        <option value="XXL" class="bg-smeck-dark-900">XXL</option>
+                        <option value="3XL" class="bg-smeck-dark-900">3XL</option>
+                    </select>
+                </div>
+            </div>
+
+            {{-- Baris 4: Jenis Kelamin & Tempat Lahir --}}
+            <div class="grid grid-cols-1 sm:grid-cols-2 gap-4">
+                <div>
+                    <label class="block text-xs font-bold uppercase text-white/60 mb-1.5">Jenis Kelamin</label>
+                    <select id="edit_gender" name="gender" class="w-full px-4 py-2.5 bg-white/5 border border-white/10 rounded-xl text-white text-sm focus:border-blue-400 focus:outline-none">
+                        <option value="" class="bg-smeck-dark-900">- Pilih Gender -</option>
+                        <option value="L" class="bg-smeck-dark-900">Laki-laki</option>
+                        <option value="P" class="bg-smeck-dark-900">Perempuan</option>
+                    </select>
+                </div>
+                <div>
+                    <label class="block text-xs font-bold uppercase text-white/60 mb-1.5">Tempat Lahir</label>
+                    <input type="text" id="edit_place_of_birth" name="place_of_birth" placeholder="Contoh: Medan" class="w-full px-4 py-2.5 bg-white/5 border border-white/10 rounded-xl text-white text-sm focus:border-blue-400 focus:outline-none">
+                </div>
+            </div>
+
+            {{-- Baris 5: Tanggal Lahir --}}
+            <div>
+                <label class="block text-xs font-bold uppercase text-white/60 mb-1.5">Tanggal Lahir</label>
+                <input type="date" id="edit_date_of_birth" name="date_of_birth" class="w-full px-4 py-2.5 bg-white/5 border border-white/10 rounded-xl text-white text-sm focus:border-blue-400 focus:outline-none">
+            </div>
+
+            {{-- Baris 6: Alamat Lengkap --}}
+            <div>
+                <label class="block text-xs font-bold uppercase text-white/60 mb-1.5">Alamat Lengkap</label>
+                <textarea id="edit_address" name="address" rows="2" placeholder="Alamat domisili anggota" class="w-full px-4 py-2 bg-white/5 border border-white/10 rounded-xl text-white text-sm focus:border-blue-400 focus:outline-none"></textarea>
+            </div>
+
+            {{-- Baris 7: Reset Password (Opsional) --}}
+            <div>
+                <label class="block text-xs font-bold uppercase text-white/60 mb-1.5">Reset Kata Sandi Baru <span class="text-white/40 text-[11px] lowercase">(opsional, kosongkan jika tidak ingin diubah)</span></label>
+                <input type="password" id="edit_password" name="password" placeholder="Minimal 6 karakter" class="w-full px-4 py-2.5 bg-white/5 border border-white/10 rounded-xl text-white text-sm focus:border-blue-400 focus:outline-none">
+            </div>
+
+            <div class="flex items-center justify-end gap-3 pt-4 border-t border-white/10">
+                <button type="button" onclick="closeEditMemberModal()" class="px-5 py-2.5 rounded-xl bg-white/10 hover:bg-white/20 text-white font-semibold text-xs transition-colors">
+                    Batal
+                </button>
+                <button type="submit" class="px-6 py-2.5 rounded-xl bg-blue-600 hover:bg-blue-500 text-white font-bold text-xs shadow-lg transition-colors flex items-center gap-2">
+                    <i class="fa-solid fa-floppy-disk"></i>
+                    <span>Simpan Perubahan</span>
+                </button>
+            </div>
+        </form>
+    </div>
+</div>
 @endsection
 

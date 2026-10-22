@@ -512,4 +512,57 @@ class ChapterDashboardController extends Controller
 
         return back()->with('success', "Kartu KTA fisik baru Nomor {$cardNumber} (UID: {$newCard->uid_number}) berhasil diterbitkan untuk {$user->name}. Kartu lama telah diblokir.");
     }
+
+    /**
+     * Edit / Perbarui Data Anggota Basis (Admin Chapter).
+     */
+    public function updateMember(Request $request, int $id): RedirectResponse
+    {
+        $chapterId = $request->user()->chapter_id ?? 1;
+        $user = User::where('chapter_id', $chapterId)->with('profile')->findOrFail($id);
+        $profileId = $user->profile?->id;
+
+        $validated = $request->validate([
+            'name' => ['required', 'string', 'max:255'],
+            'email' => ['required', 'email', 'max:255', 'unique:users,email,' . $user->id],
+            'nik_ktp' => ['required', 'string', 'max:25', 'unique:member_profiles,nik_ktp,' . ($profileId ?? 'NULL') . ',id'],
+            'phone_number' => ['required', 'string', 'max:25'],
+            'blood_type' => ['nullable', 'in:A,B,AB,O,-'],
+            'shirt_size' => ['nullable', 'in:S,M,L,XL,XXL,3XL,-'],
+            'gender' => ['nullable', 'in:L,P'],
+            'place_of_birth' => ['nullable', 'string', 'max:100'],
+            'date_of_birth' => ['nullable', 'date'],
+            'address' => ['nullable', 'string'],
+            'password' => ['nullable', 'string', 'min:6'],
+        ]);
+
+        $userData = [
+            'name' => $validated['name'],
+            'email' => $validated['email'],
+        ];
+        if (! empty($validated['password'])) {
+            $userData['password'] = Hash::make($validated['password']);
+        }
+        $user->update($userData);
+
+        $profileData = [
+            'nik_ktp' => $validated['nik_ktp'],
+            'phone_number' => $validated['phone_number'],
+            'blood_type' => ($validated['blood_type'] ?? '') === '-' ? null : ($validated['blood_type'] ?? null),
+            'shirt_size' => ($validated['shirt_size'] ?? '') === '-' ? null : ($validated['shirt_size'] ?? null),
+            'gender' => $validated['gender'] ?? null,
+            'place_of_birth' => $validated['place_of_birth'] ?? null,
+            'date_of_birth' => $validated['date_of_birth'] ?? null,
+            'address' => $validated['address'] ?? null,
+        ];
+
+        if ($user->profile) {
+            $user->profile->update($profileData);
+        } else {
+            $profileData['user_id'] = $user->id;
+            MemberProfile::create($profileData);
+        }
+
+        return back()->with('success', "Data anggota basis {$user->name} berhasil diperbarui!");
+    }
 }

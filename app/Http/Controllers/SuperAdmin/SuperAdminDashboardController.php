@@ -24,6 +24,7 @@ use Illuminate\Http\JsonResponse;
 use Illuminate\Http\RedirectResponse;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\File;
+use Illuminate\Support\Facades\Hash;
 use Illuminate\Support\Facades\Http;
 use Illuminate\View\View;
 
@@ -132,6 +133,62 @@ class SuperAdminDashboardController extends Controller
             'pendingMembersCount',
             'suspendedMembersCount'
         ));
+    }
+
+    /**
+     * Edit / Perbarui Data Anggota Suporter Nasional (DPP Pusat).
+     */
+    public function updateMember(Request $request, int $id): RedirectResponse
+    {
+        $user = User::with('profile')->findOrFail($id);
+        $profileId = $user->profile?->id;
+
+        $validated = $request->validate([
+            'name' => ['required', 'string', 'max:255'],
+            'email' => ['required', 'email', 'max:255', 'unique:users,email,' . $user->id],
+            'nik_ktp' => ['required', 'string', 'max:25', 'unique:member_profiles,nik_ktp,' . ($profileId ?? 'NULL') . ',id'],
+            'phone_number' => ['required', 'string', 'max:25'],
+            'chapter_id' => ['nullable', 'exists:chapters,id'],
+            'blood_type' => ['nullable', 'in:A,B,AB,O,-'],
+            'shirt_size' => ['nullable', 'in:S,M,L,XL,XXL,3XL,-'],
+            'gender' => ['nullable', 'in:L,P'],
+            'place_of_birth' => ['nullable', 'string', 'max:100'],
+            'date_of_birth' => ['nullable', 'date'],
+            'address' => ['nullable', 'string'],
+            'password' => ['nullable', 'string', 'min:6'],
+        ]);
+
+        $userData = [
+            'name' => $validated['name'],
+            'email' => $validated['email'],
+        ];
+        if (! empty($validated['chapter_id'])) {
+            $userData['chapter_id'] = $validated['chapter_id'];
+        }
+        if (! empty($validated['password'])) {
+            $userData['password'] = Hash::make($validated['password']);
+        }
+        $user->update($userData);
+
+        $profileData = [
+            'nik_ktp' => $validated['nik_ktp'],
+            'phone_number' => $validated['phone_number'],
+            'blood_type' => ($validated['blood_type'] ?? '') === '-' ? null : ($validated['blood_type'] ?? null),
+            'shirt_size' => ($validated['shirt_size'] ?? '') === '-' ? null : ($validated['shirt_size'] ?? null),
+            'gender' => $validated['gender'] ?? null,
+            'place_of_birth' => $validated['place_of_birth'] ?? null,
+            'date_of_birth' => $validated['date_of_birth'] ?? null,
+            'address' => $validated['address'] ?? null,
+        ];
+
+        if ($user->profile) {
+            $user->profile->update($profileData);
+        } else {
+            $profileData['user_id'] = $user->id;
+            MemberProfile::create($profileData);
+        }
+
+        return back()->with('success', "Data anggota {$user->name} berhasil diperbarui!");
     }
 
     /**

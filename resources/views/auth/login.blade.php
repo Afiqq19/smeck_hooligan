@@ -195,16 +195,6 @@
                     </button>
                 </form>
 
-                {{-- Demo Login Credentials Hint for Convenience --}}
-                <div class="p-3.5 rounded-xl bg-white/[0.03] border border-white/10 text-xs text-white/50 space-y-1">
-                    <div class="font-semibold text-white/70 flex items-center gap-1.5">
-                        <i class="fa-solid fa-circle-info text-smeck-green-400"></i> Akun Uji Coba Tersedia:
-                    </div>
-                    <div>• Super Admin: <span class="text-smeck-green-300 font-mono">admin@smeck.id</span> (sandi: password)</div>
-                    <div>• Admin Chapter: <span class="text-smeck-green-300 font-mono">chapter@smeck.id</span> (sandi: password)</div>
-                    <div>• Anggota: <span class="text-smeck-green-300 font-mono">member@smeck.id</span> (sandi: password)</div>
-                </div>
-
                 {{-- Register Link --}}
                 <div class="pt-4 text-center border-t border-white/10">
                     <p class="text-sm text-white/60">

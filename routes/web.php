@@ -97,6 +97,7 @@ Route::middleware(['auth', 'role:admin_chapter,super_admin'])->prefix('chapter')
     // Manajemen Anggota Basis & KTA NFC
     Route::get('/members', [ChapterDashboardController::class, 'members'])->name('members');
     Route::post('/members', [ChapterDashboardController::class, 'storeMember'])->name('members.store');
+    Route::post('/members/{id}/update', [ChapterDashboardController::class, 'updateMember'])->name('members.update');
     Route::post('/nfc/block/{cardId}', [ChapterDashboardController::class, 'blockCard'])->name('nfc.block');
     Route::post('/nfc/unblock/{cardId}', [ChapterDashboardController::class, 'unblockCard'])->name('nfc.unblock');
     Route::post('/nfc/replace/{userId}', [ChapterDashboardController::class, 'replaceCard'])->name('nfc.replace');
@@ -118,6 +119,7 @@ Route::middleware(['auth', 'role:super_admin'])->prefix('superadmin')->name('sup
 
     // 2. Direktori Anggota Nasional
     Route::get('/members', [SuperAdminDashboardController::class, 'members'])->name('members');
+    Route::post('/members/{id}/update', [SuperAdminDashboardController::class, 'updateMember'])->name('members.update');
     Route::post('/members/{id}/approve', [SuperAdminDashboardController::class, 'approveMember'])->name('members.approve');
     Route::post('/members/{id}/role', [SuperAdminDashboardController::class, 'updateMemberRole'])->name('members.role');
     Route::post('/members/{id}/status', [SuperAdminDashboardController::class, 'toggleMemberStatus'])->name('members.status');
