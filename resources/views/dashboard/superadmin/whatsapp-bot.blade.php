@@ -111,12 +111,12 @@
 Halo Saudaraku! 💚
 Selamat datang di Layanan WhatsApp Otomatis Resmi SMeCK Hooligan (PSMS Medan).
 
-Ketik kata kunci untuk mencoba:
-• *CEK KTA SMCK-2024-1950*
-• *JADWAL*
-• *KLASEMEN*
-• *DAFTAR*
-• *CHANT*
+Ketik angka atau kata kunci untuk mencoba:
+1️⃣ *CEK KTA 1950* (atau *CEK KTA SMC-2024-001*)
+2️⃣ *JADWAL* (Laga terdekat & kuota tiket)
+3️⃣ *KLASEMEN* (Update Liga 2 PT LIB)
+4️⃣ *DAFTAR* (Gabung anggota resmi)
+5️⃣ *CHANT* (Lirik Salam Sada Roha)
                             </div>
                             <div class="text-[9px] text-white/40 text-right font-mono">10:00</div>
                         </div>
@@ -220,29 +220,48 @@ Ketik kata kunci untuk mencoba:
                         </thead>
                         <tbody class="divide-y divide-white/5">
                             <tr class="hover:bg-white/[0.02]">
-                                <td class="py-3 px-3 font-mono font-bold text-emerald-400">CEK KTA &lt;nomor&gt;</td>
+                                <td class="py-3 px-3 font-mono font-bold text-emerald-400">
+                                    CEK KTA &lt;nomor&gt;<br>
+                                    <span class="text-[10px] text-white/40 font-normal">atau ketik angka 1</span>
+                                </td>
                                 <td class="py-3 px-3 text-white/80">Validasi keaslian KTA suporter, nama, basis, gol. darah & masa berlaku (Cegah KTA palsu).</td>
-                                <td class="py-3 px-3 font-mono text-white/50">`CEK KTA SMCK-2024-1950`</td>
+                                <td class="py-3 px-3 font-mono text-white/50">
+                                    • `CEK KTA 1950`<br>
+                                    • `CEK KTA SMC-2024-001`<br>
+                                    • `CEK KTA Bani Ginting`
+                                </td>
                             </tr>
                             <tr class="hover:bg-white/[0.02]">
-                                <td class="py-3 px-3 font-mono font-bold text-emerald-400">JADWAL</td>
+                                <td class="py-3 px-3 font-mono font-bold text-emerald-400">
+                                    JADWAL<br>
+                                    <span class="text-[10px] text-white/40 font-normal">atau ketik angka 2</span>
+                                </td>
                                 <td class="py-3 px-3 text-white/80">Informasi pertandingan terdekat PSMS Medan, stadion, harga & sisa kuota tiket suporter.</td>
-                                <td class="py-3 px-3 font-mono text-white/50">`JADWAL`</td>
+                                <td class="py-3 px-3 font-mono text-white/50">`JADWAL` (atau `2`)</td>
                             </tr>
                             <tr class="hover:bg-white/[0.02]">
-                                <td class="py-3 px-3 font-mono font-bold text-emerald-400">KLASEMEN</td>
+                                <td class="py-3 px-3 font-mono font-bold text-emerald-400">
+                                    KLASEMEN<br>
+                                    <span class="text-[10px] text-white/40 font-normal">atau ketik angka 3</span>
+                                </td>
                                 <td class="py-3 px-3 text-white/80">Posisi & poin klasemen PSMS Medan terkini disinkronkan langsung dari PT LIB.</td>
-                                <td class="py-3 px-3 font-mono text-white/50">`KLASEMEN`</td>
+                                <td class="py-3 px-3 font-mono text-white/50">`KLASEMEN` (atau `3`)</td>
                             </tr>
                             <tr class="hover:bg-white/[0.02]">
-                                <td class="py-3 px-3 font-mono font-bold text-emerald-400">DAFTAR</td>
+                                <td class="py-3 px-3 font-mono font-bold text-emerald-400">
+                                    DAFTAR<br>
+                                    <span class="text-[10px] text-white/40 font-normal">atau ketik angka 4</span>
+                                </td>
                                 <td class="py-3 px-3 text-white/80">Tautan instan dan syarat pendaftaran anggota baru bagi suporter yang ingin bergabung.</td>
-                                <td class="py-3 px-3 font-mono text-white/50">`DAFTAR`</td>
+                                <td class="py-3 px-3 font-mono text-white/50">`DAFTAR` (atau `4`)</td>
                             </tr>
                             <tr class="hover:bg-white/[0.02]">
-                                <td class="py-3 px-3 font-mono font-bold text-emerald-400">CHANT</td>
+                                <td class="py-3 px-3 font-mono font-bold text-emerald-400">
+                                    CHANT<br>
+                                    <span class="text-[10px] text-white/40 font-normal">atau ketik angka 5</span>
+                                </td>
                                 <td class="py-3 px-3 text-white/80">Lirik anthem kebanggaan tribun *Salam Sada Roha* dan lagu semangat Ayam Kinantan.</td>
-                                <td class="py-3 px-3 font-mono text-white/50">`CHANT`</td>
+                                <td class="py-3 px-3 font-mono text-white/50">`CHANT` (atau `5`)</td>
                             </tr>
                         </tbody>
                     </table>

@@ -19,34 +19,84 @@ class WhatsAppBotService
         $text = trim($incomingText);
         $upper = strtoupper($text);
 
-        // 1. Perintah Cek KTA
-        if (str_starts_with($upper, 'CEK KTA') || str_starts_with($upper, 'KTA ') || str_starts_with($upper, 'CEK ')) {
-            $query = trim(preg_replace('/^(CEK\s+KTA|KTA|CEK)\s+/i', '', $text));
+        // 1. Shortcut Angka Menu Utama (1 - 6)
+        if ($upper === '1') {
+            return $this->handleKtaTutorial();
+        }
+        if ($upper === '2') {
+            return $this->handleSchedule();
+        }
+        if ($upper === '3') {
+            return $this->handleStandings();
+        }
+        if ($upper === '4') {
+            return $this->handleRegister();
+        }
+        if ($upper === '5') {
+            return $this->handleChants();
+        }
+        if ($upper === '6' || in_array($upper, ['MENU', 'HELP', 'BANTUAN', 'INFO', 'P', 'HALO', 'HAI', 'ASSALAMUALAIKUM', 'TES', 'TEST'])) {
+            return $this->handleHelp();
+        }
+
+        // 2. Jika user hanya mengetik "CEK KTA", "KTA", atau "CEK" tanpa nomor/nama
+        if (in_array($upper, ['CEK KTA', 'KTA', 'CEK', 'CEK KTA DONG', 'CARA CEK KTA', 'CARA CEK', 'CEK KTA GIMANA', 'CEKKTA'])) {
+            return $this->handleKtaTutorial();
+        }
+
+        // 3. Perintah Cek KTA dengan parameter (Contoh: "CEK KTA 1950", "KTA SMC-2024-001", "CEK Bani Ginting")
+        if (preg_match('/^(CEK\s+KTA|KTA|CEK)\s+(.+)$/i', $text, $matches)) {
+            $query = trim($matches[2]);
             return $this->handleCheckKta($query);
         }
 
-        // 2. Perintah Jadwal Pertandingan
-        if (in_array($upper, ['JADWAL', 'JADWAL MATCH', 'PERTANDINGAN', 'MAIN', 'LAWAN'])) {
+        // 4. Perintah Jadwal Pertandingan
+        if (in_array($upper, ['JADWAL', 'JADWAL MATCH', 'PERTANDINGAN', 'MAIN', 'LAWAN', 'JADWAL PSMS', 'KAPAN MAIN'])) {
             return $this->handleSchedule();
         }
 
-        // 3. Perintah Klasemen Liga 2
-        if (in_array($upper, ['KLASEMEN', 'POIN', 'PERINGKAT', 'STANDINGS'])) {
+        // 5. Perintah Klasemen Liga 2 (PT LIB)
+        if (in_array($upper, ['KLASEMEN', 'POIN', 'PERINGKAT', 'STANDINGS', 'KLASEMEN LIGA 2', 'KLASEMEN PSMS', 'KLASEMEN SEMENTARA'])) {
             return $this->handleStandings();
         }
 
-        // 4. Perintah Lagu & Chants Tribun
-        if (in_array($upper, ['CHANT', 'CHANTS', 'LAGU', 'ANTHEM', 'LIRIK'])) {
+        // 6. Perintah Lagu & Chants Tribun
+        if (in_array($upper, ['CHANT', 'CHANTS', 'LAGU', 'ANTHEM', 'LIRIK', 'LIRIK LAGU', 'SALAM SADA ROHA'])) {
             return $this->handleChants();
         }
 
-        // 5. Perintah Pendaftaran Anggota Baru
-        if (in_array($upper, ['DAFTAR', 'GABUNG', 'REGISTRASI', 'JOIN', 'ANGGOTA BARU'])) {
+        // 7. Perintah Pendaftaran Anggota Baru
+        if (in_array($upper, ['DAFTAR', 'GABUNG', 'REGISTRASI', 'JOIN', 'ANGGOTA BARU', 'CARA DAFTAR', 'GABUNG SUPORTER'])) {
             return $this->handleRegister();
         }
 
-        // 6. Perintah Bantuan / Menu Default
+        // 8. Cek apakah ada nomor KTA yang diketik langsung (misal: 6032-9800-2024-1950 atau SMC-2024-001)
+        if (preg_match('/^(SMC|6032|\d{4,16})/i', $text)) {
+            return $this->handleCheckKta($text);
+        }
+
+        // 9. Default: Tampilkan Menu Interaktif Lengkap dengan Contoh
         return $this->handleHelp();
+    }
+
+    /**
+     * Handler: Tutorial & Panduan Lengkap Cara Cek KTA
+     */
+    public function handleKtaTutorial(): string
+    {
+        return "🔍 *PANDUAN LENGKAP CARA CEK KTA SUPORTER* 💚\n\n" .
+            "Untuk mengecek keaslian, status aktif/suspend, dan data anggota resmi SMeCK Hooligan, formatnya sangat mudah:\n\n" .
+            "👉 Ketik: *CEK KTA <Nomor KTA / NIA / Nama>*\n\n" .
+            "💡 *CONTOH PENGETIKAN (Bisa Dicoba Langsung):*\n" .
+            "• `CEK KTA 1950` ➔ Cukup 4 angka belakang kartu KTA\n" .
+            "• `CEK KTA SMC-2024-001` ➔ Cek via Nomor Induk Anggota (NIA)\n" .
+            "• `CEK KTA 6032-9800-2024-1950` ➔ Nomor kartu fisik lengkap\n" .
+            "• `CEK KTA Bani Ginting` ➔ Cek via Nama Suporter\n\n" .
+            "✅ *Data yang akan tampil:*\n" .
+            "- Nama Lengkap Anggota & Chapter Domisili\n" .
+            "- Status KTA (🟢 Aktif / 🚨 Suspended)\n" .
+            "- Golongan Darah (Untuk Data Medis di Tribun)\n\n" .
+            "Silakan ketik sekarang dengan format di atas, Saudaraku! 🐓";
     }
 
     /**
@@ -54,27 +104,30 @@ class WhatsAppBotService
      */
     public function handleCheckKta(string $query): string
     {
-        if (empty($query)) {
-            return "⚠️ *FORMAT CEK KTA KURANG LENGKAP*\n\nSilakan ketik:\n*CEK KTA <Nomor NIA / UID / NIK>*\n\nContoh:\n• `CEK KTA SMCK-2024-1950`\n• `CEK KTA 1271081206980005`";
+        $rawQuery = trim($query);
+
+        if (empty($rawQuery) || in_array(strtoupper($rawQuery), ['KTA', 'CEK', 'CEK KTA'])) {
+            return $this->handleKtaTutorial();
         }
 
-        $rawQuery = trim($query);
         $cleanQuery = str_replace([' ', '-', ':', '.'], '', strtolower($rawQuery));
 
-        // 1. Cari via Nomor Kartu Fisik / UID NFC
+        // 1. Cari via Nomor Kartu Fisik / UID NFC / Partial 4 Digit
         $card = NfcCard::where(function ($q) use ($rawQuery, $cleanQuery) {
             $q->whereRaw('LOWER(uid_number) = ?', [strtolower($rawQuery)])
                 ->orWhereRaw('REPLACE(REPLACE(LOWER(uid_number), ":", ""), "-", "") = ?', [$cleanQuery])
                 ->orWhereRaw('LOWER(card_number) = ?', [strtolower($rawQuery)])
-                ->orWhereRaw('REPLACE(REPLACE(LOWER(card_number), " ", ""), "-", "") = ?', [$cleanQuery]);
+                ->orWhereRaw('REPLACE(REPLACE(LOWER(card_number), " ", ""), "-", "") = ?', [$cleanQuery])
+                ->orWhere('card_number', 'like', "%{$rawQuery}%");
         })->with(['user.profile', 'user.chapter'])->first();
 
-        // 2. Cari via NIA
+        // 2. Cari via NIA (Nomor Induk Anggota)
         if (! $card) {
-            $profile = MemberProfile::whereRaw('LOWER(nia) = ?', [strtolower($rawQuery)])
-                ->orWhereRaw('REPLACE(LOWER(nia), "-", "") = ?', [$cleanQuery])
-                ->with(['user.chapter', 'user.nfcCard'])
-                ->first();
+            $profile = MemberProfile::where(function ($q) use ($rawQuery, $cleanQuery) {
+                $q->whereRaw('LOWER(nia) = ?', [strtolower($rawQuery)])
+                    ->orWhereRaw('REPLACE(LOWER(nia), "-", "") = ?', [$cleanQuery])
+                    ->orWhere('nia', 'like', "%{$rawQuery}%");
+            })->with(['user.chapter', 'user.nfcCard'])->first();
 
             if ($profile && $profile->user) {
                 $user = $profile->user;
@@ -97,34 +150,52 @@ class WhatsAppBotService
             }
         }
 
+        // 4. Cari via Nama Anggota (User::where('name', 'like', ...))
         if (! isset($user) || ! $user) {
-            return "❌ *KTA TIDAK TERDAFTAR*\n\nData suporter dengan nomor/kartu `{$rawQuery}` *TIDAK DITEMUKAN* dalam database resmi SMeCK Hooligan.\n\n⚠️ Waspada KTA palsu! Pastikan Anda mendaftar melalui portal resmi: https://projek2.xie.my.id/register";
+            $user = User::where('name', 'like', "%{$rawQuery}%")
+                ->with(['profile', 'chapter', 'nfcCard'])
+                ->first();
+
+            if ($user) {
+                $profile = $user->profile;
+                $card = $user->nfcCard;
+            }
+        }
+
+        // Jika tidak ditemukan di database
+        if (! isset($user) || ! $user) {
+            return "❌ *KTA TIDAK TERDAFTAR*\n\n" .
+                "Data suporter dengan kata kunci `{$rawQuery}` *TIDAK DITEMUKAN* dalam database resmi SMeCK Hooligan.\n\n" .
+                "💡 *Contoh format yang benar:*\n" .
+                "👉 `CEK KTA 1950`\n" .
+                "👉 `CEK KTA SMC-2024-001`\n\n" .
+                "⚠️ *Waspada KTA palsu!* Pastikan Anda mendaftar melalui portal resmi:\n" .
+                "https://projek2.xie.my.id/register";
         }
 
         // Cek apakah akun ditangguhkan / suspend
         $isSuspended = ($user->status === 'suspended') || ($card?->status === 'blocked');
 
         if ($isSuspended) {
-            return "🚨 *PERINGATAN SANKSI DISIPLIN: KTA DITANGGUHKAN / SUSPENDED*\n\n" .
+            return "🚨 *PERINGATAN SANKSI: KTA DITANGGUHKAN (SUSPENDED)*\n\n" .
                 "• *Nama Suporter:* {$user->name}\n" .
                 "• *Nomor NIA:* " . ($profile?->nia ?? '-') . "\n" .
-                "• *Basis Chapter:* " . ($user->chapter?->name ?? 'DPP SMeCK') . "\n" .
+                "• *Basis Chapter:* " . ($user->chapter?->name ?? 'DPP SMeCK Hooligan') . "\n" .
                 "• *Status Keanggotaan:* ❌ DIBEKUKAN / SUSPENDED\n\n" .
-                "⚠️ *Akun ini sedang dalam sanksi penangguhan organisasi! Hak akses tribun dan manfaat suporter TIDAK BERLAKU sementara.* Silakan hubungi Korlap Basis Anda.";
+                "⚠️ *PERHATIAN:* Akun ini sedang dalam sanksi penangguhan organisasi DPP SMeCK Hooligan. Hak akses tribun suporter, diskon tiket, dan kartu NFC *TIDAK BERLAKU* sementara. Silakan hubungi Korlap Basis Anda untuk penyelesaian sanksi.";
         }
 
         $displayCardNo = $card?->card_number ?? '6032-••••-••••-1950';
 
         return "🟢 *DATA KTA RESMI SMECK HOOLIGAN (VALID)* ✅\n\n" .
             "• *Nama Anggota:* {$user->name}\n" .
-            "• *Nomor NIA:* " . ($profile?->nia ?? 'BELUM DITERBITKAN') . "\n" .
-            "• *Basis / Wilayah:* " . ($user->chapter?->name ?? 'DPP SMeCK') . "\n" .
+            "• *Nomor NIA:* " . ($profile?->nia ?? 'TERDAFTAR') . "\n" .
+            "• *Basis / Wilayah:* " . ($user->chapter?->name ?? 'DPP SMeCK Hooligan') . "\n" .
             "• *Golongan Darah:* " . ($profile?->blood_type ?? '-') . " (Siap Medis Tribun)\n" .
             "• *Nomor Kartu KTA:* {$displayCardNo}\n" .
-            "• *Status KTA:* 🟢 AKTIF & BERLAKU RESMI\n" .
-            "• *Tgl Bergabung:* " . ($profile?->joined_date ? $profile->joined_date->format('d M Y') : 'Aktif') . "\n\n" .
-            "🔗 *Cek Online:* " . url('/api/check-kta?query=' . urlencode($profile?->nia ?? $user->name)) . "\n\n" .
-            "Salam Sada Roha! 🐓⚽";
+            "• *Status Kartu NFC:* 🟢 AKTIF & SAH DIGUNAKAN\n" .
+            "• *Tgl Bergabung:* " . ($profile?->joined_date ? $profile->joined_date->format('d M Y') : 'Anggota Aktif') . "\n\n" .
+            "Salam Sada Roha! Ayam Kinantan Selamanya! 🐓💚";
     }
 
     /**
@@ -225,18 +296,44 @@ class WhatsAppBotService
     }
 
     /**
-     * Handler: Bantuan & Menu Perintah
+     * Handler: Bantuan & Menu Perintah Interaktif Lengkap dengan Contoh
      */
     public function handleHelp(): string
     {
-        return "🤖 *BOT RESMI SMECK HOOLIGAN (PSMS MEDAN)* 💚\n\n" .
-            "Halo Saudaraku! Kirim pesan kata kunci berikut untuk mendapatkan informasi otomatis:\n\n" .
-            "• *CEK KTA <nomor>* ➡️ Cek keaslian KTA & status aktif suporter\n" .
-            "• *JADWAL* ➡️ Info laga terdekat PSMS & kuota tiket\n" .
-            "• *KLASEMEN* ➡️ Update poin & zona promosi Liga 2 PT LIB\n" .
-            "• *DAFTAR* ➡️ Tautan pendaftaran anggota suporter baru\n" .
-            "• *CHANT* ➡️ Lirik lagu & anthem kebanggaan tribun\n\n" .
+        return "🤖 *LAYANAN BOT RESMI SMECK HOOLIGAN (PSMS MEDAN)* 💚\n" .
+            "_(Satu Hati, Satu Jiwa — Salam Sada Roha!)_\n\n" .
+            "Halo Saudaraku! Kami siap melayani suporter 24 Jam secara otomatis.\n" .
+            "Ketik kata kunci atau cukup ketik *ANGKA (1 - 5)* untuk memilih menu:\n\n" .
+            "━━━━━━━━━━━━━━━━━━━━━━━━━━\n" .
+            "1️⃣ *CEK KEASLIAN KTA ANGGOTA*\n" .
+            "Untuk mengecek kartu resmi, aktif/suspend, dan gol. darah:\n" .
+            "👉 Ketik: *CEK KTA <Nomor KTA / NIA / Nama>*\n" .
+            "💡 *Contoh Langsung:*\n" .
+            "   • `CEK KTA 1950`\n" .
+            "   • `CEK KTA SMC-2024-001`\n" .
+            "   • `CEK KTA Bani Ginting`\n\n" .
+            "━━━━━━━━━━━━━━━━━━━━━━━━━━\n" .
+            "2️⃣ *JADWAL LAGA PSMS MEDAN*\n" .
+            "Untuk melihat jadwal laga terdekat, stadion, dan tiket:\n" .
+            "👉 Cukup ketik: *JADWAL* (atau ketik angka *2*)\n\n" .
+            "━━━━━━━━━━━━━━━━━━━━━━━━━━\n" .
+            "3️⃣ *KLASEMEN RESMI PT LIB*\n" .
+            "Untuk update poin PSMS, selisih gol, dan zona promosi:\n" .
+            "👉 Cukup ketik: *KLASEMEN* (atau ketik angka *3*)\n\n" .
+            "━━━━━━━━━━━━━━━━━━━━━━━━━━\n" .
+            "4️⃣ *PENDAFTARAN ANGGOTA BARU*\n" .
+            "Untuk info syarat dan link registrasi suporter resmi:\n" .
+            "👉 Cukup ketik: *DAFTAR* (atau ketik angka *4*)\n\n" .
+            "━━━━━━━━━━━━━━━━━━━━━━━━━━\n" .
+            "5️⃣ *CHANT & LIRIK TRIBUN*\n" .
+            "Untuk mendapatkan lirik lagu anthem kebanggaan:\n" .
+            "👉 Cukup ketik: *CHANT* (atau ketik angka *5*)\n\n" .
+            "━━━━━━━━━━━━━━━━━━━━━━━━━━\n" .
+            "❓ *MENU PANDUAN*\n" .
+            "Untuk menampilkan panduan ini kapan saja:\n" .
+            "👉 Ketik: *MENU* atau *BANTUAN* (atau ketik angka *6*)\n" .
+            "━━━━━━━━━━━━━━━━━━━━━━━━━━\n\n" .
             "🌐 *Portal Resmi:* https://projek2.xie.my.id/\n" .
-            "Salam Sada Roha!";
+            "Ayam Kinantan Selamanya! 🐓⚽";
     }
 }
