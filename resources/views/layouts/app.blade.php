@@ -76,7 +76,7 @@
         </div>
 
         {{-- Sidebar Navigation Links (Dynamic per Role) --}}
-        <div class="flex-1 overflow-y-auto px-4 py-4 space-y-6">
+        <div id="sidebar-nav-container" class="flex-1 overflow-y-auto px-4 py-4 space-y-6">
 
             {{-- ====================================================== --}}
             {{-- 1. MENU UNTUK ROLE 'member' (ANGGOTA) --}}
@@ -278,8 +278,20 @@
                     </nav>
                 </div>
             @endif
-
         </div>
+
+        {{-- Instant Sidebar Scroll Restoration (Mencegah Sidebar Reset ke Atas Saat Pindah Menu) --}}
+        <script>
+            (function() {
+                try {
+                    const sc = document.getElementById('sidebar-nav-container');
+                    const saved = sessionStorage.getItem('smeck_sidebar_scroll');
+                    if (sc && saved !== null) {
+                        sc.scrollTop = parseInt(saved, 10);
+                    }
+                } catch(e) {}
+            })();
+        </script>
 
         {{-- Sidebar Footer: User Card Mini & Switch Portal if Admin --}}
         <div class="p-4 border-t border-white/10 bg-smeck-dark-950/80">
@@ -428,6 +440,35 @@
             backdrop.classList.add('hidden');
         }
     }
+
+    // Persistensi Scroll Sidebar (Mencegah Sidebar Reset Naik ke Atas saat Pindah Menu)
+    document.addEventListener('DOMContentLoaded', function() {
+        const sc = document.getElementById('sidebar-nav-container');
+        if (!sc) return;
+
+        const saved = sessionStorage.getItem('smeck_sidebar_scroll');
+        if (saved !== null) {
+            sc.scrollTop = parseInt(saved, 10);
+        } else {
+            // Jika baru dibuka, scroll item menu aktif ke posisi terlihat
+            const activeLink = sc.querySelector('.bg-red-600, .bg-amber-600, .bg-smeck-green-600');
+            if (activeLink) {
+                activeLink.scrollIntoView({ block: 'nearest', behavior: 'instant' });
+            }
+        }
+
+        // Catat posisi saat pengguna scrolling di sidebar
+        sc.addEventListener('scroll', function() {
+            sessionStorage.setItem('smeck_sidebar_scroll', sc.scrollTop);
+        }, { passive: true });
+
+        // Catat posisi saat link menu diklik
+        sc.querySelectorAll('a').forEach(function(link) {
+            link.addEventListener('click', function() {
+                sessionStorage.setItem('smeck_sidebar_scroll', sc.scrollTop);
+            });
+        });
+    });
 </script>
 
 @stack('scripts')
