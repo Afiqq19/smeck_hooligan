@@ -4,8 +4,10 @@ namespace App\Http\Controllers;
 
 use App\Models\Chant;
 use App\Models\Chapter;
+use App\Models\LeagueStanding;
 use App\Models\MatchTicket;
 use App\Models\SmeckPartner;
+use App\Services\PtLibScraperService;
 use Illuminate\Contracts\View\View;
 use Illuminate\Http\Request;
 
@@ -21,11 +23,21 @@ class PublicController extends Controller
         $chaptersCount = Chapter::where('is_active', true)->count();
         $partners = SmeckPartner::where('is_active', true)->take(4)->get();
 
+        // Opsi B: Ambil Klasemen Resmi Liga 2 PT LIB
+        $standings = LeagueStanding::orderBy('position')->get();
+        if ($standings->isEmpty()) {
+            app(PtLibScraperService::class)->syncStandings();
+            $standings = LeagueStanding::orderBy('position')->get();
+        }
+        $psmsStanding = $standings->firstWhere('is_our_team', true);
+
         return view('pages.landing', compact(
             'featuredChants',
             'upcomingMatch',
             'chaptersCount',
-            'partners'
+            'partners',
+            'standings',
+            'psmsStanding'
         ));
     }
 

@@ -48,6 +48,7 @@ Route::get('/update-rahasia-smeckhooligan', function () {
 
     // 4. Migrate Database & Seeder
     $output4 = shell_exec("cd \"$repoDir\" && php artisan migrate --force 2>&1");
+    $output_standings = shell_exec("cd \"$repoDir\" && php artisan league:sync-standings 2>&1");
 
     // Eksekusi DatabaseSeeder jika diperlukan
     $output_dbseed = file_exists(database_path('seeders/DatabaseSeeder.php'))

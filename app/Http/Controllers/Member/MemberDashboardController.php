@@ -24,8 +24,9 @@ class MemberDashboardController extends Controller
         $recentDues = $user->voluntaryDues()->latest()->take(3)->get();
         $recentAttendances = $user->attendances()->latest()->take(3)->get();
         $upcomingMatch = MatchTicket::where('status', 'open')->orderBy('match_time', 'asc')->first();
+        $psmsStanding = \App\Models\LeagueStanding::where('is_our_team', true)->first();
 
-        return view('dashboard.member.index', compact('user', 'recentDues', 'recentAttendances', 'upcomingMatch'));
+        return view('dashboard.member.index', compact('user', 'recentDues', 'recentAttendances', 'upcomingMatch', 'psmsStanding'));
     }
 
     /**

@@ -142,42 +142,56 @@
                     </svg>
                 </div>
 
-                <h3 class="font-display font-bold text-xl text-white mb-3">Jadwal Pertandingan</h3>
-                <p class="text-white/50 text-sm leading-relaxed mb-6">Jadwal lengkap pertandingan PSMS Medan di berbagai kompetisi musim ini.</p>
+                <h3 class="font-display font-bold text-xl text-white mb-2">Jadwal Pertandingan</h3>
+                <p class="text-white/50 text-sm leading-relaxed mb-5">Jadwal resmi laga PSMS Medan & kuota tiket tribun suporter SMeCK.</p>
 
-                {{-- Next Match Card --}}
-                <div class="p-4 rounded-xl bg-gradient-to-br from-smeck-green-900/30 to-smeck-dark-800 border border-smeck-green-500/20 mb-4">
-                    <div class="text-smeck-green-400 text-xs font-medium mb-3">PERTANDINGAN SELANJUTNYA</div>
-                    <div class="flex items-center justify-between gap-4">
-                        <div class="text-center flex-1">
-                            <div class="w-12 h-12 mx-auto rounded-xl bg-smeck-green-500/20 flex items-center justify-center mb-2">
-                                <span class="font-display font-bold text-sm text-smeck-green-400">PSM</span>
-                            </div>
-                            <span class="text-white text-xs font-medium">PSMS Medan</span>
+                {{-- Next Match Card Dynamic --}}
+                @if(isset($upcomingMatch))
+                    <div class="p-4 rounded-xl bg-gradient-to-br from-smeck-green-900/30 to-smeck-dark-800 border border-smeck-green-500/20 mb-4">
+                        <div class="flex items-center justify-between text-xs mb-3">
+                            <span class="text-smeck-green-400 font-bold tracking-wider uppercase text-[10px] flex items-center gap-1.5">
+                                <span class="w-1.5 h-1.5 rounded-full bg-smeck-green-400 animate-pulse"></span> LAGA BERIKUTNYA
+                            </span>
+                            <span class="px-2 py-0.5 rounded text-[9px] font-mono bg-white/10 text-white/70">
+                                {{ $upcomingMatch->type === 'home' ? 'KANDANG' : 'AWAYDAYS' }}
+                            </span>
                         </div>
-                        <div class="text-center">
-                            <div class="text-white/30 text-xs mb-1">VS</div>
-                            <div class="text-white font-display font-bold text-lg">19:00</div>
-                            <div class="text-white/40 text-xs">WIB</div>
+
+                        <div class="font-display font-bold text-white text-base text-center mb-3 truncate">
+                            {{ $upcomingMatch->match_title }}
                         </div>
-                        <div class="text-center flex-1">
-                            <div class="w-12 h-12 mx-auto rounded-xl bg-white/10 flex items-center justify-center mb-2">
-                                <span class="font-display font-bold text-sm text-white/50">AWY</span>
+
+                        <div class="flex items-center justify-between gap-2 py-2 px-3 rounded-lg bg-black/20 text-xs text-white/70 mb-3">
+                            <div class="flex items-center gap-1.5 truncate">
+                                <i class="fa-regular fa-calendar text-smeck-green-400 text-xs"></i>
+                                <span>{{ $upcomingMatch->match_time->translatedFormat('d M Y') }}</span>
                             </div>
-                            <span class="text-white text-xs font-medium">Away Team</span>
+                            <div class="font-bold text-white font-mono">
+                                {{ $upcomingMatch->match_time->format('H:i') }} WIB
+                            </div>
+                        </div>
+
+                        <div class="text-[11px] text-white/50 flex items-center gap-1.5 truncate mb-2">
+                            <i class="fa-solid fa-location-dot text-amber-400 text-[10px]"></i>
+                            <span class="truncate">{{ $upcomingMatch->stadium }}</span>
                         </div>
                     </div>
-                </div>
 
-                <a href="#" class="inline-flex items-center gap-2 text-smeck-green-400 text-sm font-medium hover:text-smeck-green-300 transition-colors group/link">
-                    Lihat Jadwal Lengkap
-                    <svg class="w-4 h-4 group-hover/link:translate-x-1 transition-transform" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5l7 7-7 7"/>
-                    </svg>
-                </a>
+                    <a href="{{ auth()->check() ? route('member.tickets') : route('login') }}" class="inline-flex items-center gap-2 text-smeck-green-400 text-sm font-semibold hover:text-smeck-green-300 transition-colors group/link">
+                        <span>Pesan Tiket Tribun SMeCK</span>
+                        <svg class="w-4 h-4 group-hover/link:translate-x-1 transition-transform" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5l7 7-7 7"/>
+                        </svg>
+                    </a>
+                @else
+                    <div class="p-6 rounded-xl bg-white/5 border border-white/5 text-center mb-4">
+                        <i class="fa-solid fa-calendar-xmark text-2xl text-white/30 mb-2"></i>
+                        <p class="text-xs text-white/50">Jadwal laga resmi berikutnya sedang divalidasi operator kompetisi.</p>
+                    </div>
+                @endif
             </div>
 
-            {{-- Card: Klasemen --}}
+            {{-- Card: Klasemen PT LIB (Opsi B Auto-Sync) --}}
             <div id="card-klasemen" class="group relative bg-smeck-dark-800/50 rounded-2xl border border-white/5 p-6 lg:p-8 hover:border-smeck-green-500/30 transition-all duration-500 card-shadow hover:-translate-y-1 md:col-span-2 lg:col-span-1">
                 <div class="absolute top-0 left-0 right-0 h-1 bg-gradient-to-r from-smeck-green-500 to-smeck-green-300 rounded-t-2xl opacity-0 group-hover:opacity-100 transition-opacity duration-500"></div>
 
@@ -187,40 +201,49 @@
                     </svg>
                 </div>
 
-                <h3 class="font-display font-bold text-xl text-white mb-3">Klasemen</h3>
-                <p class="text-white/50 text-sm leading-relaxed mb-6">Pantau posisi PSMS Medan di klasemen kompetisi berjalan.</p>
+                <div class="flex items-center justify-between mb-2">
+                    <h3 class="font-display font-bold text-xl text-white">Klasemen Liga 2</h3>
+                    <span class="px-2 py-0.5 rounded-full text-[9px] font-bold bg-emerald-500/20 text-emerald-300 font-mono">
+                        PT LIB SYNC
+                    </span>
+                </div>
+                <p class="text-white/50 text-sm leading-relaxed mb-5">Wilayah Barat (Grup 1) Pegadaian Liga 2 musim ini.</p>
 
-                {{-- Mini Standings --}}
+                {{-- Mini Standings Dynamic --}}
                 <div class="space-y-2">
-                    <div class="flex items-center justify-between p-3 rounded-xl bg-smeck-green-500/10 border border-smeck-green-500/20">
-                        <div class="flex items-center gap-3">
-                            <span class="w-6 h-6 rounded-full bg-smeck-green-500 flex items-center justify-center text-xs font-bold text-white">1</span>
-                            <span class="text-white font-medium text-sm">PSMS Medan</span>
+                    @forelse($standings->take(3) as $st)
+                        @php
+                            $isPsms = $st->is_our_team;
+                        @endphp
+                        <div class="flex items-center justify-between p-3 rounded-xl transition-all {{ $isPsms ? 'bg-smeck-green-500/15 border border-smeck-green-500/30' : 'bg-white/5' }}">
+                            <div class="flex items-center gap-3 truncate">
+                                <span class="w-6 h-6 rounded-full flex-shrink-0 {{ $isPsms ? 'bg-smeck-green-500 text-white font-bold' : 'bg-white/10 text-white/60' }} flex items-center justify-center text-xs">
+                                    {{ $st->position }}
+                                </span>
+                                <div class="truncate">
+                                    <span class="{{ $isPsms ? 'text-white font-bold' : 'text-white/70' }} text-sm truncate">
+                                        {{ $st->team_name }}
+                                    </span>
+                                    @if($isPsms)
+                                        <span class="ml-1 px-1.5 py-0.2 rounded text-[8px] bg-smeck-gold text-smeck-dark-950 font-black">KINANTAN</span>
+                                    @endif
+                                </div>
+                            </div>
+                            <span class="{{ $isPsms ? 'text-smeck-green-400 font-black' : 'text-white/50' }} font-display text-sm ml-2 font-mono flex-shrink-0">
+                                {{ $st->points }} pts
+                            </span>
                         </div>
-                        <span class="text-smeck-green-400 font-display font-bold text-sm">45 pts</span>
-                    </div>
-                    <div class="flex items-center justify-between p-3 rounded-xl bg-white/5">
-                        <div class="flex items-center gap-3">
-                            <span class="w-6 h-6 rounded-full bg-white/10 flex items-center justify-center text-xs font-bold text-white/60">2</span>
-                            <span class="text-white/60 text-sm">Tim B</span>
-                        </div>
-                        <span class="text-white/40 font-display font-bold text-sm">42 pts</span>
-                    </div>
-                    <div class="flex items-center justify-between p-3 rounded-xl bg-white/5">
-                        <div class="flex items-center gap-3">
-                            <span class="w-6 h-6 rounded-full bg-white/10 flex items-center justify-center text-xs font-bold text-white/60">3</span>
-                            <span class="text-white/60 text-sm">Tim C</span>
-                        </div>
-                        <span class="text-white/40 font-display font-bold text-sm">40 pts</span>
-                    </div>
+                    @empty
+                        <div class="p-3 text-center text-xs text-white/40">Data klasemen sedang dimuat...</div>
+                    @endforelse
                 </div>
 
-                <a href="#" class="mt-6 inline-flex items-center gap-2 text-smeck-green-400 text-sm font-medium hover:text-smeck-green-300 transition-colors group/link">
-                    Lihat Klasemen Lengkap
+                <button type="button" onclick="openStandingsModal()" class="mt-6 inline-flex items-center gap-2 text-smeck-green-400 text-sm font-semibold hover:text-smeck-green-300 transition-colors group/link cursor-pointer">
+                    <span>Lihat Klasemen Lengkap (10 Klub)</span>
                     <svg class="w-4 h-4 group-hover/link:translate-x-1 transition-transform" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                         <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5l7 7-7 7"/>
                     </svg>
-                </a>
+                </button>
             </div>
         </div>
     </div>
@@ -661,4 +684,170 @@
     </div>
 </section>
 
+{{-- ===== MODAL KLASEMEN LENGKAP PT LIB (OPSI B) ===== --}}
+<div id="modal-full-standings" class="fixed inset-0 z-50 hidden bg-black/85 backdrop-blur-md flex items-center justify-center p-3 sm:p-4 overflow-y-auto">
+    <div class="w-full max-w-4xl bg-smeck-dark-900 border border-smeck-green-500/30 rounded-3xl p-5 sm:p-8 shadow-2xl relative my-8">
+        {{-- Close Button --}}
+        <button type="button" onclick="closeStandingsModal()" class="absolute top-5 right-5 w-9 h-9 rounded-full bg-white/10 hover:bg-white/20 text-white flex items-center justify-center text-lg transition-colors cursor-pointer z-10">
+            &times;
+        </button>
+
+        {{-- Header Modal --}}
+        <div class="flex flex-col sm:flex-row sm:items-center justify-between gap-4 pb-6 border-b border-white/10">
+            <div>
+                <div class="flex items-center gap-2 mb-1.5">
+                    <span class="px-2.5 py-0.5 rounded-full text-[10px] font-bold uppercase tracking-wider bg-emerald-500/20 text-emerald-300 border border-emerald-500/30 font-mono">
+                        PT LIB AUTO-SYNC
+                    </span>
+                    <span class="text-xs text-white/40">Pegadaian Liga 2</span>
+                </div>
+                <h3 class="font-display font-black text-2xl text-white">Klasemen Wilayah Barat</h3>
+                <p class="text-xs text-white/50 mt-0.5">Pantau posisi Ayam Kinantan di babak penyisihan musim kompetisi 2026/2027.</p>
+            </div>
+
+            {{-- PSMS Highlight Badge --}}
+            <div class="px-4 py-2.5 rounded-2xl bg-smeck-green-500/10 border border-smeck-green-500/30 flex items-center gap-3">
+                <div class="w-10 h-10 rounded-xl bg-smeck-green-500 flex items-center justify-center text-white font-black text-sm">
+                    PSM
+                </div>
+                <div>
+                    <div class="text-[10px] uppercase font-bold text-smeck-green-400">PSMS Medan</div>
+                    <div class="text-white font-bold text-sm">
+                        Peringkat #{{ $psmsStanding?->position ?? 3 }} · <span class="text-smeck-green-300 font-mono">{{ $psmsStanding?->points ?? 11 }} PTS</span>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        {{-- Table Container --}}
+        <div class="overflow-x-auto mt-4 max-h-[60vh]">
+            <table class="w-full text-left text-xs text-white/80">
+                <thead class="sticky top-0 bg-smeck-dark-900 z-10">
+                    <tr class="border-b border-white/10 text-white/40 uppercase font-bold text-[10px] tracking-wider">
+                        <th class="py-3 px-3 text-center w-12">#</th>
+                        <th class="py-3 px-4">Klub / Tim</th>
+                        <th class="py-3 px-2.5 text-center" title="Main">T</th>
+                        <th class="py-3 px-2.5 text-center" title="Menang">M</th>
+                        <th class="py-3 px-2.5 text-center" title="Seri">S</th>
+                        <th class="py-3 px-2.5 text-center" title="Kalah">K</th>
+                        <th class="py-3 px-3 text-center" title="Gol Masuk:Kemasukan">Gol</th>
+                        <th class="py-3 px-2.5 text-center" title="Selisih Gol">SG</th>
+                        <th class="py-3 px-3 text-center font-bold text-white" title="Poin">PTS</th>
+                        <th class="py-3 px-4 text-center">Form</th>
+                    </tr>
+                </thead>
+                <tbody class="divide-y divide-white/5">
+                    @forelse($standings as $team)
+                        @php
+                            $isPsms = $team->is_our_team;
+                            $formArr = array_filter(explode(',', $team->form ?? ''));
+                        @endphp
+                        <tr class="transition-colors {{ $isPsms ? 'bg-smeck-green-500/15 border-l-4 border-l-smeck-green-400 font-semibold text-white' : 'hover:bg-white/5 text-white/80' }}">
+                            {{-- Rank --}}
+                            <td class="py-3 px-3 text-center">
+                                @if($team->position <= 3)
+                                    <span class="w-6 h-6 mx-auto rounded-full bg-emerald-500/20 text-emerald-400 font-black text-xs flex items-center justify-center">
+                                        {{ $team->position }}
+                                    </span>
+                                @elseif($team->position >= 7)
+                                    <span class="w-6 h-6 mx-auto rounded-full bg-red-500/20 text-red-400 font-black text-xs flex items-center justify-center">
+                                        {{ $team->position }}
+                                    </span>
+                                @else
+                                    <span class="w-6 h-6 mx-auto rounded-full bg-white/5 text-white/50 text-xs flex items-center justify-center">
+                                        {{ $team->position }}
+                                    </span>
+                                @endif
+                            </td>
+
+                            {{-- Club --}}
+                            <td class="py-3 px-4">
+                                <div class="flex items-center gap-2.5">
+                                    <span class="w-7 h-7 rounded-lg {{ $isPsms ? 'bg-smeck-green-500 text-white font-black' : 'bg-white/10 text-white/50' }} flex items-center justify-center text-[10px] font-mono font-bold">
+                                        {{ $team->team_code ?? substr($team->team_name, 0, 3) }}
+                                    </span>
+                                    <div>
+                                        <div class="font-bold {{ $isPsms ? 'text-smeck-green-300' : 'text-white' }} flex items-center gap-1.5">
+                                            <span>{{ $team->team_name }}</span>
+                                            @if($isPsms)
+                                                <i class="fa-solid fa-star text-smeck-gold text-[10px]"></i>
+                                            @endif
+                                        </div>
+                                    </div>
+                                </div>
+                            </td>
+
+                            {{-- Stats --}}
+                            <td class="py-3 px-2.5 text-center font-mono">{{ $team->played }}</td>
+                            <td class="py-3 px-2.5 text-center font-mono text-emerald-400">{{ $team->won }}</td>
+                            <td class="py-3 px-2.5 text-center font-mono text-amber-300">{{ $team->drawn }}</td>
+                            <td class="py-3 px-2.5 text-center font-mono text-red-400">{{ $team->lost }}</td>
+                            <td class="py-3 px-3 text-center font-mono text-white/60">{{ $team->goals_for }}:{{ $team->goals_against }}</td>
+                            <td class="py-3 px-2.5 text-center font-mono font-bold {{ $team->goal_difference > 0 ? 'text-emerald-400' : ($team->goal_difference < 0 ? 'text-red-400' : 'text-white/50') }}">
+                                {{ $team->goal_difference > 0 ? '+' : '' }}{{ $team->goal_difference }}
+                            </td>
+                            <td class="py-3 px-3 text-center font-mono font-black text-sm {{ $isPsms ? 'text-smeck-green-400' : 'text-white' }}">
+                                {{ $team->points }}
+                            </td>
+
+                            {{-- Form --}}
+                            <td class="py-3 px-4 text-center">
+                                <div class="flex items-center justify-center gap-1">
+                                    @forelse($formArr as $f)
+                                        @if(trim(strtoupper($f)) === 'W')
+                                            <span class="w-4 h-4 rounded bg-emerald-500/20 text-emerald-400 text-[9px] font-bold flex items-center justify-center" title="Menang">M</span>
+                                        @elseif(trim(strtoupper($f)) === 'D')
+                                            <span class="w-4 h-4 rounded bg-amber-500/20 text-amber-300 text-[9px] font-bold flex items-center justify-center" title="Seri">S</span>
+                                        @else
+                                            <span class="w-4 h-4 rounded bg-red-500/20 text-red-400 text-[9px] font-bold flex items-center justify-center" title="Kalah">K</span>
+                                        @endif
+                                    @empty
+                                        <span class="text-white/30 text-[10px]">-</span>
+                                    @endforelse
+                                </div>
+                            </td>
+                        </tr>
+                    @empty
+                        <tr>
+                            <td colspan="10" class="py-8 text-center text-white/40">Data belum tersedia.</td>
+                        </tr>
+                    @endforelse
+                </tbody>
+            </table>
+        </div>
+
+        {{-- Footer Legend & Attribution --}}
+        <div class="mt-6 pt-4 border-t border-white/10 flex flex-col sm:flex-row sm:items-center justify-between gap-3 text-[11px] text-white/50">
+            <div class="flex flex-wrap items-center gap-3">
+                <span class="flex items-center gap-1.5"><span class="w-2.5 h-2.5 rounded-sm bg-emerald-500"></span> 1-3: Playoff Promosi Liga 1</span>
+                <span class="flex items-center gap-1.5"><span class="w-2.5 h-2.5 rounded-sm bg-white/20"></span> 4-6: Zona Aman</span>
+                <span class="flex items-center gap-1.5"><span class="w-2.5 h-2.5 rounded-sm bg-red-500/80"></span> 7-10: Playoff Degradasi</span>
+            </div>
+            <div class="flex items-center gap-1.5 text-white/40">
+                <i class="fa-solid fa-cloud-arrow-down text-emerald-400 text-xs"></i>
+                <span>Disinkronkan otomatis dari PT Liga Indonesia Baru</span>
+            </div>
+        </div>
+    </div>
+</div>
+
+<script>
+    function openStandingsModal() {
+        const modal = document.getElementById('modal-full-standings');
+        if (modal) {
+            modal.classList.remove('hidden');
+            document.body.classList.add('overflow-hidden');
+        }
+    }
+
+    function closeStandingsModal() {
+        const modal = document.getElementById('modal-full-standings');
+        if (modal) {
+            modal.classList.add('hidden');
+            document.body.classList.remove('overflow-hidden');
+        }
+    }
+</script>
+
 @endsection
+

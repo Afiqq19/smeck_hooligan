@@ -7,6 +7,7 @@ use App\Models\Chant;
 use App\Models\Chapter;
 use App\Models\ChapterDocumentation;
 use App\Models\EventAttendance;
+use App\Models\LeagueStanding;
 use App\Models\MatchTicket;
 use App\Models\MemberProfile;
 use App\Models\NfcCard;
@@ -15,6 +16,7 @@ use App\Models\StoreProduct;
 use App\Models\TicketAllocation;
 use App\Models\User;
 use App\Models\VoluntaryDue;
+use App\Services\PtLibScraperService;
 use Illuminate\Http\RedirectResponse;
 use Illuminate\Http\Request;
 use Illuminate\View\View;
@@ -484,4 +486,76 @@ class SuperAdminDashboardController extends Controller
             'recentDues'
         ));
     }
+
+    /**
+     * Manajemen Klasemen Liga 2 (Opsi B: PT LIB Scraper).
+     */
+    public function standings(): View
+    {
+        $standings = LeagueStanding::orderBy('position')->get();
+        if ($standings->isEmpty()) {
+            app(PtLibScraperService::class)->syncStandings();
+            $standings = LeagueStanding::orderBy('position')->get();
+        }
+
+        $psms = $standings->firstWhere('is_our_team', true);
+        $lastSyncedAt = $standings->max('last_synced_at');
+
+        return view('dashboard.superadmin.standings', compact('standings', 'psms', 'lastSyncedAt'));
+    }
+
+    /**
+     * Trigger manual sinkronisasi klasemen via PT LIB Scraper (100% Gratis).
+     */
+    public function syncStandings(PtLibScraperService $scraper): RedirectResponse
+    {
+        $result = $scraper->syncStandings();
+
+        return back()->with('success', "SINKRONISASI BERHASIL! {$result['count']} klub diperbarui dari PT LIB Scraper. PSMS Medan berada di peringkat ke-{$result['psms_position']} ({$result['psms_points']} Poin).");
+    }
+
+    /**
+     * Update manual data klub (misal sanksi pengurangan poin komdis PSSI).
+     */
+    public function updateStanding(Request $request, int $id): RedirectResponse
+    {
+        $standing = LeagueStanding::findOrFail($id);
+
+        $validated = $request->validate([
+            'played' => ['required', 'integer', 'min:0'],
+            'won' => ['required', 'integer', 'min:0'],
+            'drawn' => ['required', 'integer', 'min:0'],
+            'lost' => ['required', 'integer', 'min:0'],
+            'goals_for' => ['required', 'integer', 'min:0'],
+            'goals_against' => ['required', 'integer', 'min:0'],
+            'points' => ['required', 'integer'],
+            'form' => ['nullable', 'string', 'max:50'],
+        ]);
+
+        $validated['goal_difference'] = $validated['goals_for'] - $validated['goals_against'];
+
+        $standing->update($validated);
+
+        // Re-ranking seluruh klasemen setelah update manual
+        $all = LeagueStanding::all()->sort(function ($a, $b) {
+            if ($b->points !== $a->points) return $b->points <=> $a->points;
+            if ($b->goal_difference !== $a->goal_difference) return $b->goal_difference <=> $a->goal_difference;
+            return $b->goals_for <=> $a->goals_for;
+        })->values();
+
+        foreach ($all as $index => $item) {
+            $pos = $index + 1;
+            $zone = 'safe';
+            if ($pos <= 3) $zone = 'promotion_playoff';
+            elseif ($pos >= 7) $zone = 'relegation_playoff';
+
+            $item->update([
+                'position' => $pos,
+                'zone_status' => $zone,
+            ]);
+        }
+
+        return back()->with('success', "Statistik klasemen tim '{$standing->team_name}' berhasil disesuaikan!");
+    }
 }
+

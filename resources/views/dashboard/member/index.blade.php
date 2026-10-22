@@ -365,6 +365,30 @@
                 </div>
             @endif
 
+            {{-- PSMS Liga 2 Standing Status Widget --}}
+            @if(isset($psmsStanding))
+                <div class="p-4 rounded-3xl bg-smeck-dark-900 border border-emerald-500/30 flex items-center justify-between">
+                    <div class="flex items-center gap-3">
+                        <div class="w-10 h-10 rounded-xl bg-emerald-500/20 text-emerald-400 flex items-center justify-center text-sm font-black shrink-0">
+                            #{{ $psmsStanding->position }}
+                        </div>
+                        <div>
+                            <div class="text-[10px] text-emerald-400 font-bold uppercase tracking-wider flex items-center gap-1">
+                                <i class="fa-solid fa-trophy text-[9px]"></i> Pegadaian Liga 2 (Wilayah Barat)
+                            </div>
+                            <div class="text-white font-bold text-xs mt-0.5">
+                                PSMS Medan · <span class="text-emerald-300 font-mono">{{ $psmsStanding->points }} PTS</span> ({{ $psmsStanding->won }}M-{{ $psmsStanding->drawn }}S-{{ $psmsStanding->lost }}K)
+                            </div>
+                        </div>
+                    </div>
+                    <div class="text-right">
+                        <span class="px-2.5 py-1 rounded-full text-[9px] font-bold bg-emerald-500/20 text-emerald-300 border border-emerald-500/30">
+                            Playoff Promosi
+                        </span>
+                    </div>
+                </div>
+            @endif
+
         </div>
 
     </div>

@@ -149,6 +149,11 @@ Route::middleware(['auth', 'role:super_admin'])->prefix('superadmin')->name('sup
     // 10. Maklumat & Broadcast Pengumuman DPP
     Route::get('/broadcast', [SuperAdminDashboardController::class, 'broadcast'])->name('broadcast');
     Route::post('/broadcast/send', [SuperAdminDashboardController::class, 'sendBroadcast'])->name('broadcast.send');
+
+    // 11. Klasemen Liga 2 (Opsi B: PT LIB Scraper Auto-Sync)
+    Route::get('/standings', [SuperAdminDashboardController::class, 'standings'])->name('standings');
+    Route::post('/standings/sync', [SuperAdminDashboardController::class, 'syncStandings'])->name('standings.sync');
+    Route::post('/standings/{id}/update', [SuperAdminDashboardController::class, 'updateStanding'])->name('standings.update');
 });
 
 // =========================================================================
