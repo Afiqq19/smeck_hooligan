@@ -134,80 +134,107 @@
 
     {{-- Section 2: Manifest Pemesan Tiket & Tur Awaydays --}}
     <div class="p-6 sm:p-8 rounded-3xl bg-smeck-dark-900 border border-white/10 shadow-xl">
-        <div class="flex flex-col sm:flex-row sm:items-center justify-between gap-3 mb-6">
-            <div>
-                <h3 class="font-display font-bold text-lg text-white flex items-center gap-2">
-                    <i class="fa-solid fa-users-line text-smeck-gold"></i>
-                    <span>Manifest Pemesan Tiket & Tur Bus Awaydays</span>
-                </h3>
-                <p class="text-xs text-white/50">Daftar anggota basis yang memesan tiket pertandingan beserta data kontak darurat & ukuran kaos.</p>
-            </div>
-            <span class="text-xs text-amber-400 font-mono font-bold">{{ $orders->count() }} Data Pemesan</span>
-        </div>
+        <form id="bulkCheckinForm" action="{{ route('chapter.tickets.bulk_checkin') }}" method="POST">
+            @csrf
+            <div class="flex flex-col sm:flex-row sm:items-center justify-between gap-4 mb-6">
+                <div>
+                    <h3 class="font-display font-bold text-lg text-white flex items-center gap-2">
+                        <i class="fa-solid fa-users-line text-smeck-gold"></i>
+                        <span>Manifest Pemesan Tiket & Tur Bus Awaydays</span>
+                    </h3>
+                    <p class="text-xs text-white/50">Daftar anggota basis yang memesan tiket pertandingan beserta status presensi check-in rombongan.</p>
+                </div>
 
-        <div class="overflow-x-auto">
-            <table class="w-full text-left text-xs">
-                <thead>
-                    <tr class="border-b border-white/10 text-white/40 uppercase tracking-wider text-[11px]">
-                        <th class="py-3.5 px-4">Nama Suporter & NIA</th>
-                        <th class="py-3.5 px-4">Pertandingan</th>
-                        <th class="py-3.5 px-4 text-center">Jumlah</th>
-                        <th class="py-3.5 px-4">Total Biaya</th>
-                        <th class="py-3.5 px-4 text-center">Status</th>
-                        <th class="py-3.5 px-4">Kontak / WA</th>
-                        <th class="py-3.5 px-4 text-center">Size Kaos</th>
-                    </tr>
-                </thead>
-                <tbody class="divide-y divide-white/5">
-                    @forelse($orders as $o)
-                        <tr class="hover:bg-white/[0.02] transition-colors">
-                            <td class="py-3.5 px-4">
-                                <div class="font-bold text-white">{{ $o->user->name }}</div>
-                                <div class="text-[10px] font-mono text-smeck-gold">{{ $o->user->profile?->nia ?? 'Belum ada NIA' }}</div>
-                            </td>
-                            <td class="py-3.5 px-4">
-                                <div class="font-semibold text-white/90 truncate max-w-xs">{{ $o->matchTicket->match_title }}</div>
-                                <div class="text-[10px] text-white/40 font-mono">{{ $o->matchTicket->match_time->format('d/m/Y') }}</div>
-                            </td>
-                            <td class="py-3.5 px-4 text-center font-bold text-white">
-                                {{ $o->quantity }} Tiket
-                            </td>
-                            <td class="py-3.5 px-4 font-mono font-bold text-smeck-gold">
-                                Rp {{ number_format($o->total_price, 0, ',', '.') }}
-                            </td>
-                            <td class="py-3.5 px-4 text-center">
-                                @if($o->status === 'paid' || $o->status === 'approved')
-                                    <span class="px-2.5 py-0.5 rounded-full text-[10px] font-bold uppercase bg-smeck-green-500/20 text-smeck-green-400 border border-smeck-green-500/30">
-                                        Lunas
-                                    </span>
-                                @else
-                                    <span class="px-2.5 py-0.5 rounded-full text-[10px] font-bold uppercase bg-amber-500/20 text-amber-300 border border-amber-500/30">
-                                        {{ $o->status }}
-                                    </span>
-                                @endif
-                            </td>
-                            <td class="py-3.5 px-4 font-mono text-white/70">
-                                {{ $o->user->profile?->phone_number ?? '-' }}
-                            </td>
-                            <td class="py-3.5 px-4 text-center">
-                                <span class="px-2 py-0.5 rounded bg-white/10 text-white font-bold text-[10px]">
-                                    {{ $o->user->profile?->shirt_size ?? '-' }}
-                                </span>
-                            </td>
+                {{-- Action Bulk Check-in Buttons --}}
+                <div class="flex items-center gap-2.5">
+                    <button type="submit" name="checkin_all" value="1" class="px-4 py-2 rounded-xl bg-gradient-to-r from-emerald-600 to-smeck-green-500 hover:from-emerald-500 hover:to-smeck-green-400 text-white font-bold text-xs shadow-lg shadow-emerald-900/30 transition-all flex items-center gap-1.5 cursor-pointer">
+                        <i class="fa-solid fa-bus"></i>
+                        <span>Check-In Semua Rombongan (1-Klik)</span>
+                    </button>
+                    <button type="submit" class="px-3.5 py-2 rounded-xl bg-white/10 hover:bg-white/15 text-white font-semibold text-xs transition-colors flex items-center gap-1.5 cursor-pointer">
+                        <i class="fa-solid fa-check-double text-emerald-400"></i>
+                        <span>Check-In Terpilih</span>
+                    </button>
+                    <span class="text-xs text-amber-400 font-mono font-bold ml-2">{{ $orders->count() }} Orang</span>
+                </div>
+            </div>
+
+            <div class="overflow-x-auto">
+                <table class="w-full text-left text-xs">
+                    <thead>
+                        <tr class="border-b border-white/10 text-white/40 uppercase tracking-wider text-[11px]">
+                            <th class="py-3.5 px-3 w-8 text-center">
+                                <input type="checkbox" id="selectAllOrders" onclick="toggleSelectAllOrders(this)" class="rounded bg-white/10 border-white/20 text-emerald-500 focus:ring-0">
+                            </th>
+                            <th class="py-3.5 px-4">Nama Suporter & NIA</th>
+                            <th class="py-3.5 px-4">Pertandingan</th>
+                            <th class="py-3.5 px-4 text-center">Jumlah</th>
+                            <th class="py-3.5 px-4">Total Biaya</th>
+                            <th class="py-3.5 px-4 text-center">Status Presensi</th>
+                            <th class="py-3.5 px-4">Kontak / WA</th>
+                            <th class="py-3.5 px-4 text-center">Size Kaos</th>
                         </tr>
-                    @empty
-                        <tr>
-                            <td colspan="7" class="py-12 text-center text-white/40">
-                                <i class="fa-solid fa-bus text-3xl mb-2 block text-white/20"></i>
-                                Belum ada pesanan tiket dari anggota basis untuk pertandingan yang sedang dibuka.
-                            </td>
-                        </tr>
-                    @endforelse
-                </tbody>
-            </table>
-        </div>
+                    </thead>
+                    <tbody class="divide-y divide-white/5">
+                        @forelse($orders as $o)
+                            <tr class="hover:bg-white/[0.02] transition-colors {{ $o->is_checked_in ? 'bg-emerald-500/[0.03]' : '' }}">
+                                <td class="py-3.5 px-3 text-center">
+                                    <input type="checkbox" name="order_ids[]" value="{{ $o->id }}" {{ $o->is_checked_in ? 'disabled' : '' }} class="order-checkbox rounded bg-white/10 border-white/20 text-emerald-500 focus:ring-0">
+                                </td>
+                                <td class="py-3.5 px-4">
+                                    <div class="font-bold text-white">{{ $o->user->name }}</div>
+                                    <div class="text-[10px] font-mono text-smeck-gold">{{ $o->user->profile?->nia ?? 'Belum ada NIA' }}</div>
+                                </td>
+                                <td class="py-3.5 px-4">
+                                    <div class="font-semibold text-white/90 truncate max-w-xs">{{ $o->matchTicket->match_title }}</div>
+                                    <div class="text-[10px] text-white/40 font-mono">{{ $o->matchTicket->match_time->format('d/m/Y') }}</div>
+                                </td>
+                                <td class="py-3.5 px-4 text-center font-bold text-white">
+                                    {{ $o->quantity }} Tiket
+                                </td>
+                                <td class="py-3.5 px-4 font-mono font-bold text-smeck-gold">
+                                    Rp {{ number_format($o->total_amount, 0, ',', '.') }}
+                                </td>
+                                <td class="py-3.5 px-4 text-center">
+                                    @if($o->is_checked_in)
+                                        <span class="inline-flex items-center gap-1 px-2.5 py-0.5 rounded-full text-[10px] font-bold uppercase bg-emerald-500/20 text-emerald-300 border border-emerald-500/30">
+                                            <i class="fa-solid fa-circle-check text-[9px]"></i> Hadir Bus
+                                        </span>
+                                    @else
+                                        <span class="inline-flex items-center gap-1 px-2.5 py-0.5 rounded-full text-[10px] font-bold uppercase bg-white/10 text-white/50">
+                                            Belum Check-In
+                                        </span>
+                                    @endif
+                                </td>
+                                <td class="py-3.5 px-4 font-mono text-white/70">
+                                    {{ $o->user->profile?->phone_number ?? '-' }}
+                                </td>
+                                <td class="py-3.5 px-4 text-center">
+                                    <span class="px-2 py-0.5 rounded bg-white/10 text-white font-bold text-[10px]">
+                                        {{ $o->user->profile?->shirt_size ?? '-' }}
+                                    </span>
+                                </td>
+                            </tr>
+                        @empty
+                            <tr>
+                                <td colspan="8" class="py-12 text-center text-white/40">
+                                    <i class="fa-solid fa-bus text-3xl mb-2 block text-white/20"></i>
+                                    Belum ada pesanan tiket dari anggota basis untuk pertandingan yang sedang dibuka.
+                                </td>
+                            </tr>
+                        @endforelse
+                    </tbody>
+                </table>
+            </div>
+        </form>
     </div>
 
+    <script>
+        function toggleSelectAllOrders(source) {
+            const checkboxes = document.querySelectorAll('.order-checkbox:not(:disabled)');
+            checkboxes.forEach(cb => cb.checked = source.checked);
+        }
+    </script>
 </div>
 
 {{-- ========================================================================= --}}

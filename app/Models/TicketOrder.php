@@ -18,10 +18,14 @@ class TicketOrder extends Model
         'total_amount',
         'payment_status',
         'payment_proof_path',
+        'is_checked_in',
+        'checked_in_at',
     ];
 
     protected $casts = [
         'total_amount' => 'decimal:2',
+        'is_checked_in' => 'boolean',
+        'checked_in_at' => 'datetime',
     ];
 
     public function matchTicket(): BelongsTo

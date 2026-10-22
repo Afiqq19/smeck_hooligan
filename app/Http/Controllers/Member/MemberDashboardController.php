@@ -4,9 +4,11 @@ namespace App\Http\Controllers\Member;
 
 use App\Http\Controllers\Controller;
 use App\Models\Chant;
+use App\Models\EventAttendance;
 use App\Models\MatchTicket;
 use App\Models\NfcCard;
 use App\Models\StoreProduct;
+use App\Models\TicketOrder;
 use App\Models\VoluntaryDue;
 use Illuminate\Http\RedirectResponse;
 use Illuminate\Http\Request;
@@ -211,4 +213,54 @@ class MemberDashboardController extends Controller
 
         return view('dashboard.member.store', compact('products'));
     }
+
+    /**
+     * Presensi Mandiri Suporter (Solusi 3: Scan QR Banner dari HP Sendiri).
+     */
+    public function selfCheckin(Request $request): RedirectResponse
+    {
+        $user = $request->user();
+        $rawEvent = trim($request->input('event_name', ''));
+
+        if (! empty($rawEvent)) {
+            $eventName = $rawEvent;
+        } else {
+            $upcomingMatch = MatchTicket::where('status', 'open')->orderBy('match_time', 'asc')->first();
+            $eventName = $upcomingMatch ? 'Laga: ' . $upcomingMatch->match_title : 'Matchday Akbar PSMS Medan';
+        }
+
+        $now = now();
+
+        // 1. Cek apakah suporter sudah absen di acara ini pada tanggal yang sama
+        $existing = EventAttendance::where('user_id', $user->id)
+            ->where('event_name', $eventName)
+            ->whereDate('scanned_at', $now->toDateString())
+            ->first();
+
+        if ($existing) {
+            return redirect()->route('member.dashboard')->with('info', "Anda sudah tercatat hadir pada '{$eventName}' pukul {$existing->scanned_at->format('H:i')} WIB hari ini!");
+        }
+
+        // 2. Buat presensi baru
+        EventAttendance::create([
+            'chapter_id' => $user->chapter_id ?? 1,
+            'user_id' => $user->id,
+            'event_name' => $eventName,
+            'scanned_at' => $now,
+        ]);
+
+        // 3. Jika user punya pemesanan tiket untuk laga ini yang belum check-in, update statusnya
+        TicketOrder::where('user_id', $user->id)
+            ->where('is_checked_in', false)
+            ->whereHas('matchTicket', function ($q) use ($eventName) {
+                $q->whereRaw('? LIKE CONCAT("%", match_title, "%")', [$eventName]);
+            })
+            ->update([
+                'is_checked_in' => true,
+                'checked_in_at' => $now,
+            ]);
+
+        return redirect()->route('member.dashboard')->with('success', "PRESENSI MANDIRI BERHASIL! [{$user->name}] resmi tercatat hadir pada '{$eventName}'. Poin loyalitas suporter Anda bertambah!");
+    }
 }
+

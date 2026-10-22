@@ -6,6 +6,7 @@ use App\Http\Controllers\Controller;
 use App\Models\Chapter;
 use App\Models\ChapterDocumentation;
 use App\Models\EventAttendance;
+use App\Models\MatchTicket;
 use App\Models\MemberProfile;
 use App\Models\NfcCard;
 use App\Models\TicketAllocation;
@@ -121,8 +122,9 @@ class ChapterDashboardController extends Controller
     {
         $chapterId = $request->user()->chapter_id ?? 1;
         $recentScans = EventAttendance::where('chapter_id', $chapterId)->with('user.profile')->latest()->take(15)->get();
+        $upcomingMatches = MatchTicket::where('status', 'open')->orderBy('match_time', 'asc')->get();
 
-        return view('dashboard.chapter.scanner', compact('recentScans'));
+        return view('dashboard.chapter.scanner', compact('recentScans', 'upcomingMatches'));
     }
 
     /**
@@ -238,6 +240,65 @@ class ChapterDashboardController extends Controller
         $orders = TicketOrder::where('chapter_id', $chapterId)->with('matchTicket', 'user.profile')->latest()->get();
 
         return view('dashboard.chapter.tickets', compact('allocations', 'orders'));
+    }
+
+    /**
+     * Check-in Masal / Rombongan Bus Awaydays & Tribun Chapter (Solusi 1).
+     */
+    public function bulkCheckinTickets(Request $request): RedirectResponse
+    {
+        $chapterId = $request->user()->chapter_id ?? 1;
+        
+        $orderIds = $request->input('order_ids', []);
+        $checkinAll = $request->boolean('checkin_all');
+
+        $query = TicketOrder::where('chapter_id', $chapterId)
+            ->where('is_checked_in', false)
+            ->with(['user', 'matchTicket']);
+
+        if (! $checkinAll) {
+            if (empty($orderIds)) {
+                return back()->with('error', 'Silakan pilih minimal satu suporter dalam rombongan untuk di-check in!');
+            }
+            $query->whereIn('id', $orderIds);
+        }
+
+        $orders = $query->get();
+
+        if ($orders->isEmpty()) {
+            return back()->with('info', 'Semua suporter rombongan bus yang dipilih sudah berstatus Check-In Hadir.');
+        }
+
+        $count = 0;
+        $now = now();
+
+        foreach ($orders as $order) {
+            $order->update([
+                'is_checked_in' => true,
+                'checked_in_at' => $now,
+            ]);
+
+            $eventName = $order->matchTicket ? 'Laga: ' . $order->matchTicket->match_title : 'Rombongan Tour Awaydays';
+
+            // Catat presensi otomatis jika belum ada hari ini
+            $exists = EventAttendance::where('user_id', $order->user_id)
+                ->where('event_name', $eventName)
+                ->whereDate('scanned_at', $now->toDateString())
+                ->exists();
+
+            if (! $exists) {
+                EventAttendance::create([
+                    'chapter_id' => $chapterId,
+                    'user_id' => $order->user_id,
+                    'event_name' => $eventName,
+                    'scanned_at' => $now,
+                ]);
+            }
+
+            $count++;
+        }
+
+        return back()->with('success', "CHECK-IN ROMBONGAN BERHASIL! Sebanyak {$count} suporter rombongan bus berhasil diabsen hadir serentak tanpa perlu tap kartu satu per satu!");
     }
 
     /**

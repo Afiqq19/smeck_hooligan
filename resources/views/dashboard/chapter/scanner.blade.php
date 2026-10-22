@@ -22,6 +22,14 @@
                 Tempelkan kartu fisik KTA suporter (e-money, BCA Flazz, atau RFID PVC) ke bagian belakang HP panitia. Sistem otomatis membaca UID chip & mencatat kehadiran.
             </p>
 
+            {{-- Quick Button for Solusi 3: Poster QR Presensi Suporter Mandiri --}}
+            <div class="max-w-md mx-auto mb-6">
+                <button type="button" onclick="openQrBannerModal()" class="w-full py-2.5 px-4 rounded-2xl bg-gradient-to-r from-amber-500/20 via-smeck-green-500/20 to-amber-500/20 hover:from-amber-500/30 hover:to-smeck-green-500/30 text-amber-300 font-bold text-xs border border-amber-500/40 shadow-lg transition-all flex items-center justify-center gap-2 group cursor-pointer">
+                    <i class="fa-solid fa-qrcode text-base group-hover:scale-110 transition-transform"></i>
+                    <span>Tampilkan QR Banner Presensi (Suporter Scan Mandiri)</span>
+                </button>
+            </div>
+
             {{-- Sensor NFC Status Bar & Controls --}}
             <div class="max-w-md mx-auto mb-6 p-4 rounded-2xl bg-white/[0.03] border border-white/10 flex flex-col sm:flex-row items-center justify-between gap-3">
                 <div class="flex items-center gap-2.5 text-xs text-left">
@@ -254,6 +262,129 @@
             document.getElementById('nfc-status-text').innerText = "HP Mendukung Web NFC! Klik 'Aktifkan Sensor'";
         }
     });
+
+    // Handle Solusi 3: QR Banner Presensi Suporter Mandiri
+    function openQrBannerModal() {
+        updateQrBannerCode();
+        document.getElementById('modalQrBanner').classList.remove('hidden');
+    }
+
+    function closeQrBannerModal() {
+        document.getElementById('modalQrBanner').classList.add('hidden');
+    }
+
+    function updateQrBannerCode() {
+        const select = document.getElementById('qr_event_select');
+        const customInput = document.getElementById('qr_event_custom');
+        let eventName = select.value;
+        if (eventName === 'CUSTOM') {
+            customInput.classList.remove('hidden');
+            eventName = customInput.value || 'Matchday PSMS Medan';
+        } else {
+            customInput.classList.add('hidden');
+        }
+
+        document.getElementById('qr_banner_event_title').innerText = eventName;
+        
+        const baseUrl = "{{ route('member.checkin.self') }}";
+        const fullUrl = baseUrl + '?event_name=' + encodeURIComponent(eventName);
+        
+        const qrImg = document.getElementById('qr_banner_image');
+        qrImg.src = `https://api.qrserver.com/v1/create-qr-code/?size=300x300&margin=10&data=${encodeURIComponent(fullUrl)}`;
+        document.getElementById('qr_banner_link_input').value = fullUrl;
+    }
+
+    function copyQrBannerLink() {
+        const input = document.getElementById('qr_banner_link_input');
+        input.select();
+        navigator.clipboard.writeText(input.value);
+        alert('Link presensi mandiri berhasil disalin! Anda bisa membagikannya ke WhatsApp Group Basis.');
+    }
 </script>
+
+{{-- MODAL POSTER QR BANNER PRESENSI MANDIRI (SOLUSI 3) --}}
+<div id="modalQrBanner" class="fixed inset-0 z-50 bg-black/85 backdrop-blur-md hidden flex items-center justify-center p-4 overflow-y-auto">
+    <div class="bg-smeck-dark-900 border border-amber-500/30 text-white rounded-3xl max-w-lg w-full p-6 sm:p-8 shadow-2xl relative my-8 print:bg-white print:text-black print:max-w-full print:m-0 print:p-0 print:border-none">
+        
+        {{-- Close Button --}}
+        <button onclick="closeQrBannerModal()" class="absolute top-5 right-5 text-white/40 hover:text-white text-2xl print:hidden">&times;</button>
+
+        {{-- Header Modal --}}
+        <div class="text-center pb-4 border-b border-white/10 mb-5 print:border-slate-300">
+            <span class="px-2.5 py-0.5 rounded-full text-[10px] font-bold uppercase tracking-wider bg-amber-500/20 text-amber-300 border border-amber-500/30 font-mono print:hidden">
+                SOLUSI ANTI-PEGAL
+            </span>
+            <h3 class="font-display font-black text-xl text-white mt-2 print:text-black print:text-2xl">Poster QR Presensi Suporter Mandiri</h3>
+            <p class="text-xs text-white/50 print:text-slate-600 mt-1">
+                Tampilkan di layar proyektor / banner gate tribun. Suporter cukup scan dengan kamera ponsel untuk absensi serentak!
+            </p>
+        </div>
+
+        {{-- Event Selector --}}
+        <div class="space-y-2 mb-4 print:hidden">
+            <label class="block text-xs font-bold uppercase text-white/60">Pilih Pertandingan / Acara:</label>
+            <select id="qr_event_select" onchange="updateQrBannerCode()" class="w-full px-4 py-2.5 bg-white/5 border border-white/10 rounded-xl text-white text-xs focus:border-amber-400 focus:outline-none">
+                @if(isset($upcomingMatches) && $upcomingMatches->count() > 0)
+                    @foreach($upcomingMatches as $um)
+                        <option value="Laga: {{ $um->match_title }}" class="bg-smeck-dark-900">🏟️ Laga: {{ $um->match_title }} ({{ $um->match_time->format('d/m/Y') }})</option>
+                    @endforeach
+                @endif
+                <option value="Nobar Akbar PSMS Medan" class="bg-smeck-dark-900">📺 Nobar Akbar PSMS Medan</option>
+                <option value="Awaydays Tur Gabungan PSMS Medan" class="bg-smeck-dark-900">🚌 Awaydays Tur Gabungan PSMS Medan</option>
+                <option value="Kopdar Rutin & Arisan Basis" class="bg-smeck-dark-900">☕ Kopdar Rutin & Arisan Basis</option>
+                <option value="CUSTOM" class="bg-smeck-dark-900">✏️ Acara Lainnya (Ketik Sendiri)...</option>
+            </select>
+            <input type="text" id="qr_event_custom" oninput="updateQrBannerCode()" placeholder="Tuliskan nama acara..." class="w-full px-4 py-2.5 bg-white/5 border border-white/10 rounded-xl text-white text-xs focus:border-amber-400 focus:outline-none hidden">
+        </div>
+
+        {{-- Printable Poster Sheet Container --}}
+        <div class="bg-white text-slate-900 p-6 rounded-2xl shadow-xl text-center border-2 border-emerald-700 mx-auto max-w-sm">
+            <div class="flex items-center justify-center gap-2 mb-2">
+                <div class="w-8 h-8 rounded-lg bg-emerald-800 text-amber-400 flex items-center justify-center font-black text-xs">SM</div>
+                <div class="text-left">
+                    <div class="text-xs font-black uppercase text-emerald-900 tracking-wider">SMeCK HOOLIGAN</div>
+                    <div class="text-[9px] text-slate-500 font-bold">PRESENSI RESMI SUPORTER</div>
+                </div>
+            </div>
+
+            <div id="qr_banner_event_title" class="text-sm font-black text-emerald-800 mt-2 mb-3 px-2 py-1 bg-emerald-50 rounded-lg">
+                Memuat Acara...
+            </div>
+
+            {{-- QR Code Image --}}
+            <div class="w-48 h-48 mx-auto p-2 bg-white border border-slate-300 rounded-xl shadow-inner flex items-center justify-center">
+                <img id="qr_banner_image" src="" alt="QR Presensi Suporter" class="w-full h-full object-contain">
+            </div>
+
+            <p class="text-[10px] text-slate-600 font-bold mt-3">
+                📷 Buka Kamera HP Anda & Arahkan ke QR Code di atas
+            </p>
+            <p class="text-[9px] text-slate-400 mt-0.5">
+                Otomatis tercatat hadir di database resmi suporter SMeCK
+            </p>
+        </div>
+
+        {{-- Link Sharing & Actions --}}
+        <div class="mt-5 space-y-3 print:hidden">
+            <div class="flex items-center gap-2">
+                <input type="text" id="qr_banner_link_input" readonly class="flex-1 px-3 py-2 bg-white/5 border border-white/10 rounded-xl text-white text-[11px] font-mono">
+                <button type="button" onclick="copyQrBannerLink()" class="px-3.5 py-2 rounded-xl bg-white/10 hover:bg-white/20 text-white font-bold text-xs transition-colors shrink-0">
+                    <i class="fa-solid fa-copy mr-1"></i> Salin
+                </button>
+            </div>
+
+            <div class="flex items-center justify-between gap-2 pt-2 border-t border-white/10">
+                <button type="button" onclick="window.print()" class="flex-1 py-2.5 rounded-xl bg-emerald-600 hover:bg-emerald-500 text-white font-bold text-xs shadow-lg transition-all flex items-center justify-center gap-2">
+                    <i class="fa-solid fa-print"></i>
+                    <span>Cetak Poster QR (A4)</span>
+                </button>
+                <button type="button" onclick="closeQrBannerModal()" class="px-4 py-2.5 rounded-xl bg-white/5 hover:bg-white/10 text-white/70 text-xs">
+                    Tutup
+                </button>
+            </div>
+        </div>
+
+    </div>
+</div>
 @endpush
 

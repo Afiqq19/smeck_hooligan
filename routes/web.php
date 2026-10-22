@@ -70,6 +70,7 @@ Route::middleware(['auth', 'role:member,super_admin,admin_chapter'])->prefix('me
     Route::get('/tickets', [MemberDashboardController::class, 'tickets'])->name('tickets');
     Route::post('/tickets/order', [MemberDashboardController::class, 'orderTicket'])->name('tickets.order');
     Route::get('/store', [MemberDashboardController::class, 'store'])->name('store');
+    Route::get('/self-checkin', [MemberDashboardController::class, 'selfCheckin'])->name('checkin.self');
 });
 
 // =========================================================================
@@ -95,8 +96,9 @@ Route::middleware(['auth', 'role:admin_chapter,super_admin'])->prefix('chapter')
     Route::post('/nfc/unblock/{cardId}', [ChapterDashboardController::class, 'unblockCard'])->name('nfc.unblock');
     Route::post('/nfc/replace/{userId}', [ChapterDashboardController::class, 'replaceCard'])->name('nfc.replace');
 
-    // Menu Ekstra Budaya Tribun (Prompt 6)
+    // Menu Ekstra Budaya Tribun (Prompt 6) & Check-in Rombongan (Solusi 1)
     Route::get('/tickets', [ChapterDashboardController::class, 'ticketQuota'])->name('tickets');
+    Route::post('/tickets/bulk-checkin', [ChapterDashboardController::class, 'bulkCheckinTickets'])->name('tickets.bulk_checkin');
     Route::get('/documentations', [ChapterDashboardController::class, 'documentations'])->name('documentations');
     Route::post('/documentations', [ChapterDashboardController::class, 'storeDocumentation'])->name('documentations.store');
 });
