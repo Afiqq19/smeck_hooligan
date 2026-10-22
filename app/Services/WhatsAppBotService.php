@@ -241,33 +241,47 @@ class WhatsAppBotService
             }
         }
 
-        // 4. Cari via Nama Anggota (User::where('name', 'like', ...))
+        // 4. Cari via Nama Anggota dengan skoring relevansi terbaik
         if (! isset($user) || ! $user) {
-            // Pencarian string nama lengkap terlebih dahulu
-            $user = User::where('name', 'like', "%{$rawQuery}%")
-                ->with(['profile', 'chapter', 'nfcCard'])
-                ->first();
+            $words = preg_split('/\s+/', $rawQuery);
+            $words = array_filter($words, fn ($w) => strlen(trim($w)) >= 2);
 
-            // Jika belum ketemu, cari berdasarkan token kata nama (contoh: "MHD syafiq" -> mencari kata "syafiq")
-            if (! $user) {
-                $words = preg_split('/\s+/', $rawQuery);
-                $keywords = array_filter($words, function ($w) {
-                    $clean = strtolower(trim($w, "."));
-                    return strlen($clean) >= 3 && !in_array($clean, ['mhd', 'muh', 'mohd', 'bin', 'binti', 'dan', 'smeck', 'kta']);
-                });
-
-                if (! empty($keywords)) {
-                    $user = User::where(function ($q) use ($keywords) {
-                        foreach ($keywords as $kw) {
-                            $q->orWhere('name', 'like', "%{$kw}%");
-                        }
-                    })->with(['profile', 'chapter', 'nfcCard'])->first();
+            $candidates = User::where(function ($q) use ($rawQuery, $words) {
+                $q->where('name', 'like', "%{$rawQuery}%");
+                foreach ($words as $w) {
+                    $q->orWhere('name', 'like', "%{$w}%");
                 }
-            }
+            })->with(['profile', 'chapter', 'nfcCard'])->get();
 
-            if ($user) {
-                $profile = $user->profile;
-                $card = $user->nfcCard;
+            if ($candidates->isNotEmpty()) {
+                $user = $candidates->sortByDesc(function ($u) use ($words, $rawQuery) {
+                    $score = 0;
+                    $nameLower = strtolower($u->name);
+                    $queryLower = strtolower($rawQuery);
+
+                    // 1. Cocok persis seluruh nama (poin tertinggi)
+                    if ($nameLower === $queryLower) {
+                        $score += 1000;
+                    }
+                    // 2. Mengandung seluruh frase query
+                    if (str_contains($nameLower, $queryLower)) {
+                        $score += 500;
+                    }
+                    // 3. Cocok per kata nama (makin banyak kata yang cocok makin tinggi skornya)
+                    foreach ($words as $w) {
+                        if (str_contains($nameLower, strtolower($w))) {
+                            $score += 100;
+                        }
+                    }
+
+                    // Prioritaskan anggota terbaru jika skor sama (tie-breaker)
+                    return ($score * 100000) + $u->id;
+                })->first();
+
+                if ($user) {
+                    $profile = $user->profile;
+                    $card = $user->nfcCard;
+                }
             }
         }
 
@@ -290,16 +304,22 @@ class WhatsAppBotService
                 ? $user->suspension_reason
                 : 'Pelanggaran Kode Etik Organisasi & Tata Tertib Tribun SMeCK Hooligan';
 
+            $displayCardNo = $card?->card_number ?? '6032-••••-••••-1950';
+            $joinedDate = $profile?->joined_date ? $profile->joined_date->translatedFormat('d F Y') : ($user->created_at ? $user->created_at->translatedFormat('d F Y') : '-');
+
             return "🚨 *PERINGATAN SANKSI: KTA DITANGGUHKAN (SUSPENDED)*\n\n" .
                 "• *Nama Suporter:* {$user->name}\n" .
                 "• *Nomor NIA:* " . ($profile?->nia ?? '-') . "\n" .
+                "• *Nomor Kartu KTA:* {$displayCardNo}\n" .
                 "• *Basis Chapter:* " . ($user->chapter?->name ?? 'DPP SMeCK Hooligan') . "\n" .
+                "• *Tgl Bergabung:* {$joinedDate}\n" .
                 "• *Status Keanggotaan:* ❌ DIBEKUKAN / SUSPENDED\n" .
                 "• *Alasan Sanksi:* ⚠️ {$reason}\n\n" .
                 "⚠️ *PERHATIAN:* Akun ini sedang dalam masa sanksi penangguhan organisasi DPP SMeCK Hooligan. Hak akses tribun suporter, diskon tiket, dan kartu KTA chip NFC *TIDAK BERLAKU* sementara. Silakan hubungi Korlap Basis Anda untuk penyelesaian sanksi.";
         }
 
         $displayCardNo = $card?->card_number ?? '6032-••••-••••-1950';
+        $joinedDate = $profile?->joined_date ? $profile->joined_date->translatedFormat('d F Y') : ($user->created_at ? $user->created_at->translatedFormat('d F Y') : '-');
 
         return "🟢 *DATA KTA RESMI SMECK HOOLIGAN (VALID)* ✅\n\n" .
             "• *Nama Anggota:* {$user->name}\n" .
@@ -308,7 +328,7 @@ class WhatsAppBotService
             "• *Golongan Darah:* " . ($profile?->blood_type ?? '-') . " (Siap Medis Tribun)\n" .
             "• *Nomor Kartu KTA:* {$displayCardNo}\n" .
             "• *Status Kartu NFC:* 🟢 AKTIF & SAH DIGUNAKAN\n" .
-            "• *Tgl Bergabung:* " . ($profile?->joined_date ? $profile->joined_date->format('d M Y') : 'Anggota Aktif') . "\n\n" .
+            "• *Tgl Bergabung:* {$joinedDate}\n\n" .
             "Salam Sada Roha! Ayam Kinantan Selamanya! 🐓💚";
     }
 
