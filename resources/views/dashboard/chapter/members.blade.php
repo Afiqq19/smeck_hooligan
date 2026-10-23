@@ -137,6 +137,7 @@
                                 'card_uid' => $card ? $card->uid_number : 'Belum Ada',
                                 'card_vendor' => $card ? strtoupper($card->card_vendor) : '-',
                                 'card_status' => $card ? $card->status : 'none',
+                                'photo' => $m->profile?->profile_photo_path ? asset('storage/' . $m->profile->profile_photo_path) : null,
                                 'joined' => $m->created_at ? $m->created_at->format('d M Y') : '-'
                             ], JSON_HEX_TAG | JSON_HEX_APOS | JSON_HEX_QUOT | JSON_HEX_AMP);
                         @endphp
@@ -144,8 +145,12 @@
                             {{-- Info Anggota --}}
                             <td class="py-4 px-5">
                                 <div class="flex items-center gap-3">
-                                    <div class="w-9 h-9 rounded-xl bg-smeck-green-600/30 border border-smeck-green-500/40 text-smeck-green-400 flex items-center justify-center font-bold text-xs shrink-0">
-                                        {{ strtoupper(substr($m->name, 0, 1)) }}
+                                    <div class="w-9 h-9 rounded-xl bg-smeck-dark-800 border border-emerald-400/30 overflow-hidden flex items-center justify-center font-bold text-xs text-white shrink-0 shadow">
+                                        @if($m->profile?->profile_photo_path)
+                                            <img src="{{ asset('storage/' . $m->profile->profile_photo_path) }}" alt="{{ $m->name }}" class="w-full h-full object-cover" style="object-position: center top;">
+                                        @else
+                                            <span class="text-smeck-green-400">{{ strtoupper(substr($m->name, 0, 1)) }}</span>
+                                        @endif
                                     </div>
                                     <div class="min-w-0">
                                         <div class="font-bold text-white text-sm truncate flex items-center gap-1.5">
@@ -499,7 +504,7 @@
         </button>
 
         <div class="flex items-center gap-4 mb-6">
-            <div id="detailAvatar" class="w-14 h-14 rounded-2xl bg-smeck-green-600/30 border border-smeck-green-500/40 text-smeck-green-400 flex items-center justify-center font-display font-black text-2xl shrink-0">
+            <div id="detailAvatar" class="w-14 h-14 rounded-2xl bg-smeck-dark-800 border border-smeck-green-500/40 overflow-hidden text-smeck-green-400 flex items-center justify-center font-display font-black text-2xl shrink-0 shadow">
                 A
             </div>
             <div>
@@ -728,7 +733,11 @@
     }
 
     function showMemberDetail(data) {
-        document.getElementById('detailAvatar').innerText = data.name.charAt(0).toUpperCase();
+        if (data.photo) {
+            document.getElementById('detailAvatar').innerHTML = `<img src="${data.photo}" alt="${data.name}" class="w-full h-full object-cover" style="object-position: center top;">`;
+        } else {
+            document.getElementById('detailAvatar').innerHTML = `<span class="text-smeck-green-400 font-black">${data.name.charAt(0).toUpperCase()}</span>`;
+        }
         document.getElementById('detailName').innerText = data.name;
         document.getElementById('detailNia').innerText = 'NIA: ' + data.nia;
         document.getElementById('detailCardNumber').innerText = data.card_number;

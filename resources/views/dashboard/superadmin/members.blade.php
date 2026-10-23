@@ -141,8 +141,12 @@
                             {{-- 1. Info Suporter & Basis --}}
                             <td class="py-4 px-5">
                                 <div class="flex items-center gap-3">
-                                    <div class="w-10 h-10 rounded-xl bg-smeck-green-600/20 border border-smeck-green-500/30 text-smeck-green-400 flex items-center justify-center font-black text-sm shrink-0">
-                                        {{ strtoupper(substr($m->name, 0, 1)) }}
+                                    <div class="w-10 h-10 rounded-xl bg-smeck-dark-800 border border-emerald-400/30 overflow-hidden flex items-center justify-center font-black text-sm text-white shrink-0 shadow">
+                                        @if($m->profile?->profile_photo_path)
+                                            <img src="{{ asset('storage/' . $m->profile->profile_photo_path) }}" alt="{{ $m->name }}" class="w-full h-full object-cover" style="object-position: center top;">
+                                        @else
+                                            <span class="text-smeck-green-400">{{ strtoupper(substr($m->name, 0, 1)) }}</span>
+                                        @endif
                                     </div>
                                     <div class="min-w-0">
                                         <div class="font-bold text-white text-sm truncate">{{ $m->name }}</div>

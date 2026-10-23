@@ -62,6 +62,7 @@
                                 'emergency_name' => $u->profile?->emergency_contact_name ?? '-',
                                 'emergency_phone' => $u->profile?->emergency_contact_number ?? '-',
                                 'emergency_rel' => $u->profile?->emergency_contact_relation ?? '-',
+                                'photo' => $u->profile?->profile_photo_path ? asset('storage/' . $u->profile->profile_photo_path) : null,
                                 'ktp_file' => $u->profile?->ktp_file ? asset('storage/' . $u->profile->ktp_file) : null,
                                 'created_at' => $u->created_at ? $u->created_at->format('d M Y, H:i') : '-'
                             ], JSON_HEX_TAG | JSON_HEX_APOS | JSON_HEX_QUOT | JSON_HEX_AMP);
@@ -69,8 +70,12 @@
                         <tr class="hover:bg-white/[0.02] transition-colors">
                             <td class="py-4 px-4">
                                 <div class="flex items-center gap-3">
-                                    <div class="w-9 h-9 rounded-xl bg-amber-500/20 text-amber-400 flex items-center justify-center font-bold text-xs shrink-0">
-                                        {{ strtoupper(substr($u->name, 0, 1)) }}
+                                    <div class="w-9 h-9 rounded-xl bg-smeck-dark-800 border border-amber-400/30 overflow-hidden flex items-center justify-center font-bold text-xs text-white shrink-0 shadow">
+                                        @if($u->profile?->profile_photo_path)
+                                            <img src="{{ asset('storage/' . $u->profile->profile_photo_path) }}" alt="{{ $u->name }}" class="w-full h-full object-cover" style="object-position: center top;">
+                                        @else
+                                            <span class="text-amber-400">{{ strtoupper(substr($u->name, 0, 1)) }}</span>
+                                        @endif
                                     </div>
                                     <div class="min-w-0">
                                         <div class="font-bold text-white text-sm truncate">{{ $u->name }}</div>
@@ -162,7 +167,7 @@
         </button>
 
         <div class="mb-5 flex items-center gap-3">
-            <div id="reviewAvatar" class="w-12 h-12 rounded-2xl bg-amber-500/20 text-amber-400 flex items-center justify-center text-xl font-bold">
+            <div id="reviewAvatar" class="w-12 h-12 rounded-2xl bg-smeck-dark-800 border border-amber-400/40 overflow-hidden text-amber-400 flex items-center justify-center text-xl font-bold shrink-0 shadow">
                 A
             </div>
             <div>
@@ -268,7 +273,11 @@
 
 <script>
     function openReviewModal(data) {
-        document.getElementById('reviewAvatar').innerText = data.name.charAt(0).toUpperCase();
+        if (data.photo) {
+            document.getElementById('reviewAvatar').innerHTML = `<img src="${data.photo}" alt="${data.name}" class="w-full h-full object-cover" style="object-position: center top;">`;
+        } else {
+            document.getElementById('reviewAvatar').innerHTML = `<span class="text-amber-400 font-bold">${data.name.charAt(0).toUpperCase()}</span>`;
+        }
         document.getElementById('reviewName').innerText = data.name;
         document.getElementById('reviewEmail').innerText = data.email;
         document.getElementById('reviewNik').innerText = data.nik;

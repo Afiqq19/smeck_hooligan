@@ -130,7 +130,7 @@ class MemberDashboardController extends Controller
     }
 
     /**
-     * Proses Blokir / Buka Blokir Kartu NFC.
+     * Proses Lapor Hilang / Batal Lapor Hilang Kartu NFC oleh Suporter.
      */
     public function toggleCardBlock(Request $request): RedirectResponse
     {
@@ -138,17 +138,20 @@ class MemberDashboardController extends Controller
         $card = NfcCard::where('user_id', $user->id)->first();
 
         if (! $card) {
-            return back()->with('error', 'Kartu NFC fisik Anda belum diterbitkan oleh Admin Pusat.');
+            return back()->with('error', 'Kartu NFC fisik Anda belum diterbitkan oleh Admin Basis / Pusat.');
         }
 
-        $newStatus = $card->status === 'blocked' ? 'active' : 'blocked';
-        $card->update(['status' => $newStatus]);
+        if ($user->status === 'suspended') {
+            return back()->with('error', 'Akun dan kartu fisik Anda sedang dibekukan karena Sanksi Disiplin Pengurus (' . ($user->suspension_reason ?? 'Pelanggaran Kode Etik') . '). Anda tidak dapat mengaktifkan kartu ini secara mandiri. Silakan hubungi Pengurus Basis / Pusat.');
+        }
 
-        $message = $newStatus === 'blocked'
-            ? 'Kartu fisik NFC Anda telah DINONAKTIFKAN/DIBLOKIR demi keamanan.'
-            : 'Kartu fisik NFC Anda telah DIAKTIFKAN kembali.';
-
-        return back()->with('success', $message);
+        if ($card->status === 'active') {
+            $card->update(['status' => 'lost']);
+            return back()->with('success', 'Kartu fisik KTA NFC Anda telah dilaporkan HILANG dan dinonaktifkan demi keamanan. Silakan temui Pengurus Basis untuk proses cetak ulang.');
+        } else {
+            $card->update(['status' => 'active']);
+            return back()->with('success', 'Laporan kartu hilang berhasil dibatalkan dan kartu fisik NFC Anda telah AKTIF kembali!');
+        }
     }
 
     /**

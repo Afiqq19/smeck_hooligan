@@ -143,7 +143,7 @@
             {{-- ====================================================== --}}
             {{-- 2. MENU UNTUK ROLE 'admin_chapter' (PENGURUS WILAYAH) --}}
             {{-- ====================================================== --}}
-            @if(auth()->user()->role === 'admin_chapter' || auth()->user()->role === 'super_admin')
+            @if(auth()->user()->role === 'admin_chapter')
                 <div>
                     <div class="px-3 mb-2 text-[10px] font-bold uppercase tracking-wider text-amber-400">
                         Pengurus Basis / Chapter
@@ -322,9 +322,8 @@
                 <div class="mb-3 flex items-center justify-between text-[11px] text-white/50 px-1">
                     <span>Lihat Mode:</span>
                     <div class="flex gap-1.5">
-                        <a href="{{ route('member.dashboard') }}" class="px-2 py-0.5 rounded bg-white/10 hover:bg-smeck-green-600 text-white transition-colors">Member</a>
-                        <a href="{{ route('chapter.dashboard') }}" class="px-2 py-0.5 rounded bg-white/10 hover:bg-amber-600 text-white transition-colors">Chapter</a>
-                        <a href="{{ route('superadmin.dashboard') }}" class="px-2 py-0.5 rounded bg-white/10 hover:bg-red-600 text-white transition-colors">Pusat</a>
+                        <a href="{{ route('chapter.dashboard') }}" class="px-2.5 py-0.5 rounded bg-white/10 hover:bg-amber-600 text-white transition-colors">Chapter</a>
+                        <a href="{{ route('superadmin.dashboard') }}" class="px-2.5 py-0.5 rounded bg-white/10 hover:bg-red-600 text-white transition-colors">Pusat</a>
                     </div>
                 </div>
             @endif
@@ -393,8 +392,15 @@
                 </div>
 
                 {{-- User Avatar & Logout --}}
+                @php
+                    $profileRoute = match(auth()->user()->role) {
+                        'super_admin' => route('superadmin.profile'),
+                        'admin_chapter' => route('chapter.profile'),
+                        default => route('member.profile'),
+                    };
+                @endphp
                 <div class="flex items-center gap-3 pl-3 border-l border-white/10">
-                    <a href="{{ route('member.profile') }}" class="w-8 h-8 rounded-xl bg-smeck-dark-800 border border-emerald-400/40 overflow-hidden shrink-0 flex items-center justify-center text-xs font-bold text-white shadow hover:scale-105 transition-transform" title="Profil Saya">
+                    <a href="{{ $profileRoute }}" class="w-8 h-8 rounded-xl bg-smeck-dark-800 border border-emerald-400/40 overflow-hidden shrink-0 flex items-center justify-center text-xs font-bold text-white shadow hover:scale-105 transition-transform" title="Profil Saya">
                         @if(auth()->user()->profile?->profile_photo_path)
                             <img src="{{ asset('storage/' . auth()->user()->profile->profile_photo_path) }}" alt="{{ auth()->user()->name }}" class="w-full h-full object-cover" style="object-position: center top;">
                         @else

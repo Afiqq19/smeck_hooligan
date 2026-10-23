@@ -107,6 +107,10 @@ Route::middleware(['auth', 'role:admin_chapter,super_admin'])->prefix('chapter')
     Route::post('/tickets/bulk-checkin', [ChapterDashboardController::class, 'bulkCheckinTickets'])->name('tickets.bulk_checkin');
     Route::get('/documentations', [ChapterDashboardController::class, 'documentations'])->name('documentations');
     Route::post('/documentations', [ChapterDashboardController::class, 'storeDocumentation'])->name('documentations.store');
+
+    // Profil Pengurus Chapter
+    Route::get('/profile', [ChapterDashboardController::class, 'profile'])->name('profile');
+    Route::post('/profile', [ChapterDashboardController::class, 'updateProfile'])->name('profile.update');
 });
 
 // =========================================================================
@@ -116,6 +120,10 @@ Route::middleware(['auth', 'role:admin_chapter,super_admin'])->prefix('chapter')
 Route::middleware(['auth', 'role:super_admin'])->prefix('superadmin')->name('superadmin.')->group(function () {
     // 1. Dashboard Utama Pusat
     Route::get('/dashboard', [SuperAdminDashboardController::class, 'index'])->name('dashboard');
+
+    // Profil Pengurus Pusat (DPP)
+    Route::get('/profile', [SuperAdminDashboardController::class, 'profile'])->name('profile');
+    Route::post('/profile', [SuperAdminDashboardController::class, 'updateProfile'])->name('profile.update');
 
     // 2. Direktori Anggota Nasional
     Route::get('/members', [SuperAdminDashboardController::class, 'members'])->name('members');

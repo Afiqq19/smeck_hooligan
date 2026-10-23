@@ -224,6 +224,63 @@
         </div>
     </div>
 
+    {{-- STATUS NOTIFICATION BANNERS --}}
+    @if($user->status === 'suspended')
+        <div class="p-5 rounded-3xl bg-red-950/40 border-2 border-red-500/50 shadow-2xl flex items-start gap-4">
+            <div class="w-12 h-12 rounded-2xl bg-red-600 text-white flex items-center justify-center text-xl shrink-0 shadow-lg shadow-red-700/50">
+                <i class="fa-solid fa-triangle-exclamation"></i>
+            </div>
+            <div class="space-y-1.5 flex-1">
+                <div class="flex flex-wrap items-center gap-2">
+                    <span class="px-2.5 py-0.5 rounded-full text-[10px] font-black uppercase bg-red-500 text-white">
+                        SANKSI DISIPLIN PENGURUS
+                    </span>
+                    <span class="text-xs text-red-300 font-bold">AKUN & KARTU DINONAKTIFKAN</span>
+                </div>
+                <div class="text-xs text-white/90">
+                    <strong>Alasan Sanksi:</strong> <span class="text-red-200 font-medium">"{{ $user->suspension_reason ?? 'Pelanggaran Kode Etik Organisasi & Tata Tertib Tribun SMeCK Hooligan' }}"</span>
+                </div>
+                <p class="text-[11px] text-white/60 leading-relaxed">
+                    Akses tiket, event, dan tap kartu fisik NFC di stadion Teladan dibekukan sementara. Silakan hubungi Pengurus Basis atau Pengurus Pusat untuk penyelesaian kode disiplin.
+                </p>
+            </div>
+        </div>
+    @elseif($user->nfcCard && $user->nfcCard->status === 'lost')
+        <div class="p-5 rounded-3xl bg-amber-500/15 border-2 border-amber-500/40 shadow-2xl flex items-start gap-4">
+            <div class="w-12 h-12 rounded-2xl bg-amber-500 text-black flex items-center justify-center text-xl shrink-0 shadow-lg shadow-amber-500/30">
+                <i class="fa-solid fa-triangle-exclamation"></i>
+            </div>
+            <div class="space-y-1 flex-1">
+                <div class="flex flex-wrap items-center gap-2">
+                    <span class="px-2.5 py-0.5 rounded-full text-[10px] font-black uppercase bg-amber-500 text-black">
+                        KARTU FISIK DILAPORKAN HILANG
+                    </span>
+                    <span class="text-xs text-amber-300 font-bold">MENUNGGU CETAK ULANG</span>
+                </div>
+                <p class="text-xs text-white/80 leading-relaxed">
+                    Kartu fisik NFC Anda telah dilaporkan hilang dan dinonaktifkan dari scanner stadion demi keamanan. Silakan temui Pengurus Basis untuk cetak kartu pengganti, atau batalkan laporan hilang jika kartu telah ditemukan di <a href="{{ route('member.emergency') }}" class="underline text-amber-300 font-bold">Menu Darurat</a>.
+                </p>
+            </div>
+        </div>
+    @elseif($user->status === 'pending_approval')
+        <div class="p-5 rounded-3xl bg-amber-500/10 border border-amber-500/30 shadow-xl flex items-start gap-4">
+            <div class="w-12 h-12 rounded-2xl bg-amber-500/20 text-amber-400 flex items-center justify-center text-xl shrink-0">
+                <i class="fa-solid fa-hourglass-half animate-pulse"></i>
+            </div>
+            <div class="space-y-1 flex-1">
+                <div class="flex flex-wrap items-center gap-2">
+                    <span class="px-2.5 py-0.5 rounded-full text-[10px] font-bold uppercase bg-amber-500/20 text-amber-300 border border-amber-500/30">
+                        MENUNGGU VALIDASI PUSAT
+                    </span>
+                    <span class="text-xs text-white/60">Verifikasi Pengurus Pusat DPP</span>
+                </div>
+                <p class="text-xs text-white/80 leading-relaxed">
+                    Pendaftaran identitas suporter Anda sedang diverifikasi oleh Pengurus Pusat. Setelah disetujui, E-KTA akan sah sepenuhnya dan Anda dapat mengambil kartu fisik NFC di Basis <strong>{{ $user->chapter?->name ?? 'Chapter' }}</strong>.
+                </p>
+            </div>
+        </div>
+    @endif
+
     {{-- ============================================================== --}}
     {{-- CENTERPIECE: VISUAL KTA DIGITAL (NFC HYBRID CARD) --}}
     {{-- ============================================================== --}}
@@ -501,8 +558,18 @@
                 <div class="grid grid-cols-2 gap-3 text-xs">
                     <div class="p-3 rounded-2xl bg-white/5 border border-white/5">
                         <div class="text-white/40">Status Kartu:</div>
-                        <div class="text-sm font-bold mt-0.5 {{ $user->nfcCard?->status === 'blocked' ? 'text-red-400' : 'text-smeck-green-400' }}">
-                            {{ $user->nfcCard?->status === 'blocked' ? 'DIBLOKIR SEMENTARA' : 'AKTIF & DAPAT DITAP' }}
+                        <div class="text-sm font-bold mt-0.5">
+                            @if($user->status === 'suspended')
+                                <span class="text-red-400">SANKSI DISIPLIN</span>
+                            @elseif($user->nfcCard && $user->nfcCard->status === 'lost')
+                                <span class="text-amber-400">KARTU HILANG</span>
+                            @elseif($user->nfcCard && $user->nfcCard->status === 'blocked')
+                                <span class="text-red-400">DIBLOKIR PENGURUS</span>
+                            @elseif($user->status === 'pending_approval')
+                                <span class="text-amber-300">VALIDASI PUSAT</span>
+                            @else
+                                <span class="text-smeck-green-400">AKTIF & DAPAT DITAP</span>
+                            @endif
                         </div>
                     </div>
                     <div class="p-3 rounded-2xl bg-white/5 border border-white/5">

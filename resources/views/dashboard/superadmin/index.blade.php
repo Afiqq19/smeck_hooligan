@@ -204,8 +204,12 @@
                     @forelse($recentMembers as $m)
                         <div class="p-2.5 rounded-xl bg-white/[0.02] border border-white/5 flex items-center justify-between">
                             <div class="flex items-center gap-2.5 min-w-0">
-                                <div class="w-8 h-8 rounded-lg bg-smeck-green-600 flex items-center justify-center font-display font-black text-white text-xs shrink-0">
-                                    {{ strtoupper(substr($m->name, 0, 1)) }}
+                                <div class="w-8 h-8 rounded-lg bg-smeck-dark-800 border border-emerald-400/30 overflow-hidden flex items-center justify-center font-display font-black text-white text-xs shrink-0">
+                                    @if($m->profile?->profile_photo_path)
+                                        <img src="{{ asset('storage/' . $m->profile->profile_photo_path) }}" alt="{{ $m->name }}" class="w-full h-full object-cover" style="object-position: center top;">
+                                    @else
+                                        <span class="text-smeck-green-400">{{ strtoupper(substr($m->name, 0, 1)) }}</span>
+                                    @endif
                                 </div>
                                 <div class="min-w-0">
                                     <div class="text-xs font-bold text-white truncate">{{ $m->name }}</div>

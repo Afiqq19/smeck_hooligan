@@ -1222,9 +1222,57 @@ class SuperAdminDashboardController extends Controller
             File::makeDirectory($sessionDir, 0755, true);
         }
 
-        File::put($sessionDir . '/session.json', json_encode($payload, JSON_PRETTY_PRINT));
-
         return response()->json(['success' => true]);
+    }
+
+    /**
+     * Tampilan Profil Pengurus Pusat (DPP SMeCK Hooligan).
+     */
+    public function profile(Request $request): View
+    {
+        $user = $request->user()->load(['profile', 'chapter', 'nfcCard']);
+        return view('dashboard.superadmin.profile', compact('user'));
+    }
+
+    /**
+     * Update Profil & Foto Pengurus Pusat.
+     */
+    public function updateProfile(Request $request): RedirectResponse
+    {
+        $user = $request->user();
+        $validated = $request->validate([
+            'name' => ['required', 'string', 'max:255'],
+            'phone_number' => ['nullable', 'string', 'max:20'],
+            'blood_type' => ['nullable', 'string', 'in:A,B,AB,O,-'],
+            'shirt_size' => ['nullable', 'string', 'in:S,M,L,XL,XXL,3XL,-'],
+            'address' => ['nullable', 'string', 'max:500'],
+            'profile_photo' => ['nullable', 'image', 'mimes:jpeg,png,jpg,webp', 'max:3072'],
+            'password' => ['nullable', 'string', 'min:6', 'confirmed'],
+        ]);
+
+        $user->name = $validated['name'];
+        if (!empty($validated['password'])) {
+            $user->password = Hash::make($validated['password']);
+        }
+        $user->save();
+
+        $profile = $user->profile ?? new MemberProfile(['user_id' => $user->id]);
+
+        if ($request->hasFile('profile_photo')) {
+            $path = $request->file('profile_photo')->store('profiles', 'public');
+            $profile->profile_photo_path = $path;
+        }
+
+        $profile->fill([
+            'phone_number' => $validated['phone_number'] ?? $profile->phone_number,
+            'blood_type' => ($validated['blood_type'] ?? '') === '-' ? null : ($validated['blood_type'] ?? $profile->blood_type),
+            'shirt_size' => ($validated['shirt_size'] ?? '') === '-' ? null : ($validated['shirt_size'] ?? $profile->shirt_size),
+            'address' => $validated['address'] ?? $profile->address,
+        ]);
+
+        $profile->save();
+
+        return back()->with('success', 'Profil dan kredensial Pengurus Pusat berhasil diperbarui!');
     }
 }
 

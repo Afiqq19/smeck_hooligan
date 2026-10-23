@@ -101,7 +101,7 @@ class AuthController extends Controller
             'password' => Hash::make($validated['password']),
             'chapter_id' => $validated['chapter_id'],
             'role' => 'member',
-            'status' => 'active',
+            'status' => 'pending_approval',
         ]);
 
         // Generate NIA (Nomor Induk Anggota SMeCK)
