@@ -195,16 +195,16 @@
                 </div>
             </div>
 
-            <div class="flex flex-wrap items-center gap-2.5">
-                <button type="button" onclick="flipKtaCard()" class="px-3.5 py-2.5 rounded-xl bg-white/10 hover:bg-white/15 text-white text-xs font-bold border border-white/10 flex items-center gap-1.5 transition-all">
+            <div class="grid grid-cols-2 sm:flex sm:flex-wrap items-center gap-2.5 w-full md:w-auto">
+                <button type="button" onclick="flipKtaCard()" class="px-3 py-2.5 rounded-xl bg-white/10 hover:bg-white/15 text-white text-xs font-bold border border-white/10 flex items-center justify-center gap-1.5 transition-all">
                     <i class="fa-solid fa-rotate text-smeck-green-400"></i>
                     <span>Putar Kartu</span>
                 </button>
-                <a href="{{ route('member.profile') }}" class="px-3.5 py-2.5 rounded-xl bg-white/10 hover:bg-white/15 text-white text-xs font-bold border border-white/10 flex items-center gap-1.5 transition-all" title="Unggah / Perbarui Pas Foto KTA Anda">
+                <a href="{{ route('member.profile') }}" class="px-3 py-2.5 rounded-xl bg-white/10 hover:bg-white/15 text-white text-xs font-bold border border-white/10 flex items-center justify-center gap-1.5 transition-all" title="Unggah / Perbarui Pas Foto KTA Anda">
                     <i class="fa-solid fa-camera text-amber-300"></i>
-                    <span>Pasang Pas Foto</span>
+                    <span>Pasang Foto</span>
                 </a>
-                <button type="button" onclick="openDownloadKtaModal()" class="px-4 py-2.5 rounded-xl bg-emerald-600/30 hover:bg-emerald-600/40 text-emerald-300 border border-emerald-500/30 text-xs font-bold flex items-center gap-1.5 transition-all shadow">
+                <button type="button" onclick="openDownloadKtaModal()" class="col-span-2 sm:col-auto px-4 py-2.5 rounded-xl bg-emerald-600 hover:bg-emerald-500 text-white text-xs font-bold flex items-center justify-center gap-2 transition-all shadow-lg shadow-emerald-700/30">
                     <i class="fa-solid fa-download"></i>
                     <span>Unduh KTA (PNG / PDF)</span>
                 </button>
@@ -212,13 +212,13 @@
                     $niaText = $user->profile?->nia ?? 'SMCK-1950';
                     $waShareText = urlencode("🟢 *KTA DIGITAL RESMI SMECK HOOLIGAN*\n\nNama: {$user->name}\nNIA: {$niaText}\nBasis: " . ($user->chapter->name ?? 'Pusat') . "\nGol. Darah: " . ($user->profile?->blood_type ?? '-') . "\nStatus: AKTIF TERVERIFIKASI ✅\n\nVerifikasi Kartu Asli:\n" . url('/api/check-kta?query=' . $niaText) . "\n\nSalam Sada Roha! 🐓⚽");
                 @endphp
-                <a href="https://wa.me/?text={{ $waShareText }}" target="_blank" class="px-4 py-2.5 rounded-xl bg-emerald-600/30 hover:bg-emerald-600/50 text-emerald-300 border border-emerald-500/40 text-xs font-bold flex items-center gap-1.5 transition-all">
-                    <i class="fa-brands fa-whatsapp text-sm"></i>
-                    <span>Share KTA ke WA</span>
+                <a href="https://wa.me/?text={{ $waShareText }}" target="_blank" class="px-3 py-2.5 rounded-xl bg-white/10 hover:bg-white/15 text-emerald-300 border border-emerald-500/30 text-xs font-bold flex items-center justify-center gap-1.5 transition-all">
+                    <i class="fa-brands fa-whatsapp text-sm text-emerald-400"></i>
+                    <span>Share WA</span>
                 </a>
-                <a href="{{ route('member.tickets') }}" class="px-5 py-2.5 rounded-xl bg-smeck-green-600 hover:bg-smeck-green-500 text-white text-xs font-bold shadow-lg shadow-smeck-green-700/30 flex items-center gap-2 transition-all">
+                <a href="{{ route('member.tickets') }}" class="px-3 py-2.5 rounded-xl bg-smeck-green-600 hover:bg-smeck-green-500 text-white text-xs font-bold shadow-lg shadow-smeck-green-700/30 flex items-center justify-center gap-1.5 transition-all">
                     <i class="fa-solid fa-ticket"></i>
-                    <span>Pesan Tiket Match</span>
+                    <span>Pesan Tiket</span>
                 </a>
             </div>
         </div>
@@ -366,13 +366,13 @@
 
                                 {{-- Name & NIA --}}
                                 <div class="min-w-0">
-                                    <div class="font-display font-black text-sm sm:text-base text-white tracking-wide truncate max-w-[170px] sm:max-w-[210px]">
+                                    <div class="font-display font-black text-xs sm:text-base text-white tracking-wide truncate max-w-[190px] sm:max-w-none" title="{{ strtoupper($user->name) }}">
                                         {{ strtoupper($user->name) }}
                                     </div>
                                     <div class="font-mono text-xs sm:text-sm text-amber-300 font-bold tracking-wider">
                                         {{ $user->profile?->nia ?? 'SMCK-2024-1950' }}
                                     </div>
-                                    <div class="text-[8px] sm:text-[9px] text-white/50 flex items-center gap-2 mt-0.5">
+                                    <div class="text-[7.5px] sm:text-[9px] text-white/50 flex items-center gap-1.5 sm:gap-2 mt-0.5">
                                         <span>GOL: <strong class="text-white">{{ $user->profile?->blood_type ?? 'O' }}</strong></span>
                                         <span>•</span>
                                         <span>EST: <strong class="text-white">{{ $user->profile?->joined_date?->format('Y') ?? '2024' }}</strong></span>
@@ -381,8 +381,8 @@
                             </div>
 
                             {{-- Brand e-money (Bawah Sebelah Kanan) --}}
-                            <div class="bg-white px-3 py-1.5 sm:px-3.5 sm:py-2 rounded-xl shadow-lg border border-white/80 flex items-center justify-center shrink-0">
-                                <img src="{{ $emoneyBase64 ?: asset('logoKTA/logo_emoney_resmi.png') }}" alt="e-money" class="h-5 sm:h-6 w-auto object-contain">
+                            <div class="bg-white px-2.5 py-1 sm:px-3.5 sm:py-2 rounded-xl shadow-lg border border-white/80 flex items-center justify-center shrink-0">
+                                <img src="{{ $emoneyBase64 ?: asset('logoKTA/logo_emoney_resmi.png') }}" alt="e-money" class="h-5 sm:h-6 w-auto object-contain" style="height: 20px; max-height: 24px; width: auto;">
                             </div>
                         </div>
 
@@ -391,60 +391,60 @@
                     {{-- -------------------------------------------------- --}}
                     {{-- TAMPAK BELAKANG KARTU DIGITAL ANGGOTA (E-KTA RESMI) --}}
                     {{-- -------------------------------------------------- --}}
-                    <div class="card-face card-back p-4 sm:p-5 flex flex-col justify-between overflow-hidden border border-emerald-500/30 shadow-2xl bg-gradient-to-br from-neutral-950 via-slate-950 to-neutral-900 text-white relative">
+                    <div class="card-face card-back p-3 sm:p-5 flex flex-col justify-between overflow-hidden border border-emerald-500/30 shadow-2xl bg-gradient-to-br from-neutral-950 via-slate-950 to-neutral-900 text-white relative">
                         
                         {{-- Efek Kilau Halus --}}
                         <div class="absolute inset-0 shimmer-effect opacity-15 pointer-events-none"></div>
 
                         {{-- 1. PITA IDENTITAS ATAS (E-KTA RESMI) --}}
-                        <div class="-mx-4 -mt-4 sm:-mx-5 sm:-mt-5">
-                            <div class="h-9 sm:h-10 bg-neutral-900/90 border-b border-white/10 flex items-center justify-between px-4 sm:px-5">
-                                <div class="flex items-center gap-2">
-                                    <span class="px-1.5 py-0.5 rounded text-[8px] sm:text-[9px] bg-emerald-500/20 text-emerald-300 font-mono font-bold border border-emerald-500/40">
+                        <div class="-mx-3 -mt-3 sm:-mx-5 sm:-mt-5">
+                            <div class="h-8 sm:h-10 bg-neutral-900/95 border-b border-white/10 flex items-center justify-between px-3 sm:px-5">
+                                <div class="flex items-center gap-1.5 sm:gap-2">
+                                    <span class="px-1.5 py-0.5 rounded text-[7.5px] sm:text-[9px] bg-emerald-500/20 text-emerald-300 font-mono font-bold border border-emerald-500/40">
                                         E-KTA
                                     </span>
-                                    <span class="text-[8.5px] sm:text-[10px] font-bold tracking-wider text-white uppercase font-display">
-                                        KARTU TANDA ANGGOTA ELEKTRONIK
+                                    <span class="text-[8px] sm:text-[10px] font-bold tracking-wider text-white uppercase font-display">
+                                        KARTU ANGGOTA ELEKTRONIK
                                     </span>
                                 </div>
-                                <span class="text-[8.5px] sm:text-[10px] font-display font-black text-amber-400 tracking-wider">
+                                <span class="text-[8px] sm:text-[10px] font-display font-black text-amber-400 tracking-wider">
                                     SALAM SADA ROHA
                                 </span>
                             </div>
 
                             {{-- Sub-bar Basis & Status --}}
-                            <div class="px-4 sm:px-5 py-1 bg-black/70 border-b border-white/5 flex items-center justify-between text-[7.5px] sm:text-[8.5px]">
-                                <div class="flex items-center gap-1.5 text-emerald-400 font-bold uppercase tracking-wider">
-                                    <i class="fa-solid fa-shield-halved text-[8px]"></i>
-                                    <span>BASIS: {{ strtoupper($user->chapter?->name ?? 'CHAPTER MEDAN KOTA') }}</span>
+                            <div class="px-3 sm:px-5 py-0.5 sm:py-1 bg-black/80 border-b border-white/5 flex items-center justify-between text-[7px] sm:text-[8.5px]">
+                                <div class="flex items-center gap-1 text-emerald-400 font-bold uppercase tracking-wider truncate max-w-[65%]">
+                                    <i class="fa-solid fa-shield-halved text-[7px] shrink-0"></i>
+                                    <span class="truncate">BASIS: {{ strtoupper($user->chapter?->name ?? 'CHAPTER MEDAN KOTA') }}</span>
                                 </div>
-                                <div class="flex items-center gap-1.5 text-emerald-400 font-bold">
+                                <div class="flex items-center gap-1 text-emerald-400 font-bold shrink-0">
                                     <span class="w-1.5 h-1.5 rounded-full bg-emerald-400 animate-pulse"></span>
-                                    <span>TERVERIFIKASI RESMI</span>
+                                    <span>TERVERIFIKASI DIGITAL</span>
                                 </div>
                             </div>
                         </div>
 
                         {{-- 2. KONTEN UTAMA: Panel Tanda Tangan, Ketentuan & QR Verifikasi Identitas --}}
-                        <div class="my-auto py-2 flex items-center justify-between gap-4 relative z-10">
+                        <div class="my-auto py-1 sm:py-2 flex items-center justify-between gap-2.5 sm:gap-4 relative z-10">
                             
                             {{-- Sisi Kiri: Tanda Tangan & Maklumat Ketentuan E-KTA --}}
-                            <div class="flex-1 min-w-0 flex flex-col justify-between space-y-2">
+                            <div class="flex-1 min-w-0 flex flex-col justify-between space-y-1 sm:space-y-1.5">
                                 
                                 {{-- Area Tanda Tangan --}}
                                 <div>
-                                    <div class="text-[7.5px] sm:text-[8.5px] text-white/70 font-medium mb-1 flex items-center justify-between">
+                                    <div class="text-[7px] sm:text-[8.5px] text-white/70 font-medium mb-0.5 sm:mb-1 flex items-center justify-between">
                                         <span>Tanda Tangan Pemegang Sah:</span>
-                                        <span class="font-mono text-[8px] sm:text-[9px] text-amber-300 font-bold">NIA: {{ $user->profile?->nia ?? 'SMCK-1950' }}</span>
+                                        <span class="font-mono text-[7.5px] sm:text-[9px] text-amber-300 font-bold">NIA: {{ $user->profile?->nia ?? 'SMCK-1950' }}</span>
                                     </div>
-                                    <div class="flex items-center rounded-xl overflow-hidden border border-white/20 bg-white shadow-md max-w-[210px] sm:max-w-[250px]">
-                                        <div class="flex-1 h-8 sm:h-9 bg-slate-50 flex items-center px-3">
-                                            <span class="font-signature text-base sm:text-lg text-slate-900 font-bold select-none truncate">
+                                    <div class="flex items-center rounded-lg sm:rounded-xl overflow-hidden border border-white/20 bg-white shadow-md max-w-[190px] sm:max-w-[240px]">
+                                        <div class="flex-1 h-6.5 sm:h-8.5 bg-slate-50 flex items-center px-2.5 sm:px-3">
+                                            <span class="font-signature text-sm sm:text-base text-slate-900 font-bold select-none truncate">
                                                 {{ $user->name }}
                                             </span>
                                         </div>
-                                        <div class="px-2.5 h-8 sm:h-9 bg-emerald-700 text-white flex items-center justify-center">
-                                            <span class="text-[7.5px] sm:text-[8.5px] font-black uppercase tracking-wider">
+                                        <div class="px-2 sm:px-2.5 h-6.5 sm:h-8.5 bg-emerald-700 text-white flex items-center justify-center">
+                                            <span class="text-[7px] sm:text-[8px] font-black uppercase tracking-wider">
                                                 SAH
                                             </span>
                                         </div>
@@ -452,25 +452,25 @@
                                 </div>
 
                                 {{-- Maklumat & Ketentuan Suporter E-KTA --}}
-                                <div class="text-[7.5px] sm:text-[8.5px] text-white/70 leading-relaxed space-y-1">
-                                    <div class="font-bold text-amber-300 uppercase tracking-wider flex items-center gap-1">
-                                        <i class="fa-solid fa-circle-info text-[8px]"></i>
+                                <div class="text-[6.5px] sm:text-[8px] text-white/70 leading-snug space-y-0.5">
+                                    <div class="font-bold text-amber-300 uppercase tracking-wider flex items-center gap-1 text-[7px] sm:text-[8px]">
+                                        <i class="fa-solid fa-circle-info text-[7px]"></i>
                                         <span>KETENTUAN PEMEGANG E-KTA:</span>
                                     </div>
-                                    <div>• Identitas resmi anggota terdaftar suporter SMeCK Hooligan (Ayam Kinantan).</div>
-                                    <div>• Hak akses presensi matchday Stadion Teladan, laga awaydays, & agenda suporter.</div>
-                                    <div>• E-KTA bersifat pribadi & wajib menjunjung ikrar persaudaraan <em>Salam Sada Roha</em>.</div>
+                                    <div>• Identitas resmi suporter SMeCK Hooligan (Ayam Kinantan).</div>
+                                    <div>• Akses presensi matchday Teladan & agenda suporter.</div>
+                                    <div>• Junjung tinggi persaudaraan <em>Salam Sada Roha</em>.</div>
                                 </div>
                             </div>
 
                             {{-- Sisi Kanan: Box QR Verifikasi Identitas Digital --}}
                             <div class="shrink-0 flex flex-col items-center">
-                                <div class="p-2 rounded-xl bg-black/50 border border-emerald-500/30 text-center flex flex-col items-center shadow-lg">
-                                    <div class="text-[7px] sm:text-[8px] font-bold text-emerald-400 uppercase tracking-wider mb-1 flex items-center gap-1">
-                                        <i class="fa-solid fa-id-card-clip text-[8px]"></i>
+                                <div class="p-1 sm:p-2 rounded-xl bg-black/60 border border-emerald-500/30 text-center flex flex-col items-center shadow-lg">
+                                    <div class="text-[6.5px] sm:text-[7.5px] font-bold text-emerald-400 uppercase tracking-wider mb-0.5 sm:mb-1 flex items-center gap-1">
+                                        <i class="fa-solid fa-id-card-clip text-[7px]"></i>
                                         <span>VERIFIKASI DIGITAL</span>
                                     </div>
-                                    <div class="w-16 h-16 sm:w-18 sm:h-18 bg-white rounded-lg p-1 flex items-center justify-center shadow-md">
+                                    <div class="w-14 h-14 sm:w-16 sm:h-16 bg-white rounded-lg p-1 flex items-center justify-center shadow-md">
                                         <div id="dynamic-kta-qr" class="w-full h-full flex items-center justify-center">
                                             <svg class="w-full h-full" viewBox="0 0 100 100" fill="none">
                                                 <rect width="100" height="100" fill="white"/>
@@ -483,36 +483,13 @@
                                                 <rect x="6" y="68" width="26" height="26" rx="2" fill="#052e16"/>
                                                 <rect x="10" y="72" width="18" height="18" fill="white"/>
                                                 <rect x="13" y="75" width="12" height="12" rx="1.5" fill="#052e16"/>
-                                                <rect x="36" y="10" width="5" height="5" fill="#052e16"/>
-                                                <rect x="48" y="10" width="5" height="5" fill="#052e16"/>
-                                                <rect x="58" y="10" width="5" height="5" fill="#052e16"/>
-                                                <rect x="10" y="36" width="5" height="5" fill="#052e16"/>
-                                                <rect x="10" y="48" width="5" height="5" fill="#052e16"/>
-                                                <rect x="10" y="58" width="5" height="5" fill="#052e16"/>
-                                                <rect x="36" y="24" width="6" height="6" fill="#052e16"/>
-                                                <rect x="46" y="20" width="6" height="6" fill="#052e16"/>
-                                                <rect x="56" y="26" width="6" height="6" fill="#052e16"/>
-                                                <rect x="22" y="40" width="6" height="6" fill="#052e16"/>
-                                                <rect x="34" y="36" width="6" height="6" fill="#052e16"/>
-                                                <rect x="64" y="40" width="6" height="6" fill="#052e16"/>
-                                                <rect x="20" y="50" width="6" height="6" fill="#052e16"/>
-                                                <rect x="30" y="58" width="6" height="6" fill="#052e16"/>
-                                                <rect x="40" y="52" width="6" height="6" fill="#052e16"/>
-                                                <rect x="60" y="54" width="6" height="6" fill="#052e16"/>
-                                                <rect x="70" y="50" width="6" height="6" fill="#052e16"/>
-                                                <rect x="36" y="66" width="6" height="6" fill="#052e16"/>
-                                                <rect x="48" y="62" width="6" height="6" fill="#052e16"/>
-                                                <rect x="58" y="68" width="6" height="6" fill="#052e16"/>
-                                                <rect x="36" y="78" width="6" height="6" fill="#052e16"/>
-                                                <rect x="48" y="82" width="6" height="6" fill="#052e16"/>
-                                                <rect x="58" y="78" width="6" height="6" fill="#052e16"/>
                                                 <circle cx="50" cy="50" r="9" fill="#052e16" stroke="white" stroke-width="1.5"/>
                                                 <path d="M47 46 L53 46 L54 52 L50 54 L46 52 Z" fill="#22c55e"/>
                                             </svg>
                                         </div>
                                     </div>
-                                    <div class="text-[6.5px] text-emerald-400 font-bold uppercase tracking-wider mt-1">
-                                        SCAN CEK KEASLIAN
+                                    <div class="text-[6px] sm:text-[6.5px] text-emerald-400 font-bold uppercase tracking-wider mt-0.5 sm:mt-1">
+                                        SCAN KEASLIAN
                                     </div>
                                 </div>
                             </div>
@@ -520,13 +497,13 @@
                         </div>
 
                         {{-- 3. FOOTER: Hotline Pengurus Chapter & Slogan --}}
-                        <div class="pt-2 border-t border-white/10 flex items-center justify-between text-[7.5px] sm:text-[8.5px] relative z-10">
-                            <div class="flex items-center gap-2 text-white/70">
-                                <i class="fa-solid fa-phone text-emerald-400 text-[8px]"></i>
-                                <span>Pengurus Basis: <strong class="text-white font-mono">{{ $user->profile?->emergency_contact_number ?? '0812-6543-2199' }}</strong></span>
+                        <div class="pt-1 sm:pt-2 border-t border-white/10 flex items-center justify-between text-[7px] sm:text-[8px] relative z-10">
+                            <div class="flex items-center gap-1.5 text-white/70">
+                                <i class="fa-solid fa-phone text-emerald-400 text-[7px]"></i>
+                                <span>Basis: <strong class="text-white font-mono">{{ $user->profile?->emergency_contact_number ?? '0812-6543-2199' }}</strong></span>
                             </div>
                             <div class="text-right">
-                                <span class="font-display font-black text-amber-400 tracking-widest text-[8.5px] sm:text-[9.5px]">
+                                <span class="font-display font-black text-amber-400 tracking-widest text-[7.5px] sm:text-[9px]">
                                     AYAM KINANTAN JUARA
                                 </span>
                             </div>
@@ -865,7 +842,7 @@
                 </div>
                 
                 {{-- Container Depan Berukuran Rasio 85.6 / 53.98 --}}
-                <div id="kta-pvc-front" class="kta-pvc-card w-full aspect-[85.6/53.98] rounded-2xl p-4 sm:p-5 bg-gradient-to-br from-emerald-950 via-smeck-dark-900 to-black border border-white/20 text-white shadow-2xl relative overflow-hidden flex flex-col justify-between">
+                <div id="kta-pvc-front" class="kta-pvc-card w-full aspect-[85.6/53.98] rounded-2xl p-3.5 sm:p-5 bg-gradient-to-br from-emerald-950 via-smeck-dark-900 to-black border border-white/20 text-white shadow-2xl relative overflow-hidden flex flex-col justify-between">
                     {{-- Shimmer & Watermark --}}
                     <div class="absolute inset-0 shimmer-effect pointer-events-none opacity-20"></div>
                     <div class="absolute -right-6 -bottom-6 w-36 h-36 rounded-full overflow-hidden opacity-10 pointer-events-none">
@@ -874,71 +851,71 @@
 
                     {{-- Header Kartu Depan: SMeCK & Mandiri --}}
                     <div class="relative z-10 flex items-center justify-between">
-                        <div class="flex items-center gap-2.5">
-                            <div class="w-9 h-9 sm:w-10 sm:h-10 rounded-xl overflow-hidden border border-emerald-400/60 p-0.5 bg-black shrink-0 shadow">
+                        <div class="flex items-center gap-2 sm:gap-2.5">
+                            <div class="w-8 h-8 sm:w-10 sm:h-10 rounded-xl overflow-hidden border border-emerald-400/60 p-0.5 bg-black shrink-0 shadow">
                                 <img src="{{ $logoBase64 ?: asset('images/logo-crest.jpg') }}" alt="Logo" class="w-full h-full object-cover rounded-lg">
                             </div>
                             <div>
                                 <div class="font-display font-black text-xs sm:text-sm tracking-wider uppercase text-white leading-tight">
                                     SMeCK HOOLIGAN
                                 </div>
-                                <div class="text-[8px] sm:text-[9px] text-emerald-300 font-bold uppercase tracking-widest">
+                                <div class="text-[7.5px] sm:text-[9px] text-emerald-300 font-bold uppercase tracking-widest">
                                     SUPORTER RESMI PSMS MEDAN
                                 </div>
                             </div>
                         </div>
 
                         {{-- Brand Mandiri (Kanan Atas) --}}
-                        <div class="flex items-center px-2.5 py-1 rounded-xl bg-white/95 backdrop-blur-md border border-white/60 shadow-sm shrink-0">
-                            <img src="{{ $mandiriBase64 ?: asset('logoKTA/logo_mandiri_resmi.png') }}" alt="Bank Mandiri" class="h-3.5 sm:h-4 w-auto object-contain">
+                        <div class="flex items-center px-2 py-1 sm:px-2.5 sm:py-1 rounded-xl bg-white/95 backdrop-blur-md border border-white/60 shadow-sm shrink-0">
+                            <img src="{{ $mandiriBase64 ?: asset('logoKTA/logo_mandiri_resmi.png') }}" alt="Bank Mandiri" class="h-3 sm:h-4 w-auto object-contain" style="height: 15px; max-height: 18px; width: auto;">
                         </div>
                     </div>
 
                     {{-- Tengah: PSMS Medan Crest & Basis Chapter (Chip Emas Dihapus) --}}
-                    <div class="relative z-10 flex items-center justify-between my-auto py-1 gap-2.5">
+                    <div class="relative z-10 flex items-center justify-between my-auto py-1 gap-2">
                         {{-- Logo PSMS Medan Club Crest --}}
-                        <div class="flex items-center gap-2 bg-black/40 backdrop-blur-sm px-2.5 py-1 rounded-xl border border-white/10 shadow-sm">
-                            <div class="w-7 h-9 sm:w-8 sm:h-10 shrink-0 flex items-center justify-center">
+                        <div class="flex items-center gap-1.5 sm:gap-2 bg-black/40 backdrop-blur-sm px-2 py-1 sm:px-2.5 sm:py-1 rounded-xl border border-white/10 shadow-sm">
+                            <div class="w-6 h-8 sm:w-8 sm:h-10 shrink-0 flex items-center justify-center">
                                 <img src="{{ $psmsBase64 ?: asset('logoKTA/LogoPSMS.png') }}" alt="PSMS Medan" class="w-full h-full object-contain">
                             </div>
                             <div>
-                                <div class="text-[7px] text-amber-300 font-bold uppercase tracking-widest leading-none">PSMS MEDAN</div>
-                                <div class="text-[11px] sm:text-xs font-black text-white font-display tracking-wide mt-0.5">AYAM KINANTAN</div>
+                                <div class="text-[6.5px] sm:text-[7.5px] text-amber-300 font-bold uppercase tracking-widest leading-none">PSMS MEDAN</div>
+                                <div class="text-[10px] sm:text-xs font-black text-white font-display tracking-wide mt-0.5">AYAM KINANTAN</div>
                             </div>
                         </div>
 
                         <div class="text-right">
-                            <div class="text-[7px] sm:text-[8px] text-white/50 uppercase font-bold tracking-widest">BASIS CHAPTER</div>
-                            <div class="text-xs sm:text-sm font-bold text-smeck-green-300 font-display">
+                            <div class="text-[6.5px] sm:text-[8px] text-white/50 uppercase font-bold tracking-widest">BASIS CHAPTER</div>
+                            <div class="text-[11px] sm:text-sm font-bold text-smeck-green-300 font-display">
                                 {{ $user->chapter?->name ?? 'Chapter Medan Kota' }}
                             </div>
                         </div>
                     </div>
 
                     {{-- Footer Depan: Foto, Identitas & Logo e-money (Nomor Kartu Dipindah ke Belakang) --}}
-                    <div class="relative z-10 flex items-end justify-between pt-2 border-t border-white/10 gap-2.5">
-                        <div class="flex items-center gap-2.5 min-w-0">
+                    <div class="relative z-10 flex items-end justify-between pt-1.5 sm:pt-2 border-t border-white/10 gap-2">
+                        <div class="flex items-center gap-2 sm:gap-2.5 min-w-0">
                             {{-- Pas Foto Anggota --}}
-                            <div class="w-11 h-11 sm:w-12 sm:h-12 rounded-xl border-2 border-amber-400/80 bg-smeck-dark-800 overflow-hidden shrink-0 shadow flex items-center justify-center relative">
+                            <div class="w-10 h-10 sm:w-12 sm:h-12 rounded-xl border-2 border-amber-400/80 bg-smeck-dark-800 overflow-hidden shrink-0 shadow flex items-center justify-center relative">
                                 @if($photoBase64)
                                     <img src="{{ $photoBase64 }}" alt="{{ $user->name }}" class="w-full h-full object-cover" style="object-position: center top;">
                                 @elseif($user->profile?->profile_photo_path)
                                     <img src="{{ asset('storage/' . $user->profile->profile_photo_path) }}" alt="{{ $user->name }}" class="w-full h-full object-cover" style="object-position: center top;">
                                 @else
                                     <div class="w-full h-full bg-gradient-to-br from-emerald-800 via-smeck-dark-900 to-black flex flex-col items-center justify-center text-white">
-                                        <i class="fa-solid fa-user text-base text-emerald-300"></i>
+                                        <i class="fa-solid fa-user text-sm text-emerald-300"></i>
                                         <span class="text-[6px] text-white/50 mt-0.5 uppercase font-bold">FOTO</span>
                                     </div>
                                 @endif
                             </div>
                             <div class="min-w-0">
-                                <div class="font-display font-black text-xs sm:text-sm text-white tracking-wide truncate max-w-[160px] sm:max-w-[200px]">
+                                <div class="font-display font-black text-xs sm:text-sm text-white tracking-wide truncate max-w-[150px] sm:max-w-[200px]" title="{{ strtoupper($user->name) }}">
                                     {{ strtoupper($user->name) }}
                                 </div>
-                                <div class="font-mono text-[11px] sm:text-xs text-amber-300 font-bold tracking-wider">
+                                <div class="font-mono text-[10px] sm:text-xs text-amber-300 font-bold tracking-wider">
                                     {{ $user->profile?->nia ?? 'SMCK-2024-1950' }}
                                 </div>
-                                <div class="text-[8px] sm:text-[9px] text-white/50 flex items-center gap-2 mt-0.5">
+                                <div class="text-[7.5px] sm:text-[9px] text-white/50 flex items-center gap-1.5 sm:gap-2 mt-0.5">
                                     <span>GOL: <strong class="text-white">{{ $user->profile?->blood_type ?? 'O' }}</strong></span>
                                     <span>•</span>
                                     <span>EST: <strong class="text-white">{{ $user->profile?->joined_date?->format('Y') ?? '2024' }}</strong></span>
@@ -947,8 +924,8 @@
                         </div>
 
                         {{-- Brand e-money (Bawah Sebelah Kanan) --}}
-                        <div class="bg-white px-2.5 py-1 rounded-lg shadow-md border border-white/80 flex items-center justify-center shrink-0">
-                            <img src="{{ $emoneyBase64 ?: asset('logoKTA/logo_emoney_resmi.png') }}" alt="e-money" class="h-4.5 sm:h-5 w-auto object-contain">
+                        <div class="bg-white px-2 py-1 rounded-lg shadow-md border border-white/80 flex items-center justify-center shrink-0">
+                            <img src="{{ $emoneyBase64 ?: asset('logoKTA/logo_emoney_resmi.png') }}" alt="e-money" class="h-4 sm:h-5 w-auto object-contain" style="height: 18px; max-height: 20px; width: auto;">
                         </div>
                     </div>
                 </div>
@@ -965,79 +942,79 @@
                 </div>
                 
                 {{-- Container Belakang Berukuran Rasio 85.6 / 53.98 --}}
-                <div id="kta-pvc-back" class="kta-pvc-card w-full aspect-[85.6/53.98] rounded-2xl p-4 sm:p-5 bg-gradient-to-br from-neutral-950 via-slate-950 to-neutral-900 border border-emerald-500/30 text-white shadow-2xl relative overflow-hidden flex flex-col justify-between">
+                <div id="kta-pvc-back" class="kta-pvc-card w-full aspect-[85.6/53.98] rounded-2xl p-3 sm:p-5 bg-gradient-to-br from-neutral-950 via-slate-950 to-neutral-900 border border-emerald-500/30 text-white shadow-2xl relative overflow-hidden flex flex-col justify-between">
                     {{-- Shimmer --}}
                     <div class="absolute inset-0 shimmer-effect opacity-15 pointer-events-none"></div>
 
                     {{-- Pita Identitas Atas (E-KTA Resmi) --}}
-                    <div class="h-9 sm:h-10 -mx-4 sm:-mx-5 -mt-4 sm:-mt-5 bg-neutral-900/90 border-b border-white/10 flex items-center justify-between px-4 sm:px-5">
-                        <div class="flex items-center gap-2">
-                            <span class="px-1.5 py-0.5 rounded text-[8px] sm:text-[9px] bg-emerald-500/20 text-emerald-300 font-mono font-bold border border-emerald-500/40">
+                    <div class="h-7.5 sm:h-9 -mx-3 sm:-mx-5 -mt-3 sm:-mt-5 bg-neutral-900/95 border-b border-white/10 flex items-center justify-between px-3 sm:px-5">
+                        <div class="flex items-center gap-1.5 sm:gap-2">
+                            <span class="px-1.5 py-0.5 rounded text-[7px] sm:text-[8.5px] bg-emerald-500/20 text-emerald-300 font-mono font-bold border border-emerald-500/40">
                                 E-KTA
                             </span>
-                            <span class="text-[8.5px] sm:text-[10px] font-bold tracking-wider text-white uppercase font-display">
-                                KARTU TANDA ANGGOTA ELEKTRONIK
+                            <span class="text-[7.5px] sm:text-[9.5px] font-bold tracking-wider text-white uppercase font-display">
+                                KARTU ANGGOTA ELEKTRONIK
                             </span>
                         </div>
-                        <span class="text-[8.5px] sm:text-[10px] font-display font-black text-amber-400 tracking-wider">
+                        <span class="text-[7.5px] sm:text-[9.5px] font-display font-black text-amber-400 tracking-wider">
                             SALAM SADA ROHA
                         </span>
                     </div>
 
                     {{-- Sub-bar Basis & Status --}}
-                    <div class="-mx-4 sm:-mx-5 px-4 sm:px-5 py-1 bg-black/70 border-b border-white/5 flex items-center justify-between text-[7.5px] sm:text-[8.5px]">
-                        <div class="flex items-center gap-1.5 text-emerald-400 font-bold uppercase tracking-wider">
-                            <i class="fa-solid fa-shield-halved text-[8px]"></i>
-                            <span>BASIS: {{ strtoupper($user->chapter?->name ?? 'CHAPTER MEDAN KOTA') }}</span>
+                    <div class="-mx-3 sm:-mx-5 px-3 sm:px-5 py-0.5 sm:py-1 bg-black/80 border-b border-white/5 flex items-center justify-between text-[6.5px] sm:text-[8px]">
+                        <div class="flex items-center gap-1 text-emerald-400 font-bold uppercase tracking-wider truncate max-w-[65%]">
+                            <i class="fa-solid fa-shield-halved text-[7px] shrink-0"></i>
+                            <span class="truncate">BASIS: {{ strtoupper($user->chapter?->name ?? 'CHAPTER MEDAN KOTA') }}</span>
                         </div>
-                        <div class="flex items-center gap-1.5 text-emerald-400 font-bold">
+                        <div class="flex items-center gap-1 text-emerald-400 font-bold shrink-0">
                             <span class="w-1.5 h-1.5 rounded-full bg-emerald-400 animate-pulse"></span>
                             <span>TERVERIFIKASI DIGITAL</span>
                         </div>
                     </div>
 
                     {{-- Konten Utama: Tanda Tangan, Ketentuan & QR Verifikasi E-KTA --}}
-                    <div class="my-auto py-2 flex items-center justify-between gap-4 relative z-10">
+                    <div class="my-auto py-1 sm:py-1.5 flex items-center justify-between gap-2.5 sm:gap-4 relative z-10">
                         {{-- Kiri: Tanda Tangan & Ketentuan --}}
-                        <div class="flex-1 min-w-0 space-y-2">
+                        <div class="flex-1 min-w-0 space-y-1 sm:space-y-1.5">
                             <div>
-                                <div class="text-[7.5px] sm:text-[8.5px] text-white/70 font-medium mb-1 flex items-center justify-between">
+                                <div class="text-[6.5px] sm:text-[8px] text-white/70 font-medium mb-0.5 flex items-center justify-between">
                                     <span>Tanda Tangan Pemegang Sah:</span>
-                                    <span class="font-mono text-[8px] sm:text-[9px] text-amber-300 font-bold">NIA: {{ $user->profile?->nia ?? 'SMCK-1950' }}</span>
+                                    <span class="font-mono text-[7px] sm:text-[8.5px] text-amber-300 font-bold">NIA: {{ $user->profile?->nia ?? 'SMCK-1950' }}</span>
                                 </div>
-                                <div class="flex items-center rounded-xl overflow-hidden border border-white/20 bg-white shadow-sm max-w-[200px] sm:max-w-[240px]">
-                                    <div class="flex-1 h-7 sm:h-8 bg-slate-50 flex items-center px-2.5">
-                                        <span class="font-signature text-sm sm:text-base text-slate-900 font-bold select-none truncate">
+                                <div class="flex items-center rounded-lg sm:rounded-xl overflow-hidden border border-white/20 bg-white shadow-sm max-w-[170px] sm:max-w-[220px]">
+                                    <div class="flex-1 h-6 sm:h-7.5 bg-slate-50 flex items-center px-2 sm:px-2.5">
+                                        <span class="font-signature text-xs sm:text-base text-slate-900 font-bold select-none truncate">
                                             {{ $user->name }}
                                         </span>
                                     </div>
-                                    <div class="px-2.5 h-7 sm:h-8 bg-emerald-700 text-white flex items-center justify-center">
-                                        <span class="text-[7px] sm:text-[8px] font-black uppercase tracking-wider">
+                                    <div class="px-2 h-6 sm:h-7.5 bg-emerald-700 text-white flex items-center justify-center">
+                                        <span class="text-[6.5px] sm:text-[7.5px] font-black uppercase tracking-wider">
                                             SAH
                                         </span>
                                     </div>
                                 </div>
                             </div>
 
-                            <div class="text-[7.5px] sm:text-[8.5px] text-white/70 leading-relaxed space-y-1">
-                                <div class="font-bold text-amber-300 uppercase tracking-wider flex items-center gap-1">
-                                    <i class="fa-solid fa-circle-info text-[8px]"></i>
+                            <div class="text-[6px] sm:text-[7.5px] text-white/70 leading-snug space-y-0.5">
+                                <div class="font-bold text-amber-300 uppercase tracking-wider flex items-center gap-1 text-[6.5px] sm:text-[7.5px]">
+                                    <i class="fa-solid fa-circle-info text-[6.5px]"></i>
                                     <span>KETENTUAN PEMEGANG E-KTA:</span>
                                 </div>
-                                <div>• Identitas resmi anggota terdaftar suporter SMeCK Hooligan (Ayam Kinantan).</div>
-                                <div>• Hak akses presensi matchday Stadion Teladan, laga awaydays, & agenda suporter.</div>
-                                <div>• E-KTA bersifat pribadi & wajib menjunjung ikrar persaudaraan <em>Salam Sada Roha</em>.</div>
+                                <div>• Identitas resmi suporter SMeCK Hooligan (Ayam Kinantan).</div>
+                                <div>• Akses presensi matchday Teladan & agenda suporter.</div>
+                                <div>• Junjung tinggi persaudaraan <em>Salam Sada Roha</em>.</div>
                             </div>
                         </div>
 
                         {{-- Kanan: Box QR Verifikasi Digital --}}
                         <div class="shrink-0 flex flex-col items-center">
-                            <div class="p-2 sm:p-2.5 rounded-2xl bg-black/60 border border-emerald-500/40 text-center flex flex-col items-center shadow-xl">
-                                <div class="text-[7.5px] sm:text-[8.5px] font-bold text-emerald-400 uppercase tracking-wider mb-1 flex items-center gap-1">
-                                    <i class="fa-solid fa-id-card-clip text-[8px]"></i>
+                            <div class="p-1 sm:p-2 rounded-xl bg-black/60 border border-emerald-500/40 text-center flex flex-col items-center shadow-xl">
+                                <div class="text-[6px] sm:text-[7.5px] font-bold text-emerald-400 uppercase tracking-wider mb-0.5 flex items-center gap-1">
+                                    <i class="fa-solid fa-id-card-clip text-[6.5px]"></i>
                                     <span>VERIFIKASI DIGITAL</span>
                                 </div>
-                                <div class="w-18 h-18 sm:w-22 sm:h-22 bg-white rounded-xl p-1.5 flex items-center justify-center shadow">
+                                <div class="w-13 h-13 sm:w-16 sm:h-16 bg-white rounded-lg p-1 flex items-center justify-center shadow" style="width: 50px; height: 50px;">
                                     <div id="modal-dynamic-qr" class="w-full h-full flex items-center justify-center">
                                         <svg class="w-full h-full" viewBox="0 0 100 100" fill="none">
                                             <rect width="100" height="100" fill="white"/>
@@ -1055,21 +1032,21 @@
                                         </svg>
                                     </div>
                                 </div>
-                                <div class="text-[7px] sm:text-[7.5px] text-emerald-400 font-bold uppercase tracking-wider mt-1">
-                                    SCAN CEK KEASLIAN
+                                <div class="text-[5.5px] sm:text-[6.5px] text-emerald-400 font-bold uppercase tracking-wider mt-0.5">
+                                    SCAN KEASLIAN
                                 </div>
                             </div>
                         </div>
                     </div>
 
                     {{-- Footer Belakang --}}
-                    <div class="pt-2 border-t border-white/10 flex items-center justify-between text-[7.5px] sm:text-[8.5px] relative z-10">
-                        <div class="flex items-center gap-2 text-white/70">
-                            <i class="fa-solid fa-phone text-emerald-400 text-[8px]"></i>
-                            <span>Pengurus Basis: <strong class="text-white font-mono">{{ $user->profile?->emergency_contact_number ?? '0812-6543-2199' }}</strong></span>
+                    <div class="pt-1 sm:pt-1.5 border-t border-white/10 flex items-center justify-between text-[6.5px] sm:text-[8px] relative z-10">
+                        <div class="flex items-center gap-1.5 text-white/70">
+                            <i class="fa-solid fa-phone text-emerald-400 text-[7px]"></i>
+                            <span>Basis: <strong class="text-white font-mono">{{ $user->profile?->emergency_contact_number ?? '0812-6543-2199' }}</strong></span>
                         </div>
                         <div class="text-right">
-                            <span class="font-display font-black text-amber-400 tracking-widest text-[8.5px] sm:text-[9.5px]">
+                            <span class="font-display font-black text-amber-400 tracking-widest text-[7px] sm:text-[8.5px]">
                                 AYAM KINANTAN JUARA
                             </span>
                         </div>
@@ -1080,26 +1057,26 @@
 
         {{-- Sticky Bottom Action Toolbar (TIDAK PERNAH KETUTUP!) --}}
         <div class="p-3 sm:p-4 bg-neutral-950/95 border-t border-white/10 shrink-0 sticky bottom-0 z-20 backdrop-blur-md print-hide">
-            <div class="flex flex-col sm:flex-row items-center justify-between gap-3">
+            <div class="flex flex-col sm:flex-row items-center justify-between gap-2.5 sm:gap-3">
                 <div class="text-[11px] text-white/60 hidden sm:flex items-center gap-1.5 font-mono">
                     <i class="fa-solid fa-circle-check text-emerald-400"></i>
                     <span>PNG HD Siap Cetak (1016 × 635 px • 300 DPI)</span>
                 </div>
-                <div class="flex flex-wrap items-center gap-2 w-full sm:w-auto justify-end">
-                    <button type="button" onclick="downloadKtaImage('front', this)" class="flex-1 sm:flex-initial px-3.5 py-2.5 rounded-xl bg-emerald-600 hover:bg-emerald-500 text-white font-bold text-xs shadow flex items-center justify-center gap-1.5 transition-all">
-                        <i class="fa-solid fa-download"></i>
-                        <span>Unduh Depan (PNG)</span>
+                <div class="grid grid-cols-2 sm:flex sm:flex-wrap items-center gap-2 w-full sm:w-auto">
+                    <button type="button" onclick="downloadKtaImage('front', this)" class="px-3 py-2.5 rounded-xl bg-emerald-600 hover:bg-emerald-500 text-white font-bold text-xs shadow flex items-center justify-center gap-1.5 transition-all">
+                        <i class="fa-solid fa-download text-[11px]"></i>
+                        <span>Unduh Depan</span>
                     </button>
-                    <button type="button" onclick="downloadKtaImage('back', this)" class="flex-1 sm:flex-initial px-3.5 py-2.5 rounded-xl bg-emerald-700 hover:bg-emerald-600 text-white font-bold text-xs shadow flex items-center justify-center gap-1.5 transition-all">
-                        <i class="fa-solid fa-download"></i>
-                        <span>Unduh Belakang (PNG)</span>
+                    <button type="button" onclick="downloadKtaImage('back', this)" class="px-3 py-2.5 rounded-xl bg-emerald-700 hover:bg-emerald-600 text-white font-bold text-xs shadow flex items-center justify-center gap-1.5 transition-all">
+                        <i class="fa-solid fa-download text-[11px]"></i>
+                        <span>Unduh Belakang</span>
                     </button>
-                    <button type="button" onclick="downloadBothKtaImages(this)" class="w-full sm:w-auto px-4 py-2.5 rounded-xl bg-gradient-to-r from-emerald-600 via-teal-600 to-emerald-700 hover:from-emerald-500 hover:to-teal-500 text-white font-bold text-xs shadow-lg border border-emerald-400/30 flex items-center justify-center gap-1.5 transition-all">
-                        <i class="fa-solid fa-layer-group"></i>
+                    <button type="button" onclick="downloadBothKtaImages(this)" class="col-span-2 sm:col-auto px-4 py-2.5 rounded-xl bg-gradient-to-r from-emerald-600 via-teal-600 to-emerald-700 hover:from-emerald-500 hover:to-teal-500 text-white font-bold text-xs shadow-lg border border-emerald-400/30 flex items-center justify-center gap-1.5 transition-all">
+                        <i class="fa-solid fa-layer-group text-[11px]"></i>
                         <span>Unduh Sepasang (PNG)</span>
                     </button>
-                    <button type="button" onclick="window.print()" class="px-3 py-2.5 rounded-xl bg-white/10 hover:bg-white/20 text-white font-bold text-xs border border-white/15 flex items-center justify-center gap-1.5 transition-all" title="Cetak Kartu ke PDF / Printer">
-                        <i class="fa-solid fa-print"></i>
+                    <button type="button" onclick="window.print()" class="col-span-2 sm:col-auto px-3 py-2 rounded-xl bg-white/10 hover:bg-white/20 text-white font-bold text-xs border border-white/15 flex items-center justify-center gap-1.5 transition-all" title="Cetak Kartu ke PDF / Printer">
+                        <i class="fa-solid fa-print text-[11px]"></i>
                         <span>Cetak PDF</span>
                     </button>
                 </div>
