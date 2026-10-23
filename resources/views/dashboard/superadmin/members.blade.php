@@ -240,11 +240,11 @@
                                 <div class="flex items-center justify-end gap-1.5">
                                     {{-- Approval Action if Pending --}}
                                     @if($m->status === 'pending_approval')
-                                        <form action="{{ route('superadmin.members.approve', $m->id) }}" method="POST" onsubmit="return confirm('Setujui pendaftaran suporter {{ addslashes($m->name) }}?')">
+                                        <form action="{{ route('superadmin.members.approve', $m->id) }}" method="POST" onsubmit="return confirm('Validasi dan sahkan E-KTA resmi suporter {{ addslashes($m->name) }} oleh DPP Pusat?')">
                                             @csrf
-                                            <button type="submit" class="px-2.5 py-1.5 rounded-xl bg-smeck-green-600 hover:bg-smeck-500 text-white font-bold text-[11px] shadow transition-colors flex items-center gap-1">
-                                                <i class="fa-solid fa-check"></i>
-                                                <span>Setujui</span>
+                                            <button type="submit" class="px-3 py-1.5 rounded-xl bg-smeck-green-600 hover:bg-smeck-500 text-white font-bold text-[11px] shadow-lg shadow-smeck-green-700/30 transition-all flex items-center gap-1.5 animate-pulse" title="Validasi dan Sahkan E-KTA Resmi oleh DPP Pusat">
+                                                <i class="fa-solid fa-stamp"></i>
+                                                <span>Sahkan E-KTA</span>
                                             </button>
                                         </form>
                                     @endif

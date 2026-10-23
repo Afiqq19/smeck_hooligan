@@ -468,25 +468,48 @@ class ChapterDashboardController extends Controller
     }
 
     /**
-     * Blokir Kartu NFC Anggota (Laporan Hilang / Dicuri / Rusak).
+     * Blokir Kartu NFC Anggota (Laporan Hilang atau Sanksi Disiplin Basis).
      */
     public function blockCard(Request $request, int $cardId): RedirectResponse
     {
-        $card = NfcCard::findOrFail($cardId);
-        $card->update(['status' => 'blocked']);
+        $card = NfcCard::with('user')->findOrFail($cardId);
+        $blockType = $request->input('block_type', 'lost'); // 'lost' atau 'disciplinary'
+        $reason = trim($request->input('reason', ''));
 
-        return back()->with('success', "Kartu NFC UID {$card->uid_number} milik {$card->user->name} berhasil DIBLOKIR!");
+        if ($blockType === 'lost') {
+            $card->update(['status' => 'lost']);
+            $msg = "Kartu NFC milik {$card->user->name} berhasil ditandai HILANG dan dinonaktifkan demi keamanan.";
+        } else {
+            if (empty($reason)) {
+                $reason = 'Sanksi Disiplin / Pelanggaran Tata Tertib Basis Chapter';
+            }
+            $card->update(['status' => 'blocked']);
+            $card->user->update([
+                'status' => 'suspended',
+                'suspension_reason' => $reason,
+            ]);
+            $msg = "Kartu dan akun suporter {$card->user->name} berhasil DIBLOKIR SEMENTARA (Sanksi Disiplin: {$reason}).";
+        }
+
+        return back()->with('success', $msg);
     }
 
     /**
-     * Buka Blokir Kartu NFC (Jika kartu ditemukan kembali).
+     * Buka Blokir Kartu NFC & Pemulihan Sanksi Disiplin.
      */
     public function unblockCard(Request $request, int $cardId): RedirectResponse
     {
-        $card = NfcCard::findOrFail($cardId);
+        $card = NfcCard::with('user')->findOrFail($cardId);
         $card->update(['status' => 'active']);
 
-        return back()->with('success', "Kartu NFC UID {$card->uid_number} milik {$card->user->name} berhasil DIAKTIFKAN kembali!");
+        if ($card->user && $card->user->status === 'suspended') {
+            $card->user->update([
+                'status' => 'active',
+                'suspension_reason' => null,
+            ]);
+        }
+
+        return back()->with('success', "Kartu NFC UID {$card->uid_number} dan status suporter {$card->user->name} berhasil DIAKTIFKAN kembali!");
     }
 
     /**

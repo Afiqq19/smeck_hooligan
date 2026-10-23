@@ -212,8 +212,12 @@
             @forelse($recentAttendances as $rec)
                 <div class="p-4 rounded-2xl bg-white/[0.03] border border-white/5 flex items-center justify-between">
                     <div class="flex items-center gap-3">
-                        <div class="w-10 h-10 rounded-xl bg-amber-500/20 text-amber-400 flex items-center justify-center font-bold text-sm">
-                            <i class="fa-solid fa-id-badge"></i>
+                        <div class="w-10 h-10 rounded-xl bg-smeck-dark-800 border border-amber-400/30 overflow-hidden flex items-center justify-center font-bold text-sm text-white shrink-0 shadow">
+                            @if($rec->user->profile?->profile_photo_path)
+                                <img src="{{ asset('storage/' . $rec->user->profile->profile_photo_path) }}" alt="{{ $rec->user->name }}" class="w-full h-full object-cover" style="object-position: center top;">
+                            @else
+                                <span class="text-amber-400">{{ strtoupper(substr($rec->user->name, 0, 1)) }}</span>
+                            @endif
                         </div>
                         <div>
                             <div class="text-sm font-bold text-white">{{ $rec->user->name }}</div>

@@ -202,21 +202,31 @@
                                 @endif
                             </td>
 
-                            {{-- Status Kartu --}}
+                            {{-- Status Kartu & Anggota --}}
                             <td class="py-4 px-5 text-center">
-                                @if(!$card)
+                                @if($m->status === 'pending_approval')
+                                    <span class="px-2.5 py-1 rounded-full text-[10px] font-bold uppercase bg-amber-500/20 text-amber-300 border border-amber-500/30 inline-flex items-center gap-1.5" title="Menunggu validasi & pengesahan E-KTA oleh DPP Pusat">
+                                        <i class="fa-solid fa-hourglass-half text-[9px] animate-pulse"></i>
+                                        Validasi Pusat
+                                    </span>
+                                @elseif($m->status === 'suspended' || ($card && $card->status === 'blocked'))
+                                    <span class="px-2.5 py-1 rounded-full text-[10px] font-bold uppercase bg-red-500/20 text-red-400 border border-red-500/30 inline-flex items-center gap-1.5" title="{{ $m->suspension_reason ?? 'Sanksi Disiplin Pengurus' }}">
+                                        <i class="fa-solid fa-ban text-[9px]"></i>
+                                        Sanksi Disiplin
+                                    </span>
+                                @elseif($card && $card->status === 'lost')
+                                    <span class="px-2.5 py-1 rounded-full text-[10px] font-bold uppercase bg-amber-500/20 text-amber-300 border border-amber-500/30 inline-flex items-center gap-1.5" title="Kartu fisik dilaporkan hilang">
+                                        <i class="fa-solid fa-triangle-exclamation text-[9px]"></i>
+                                        Kartu Hilang
+                                    </span>
+                                @elseif(!$card)
                                     <span class="px-2.5 py-1 rounded-full text-[10px] font-bold uppercase bg-white/10 text-white/50 border border-white/10">
-                                        Tidak Ada Kartu
+                                        Belum Ada Kartu
                                     </span>
                                 @elseif($card->status === 'active')
                                     <span class="px-2.5 py-1 rounded-full text-[10px] font-bold uppercase bg-smeck-green-500/20 text-smeck-green-400 border border-smeck-green-500/30 inline-flex items-center gap-1.5">
                                         <span class="w-1.5 h-1.5 rounded-full bg-smeck-green-400 animate-pulse"></span>
                                         Aktif
-                                    </span>
-                                @else
-                                    <span class="px-2.5 py-1 rounded-full text-[10px] font-bold uppercase bg-red-500/20 text-red-400 border border-red-500/30 inline-flex items-center gap-1.5">
-                                        <i class="fa-solid fa-ban text-[9px]"></i>
-                                        Diblokir / Hilang
                                     </span>
                                 @endif
                             </td>
@@ -235,25 +245,28 @@
                                         <span class="hidden sm:inline">Edit</span>
                                     </button>
 
-                                    {{-- Jika Belum Punya Kartu: Tombol Terbitkan --}}
-                                    @if(!$card)
+                                    {{-- Jika Status Masih Pending Approval Pusat: Kunci Penerbitan Kartu Fisik --}}
+                                    @if($m->status === 'pending_approval')
+                                        <span class="px-3 py-1.5 rounded-lg bg-white/5 text-white/40 text-[11px] font-semibold italic flex items-center gap-1" title="Menunggu validasi dan approval E-KTA oleh DPP Pusat sebelum kartu fisik dapat diterbitkan">
+                                            <i class="fa-solid fa-clock-rotate-left text-[10px]"></i>
+                                            <span>Menunggu Pusat</span>
+                                        </span>
+                                    @elseif(!$card)
+                                        {{-- Jika Belum Punya Kartu & Status Aktif: Tombol Terbitkan --}}
                                         <button onclick="openReplaceModal({{ $m->id }}, '{{ addslashes($m->name) }}', 'Terbitkan KTA Baru')" class="px-3 py-1.5 rounded-lg bg-smeck-green-600 hover:bg-smeck-green-500 text-white font-semibold text-[11px] shadow transition-colors flex items-center gap-1.5">
                                             <i class="fa-solid fa-plus"></i>
                                             <span>Terbitkan KTA</span>
                                         </button>
                                     @else
-                                        {{-- Jika Kartu Aktif: Tombol Blokir (Hilang/Dicuri) --}}
+                                        {{-- Jika Kartu Aktif: Tombol Blokir (Pilihan: Hilang atau Sanksi Disiplin) --}}
                                         @if($card->status === 'active')
-                                            <form action="{{ route('chapter.nfc.block', $card->id) }}" method="POST" onsubmit="return confirm('Apakah Anda yakin ingin MEMBLOKIR kartu KTA milik {{ $m->name }}? Kartu fisik lama tidak akan bisa di-tap di stadion atau partner SMeCK.')">
-                                                @csrf
-                                                <button type="submit" class="px-2.5 py-1.5 rounded-lg bg-red-500/10 hover:bg-red-500 text-red-400 hover:text-white border border-red-500/20 font-semibold text-[11px] transition-colors flex items-center gap-1" title="Lapor Kartu Hilang & Blokir">
-                                                    <i class="fa-solid fa-ban"></i>
-                                                    <span class="hidden sm:inline">Blokir</span>
-                                                </button>
-                                            </form>
+                                            <button type="button" onclick="handleChapterCardBlock({{ $card->id }}, '{{ addslashes($m->name) }}')" class="px-2.5 py-1.5 rounded-lg bg-red-500/10 hover:bg-red-500 text-red-400 hover:text-white border border-red-500/20 font-semibold text-[11px] transition-colors flex items-center gap-1" title="Lapor Hilang / Sanksi Disiplin">
+                                                <i class="fa-solid fa-ban"></i>
+                                                <span class="hidden sm:inline">Blokir / Hilang</span>
+                                            </button>
                                         @else
-                                            {{-- Jika Kartu Sedang Diblokir: Tombol Buka Blokir --}}
-                                            <form action="{{ route('chapter.nfc.unblock', $card->id) }}" method="POST" onsubmit="return confirm('Aktifkan kembali kartu KTA milik {{ $m->name }}?')">
+                                            {{-- Jika Kartu Sedang Diblokir / Hilang: Tombol Buka Blokir --}}
+                                            <form action="{{ route('chapter.nfc.unblock', $card->id) }}" method="POST" onsubmit="return confirm('Aktifkan kembali kartu KTA dan pulihkan status milik {{ $m->name }}?')">
                                                 @csrf
                                                 <button type="submit" class="px-2.5 py-1.5 rounded-lg bg-smeck-green-500/10 hover:bg-smeck-green-600 text-smeck-green-400 hover:text-white border border-smeck-green-500/20 font-semibold text-[11px] transition-colors flex items-center gap-1" title="Buka Blokir Kartu">
                                                     <i class="fa-solid fa-unlock"></i>
@@ -762,6 +775,51 @@
 
     function closeMemberDetail() {
         document.getElementById('modalMemberDetail').classList.add('hidden');
+    }
+
+    function handleChapterCardBlock(cardId, memberName) {
+        const choice = prompt(
+            "⚠️ PILIH TINDAKAN PENONAKTIFAN KARTU KTA: " + memberName + "\n\n" +
+            "Ketik 1 : KARTU HILANG (Laporan Suporter Kehilangan Kartu)\n" +
+            "Ketik 2 : SANKSI DISIPLIN / PELANGGARAN TATA TERTIB\n\n" +
+            "Pilihan Anda (1 atau 2):",
+            "1"
+        );
+        if (!choice) return;
+
+        const form = document.createElement('form');
+        form.method = 'POST';
+        form.action = '/chapter/nfc/block/' + cardId;
+
+        const csrfInput = document.createElement('input');
+        csrfInput.type = 'hidden';
+        csrfInput.name = '_token';
+        csrfInput.value = '{{ csrf_token() }}';
+        form.appendChild(csrfInput);
+
+        const typeInput = document.createElement('input');
+        typeInput.type = 'hidden';
+        typeInput.name = 'block_type';
+
+        if (choice === '2') {
+            typeInput.value = 'disciplinary';
+            const reason = prompt(
+                "Masukkan rincian alasan Sanksi Disiplin / Pelanggaran untuk " + memberName + ":\n(Alasan ini akan tampil pada portal & verifikasi kartu suporter)",
+                "Pelanggaran Kode Etik Organisasi & Tata Tertib Tribun SMeCK Hooligan"
+            );
+            if (!reason) return;
+            const reasonInput = document.createElement('input');
+            reasonInput.type = 'hidden';
+            reasonInput.name = 'reason';
+            reasonInput.value = reason.trim();
+            form.appendChild(reasonInput);
+        } else {
+            typeInput.value = 'lost';
+        }
+
+        form.appendChild(typeInput);
+        document.body.appendChild(form);
+        form.submit();
     }
 
     function openPrintRosterModal() {
