@@ -121,15 +121,15 @@
     {{-- Tabel Anggota Nasional Terstruktur & Rapi --}}
     <div class="rounded-3xl bg-smeck-dark-900 border border-white/10 overflow-hidden shadow-2xl">
         <div class="overflow-x-auto">
-            <table class="w-full text-left text-xs border-collapse">
+            <table class="w-full text-left text-xs border-collapse min-w-[1100px]">
                 <thead>
                     <tr class="bg-white/5 border-b border-white/10 text-white/40 uppercase tracking-wider text-[11px]">
-                        <th class="py-4 px-5">Suporter & Basis</th>
-                        <th class="py-4 px-5">KTA NFC & Identitas</th>
-                        <th class="py-4 px-5">Kontak & Medis</th>
-                        <th class="py-4 px-5 text-center">Peran (Role)</th>
-                        <th class="py-4 px-5 text-center">Status</th>
-                        <th class="py-4 px-5 text-right">Aksi Manajemen</th>
+                        <th class="py-4 px-5 min-w-[240px] whitespace-nowrap">Suporter & Basis</th>
+                        <th class="py-4 px-5 min-w-[250px] whitespace-nowrap">KTA NFC & Identitas</th>
+                        <th class="py-4 px-5 min-w-[190px] whitespace-nowrap">Kontak & Medis</th>
+                        <th class="py-4 px-5 text-center min-w-[140px] whitespace-nowrap">Peran (Role)</th>
+                        <th class="py-4 px-5 text-center min-w-[120px] whitespace-nowrap">Status</th>
+                        <th class="py-4 px-5 text-right min-w-[190px] whitespace-nowrap">Aksi Manajemen</th>
                     </tr>
                 </thead>
                 <tbody class="divide-y divide-white/5">
@@ -139,7 +139,7 @@
                         @endphp
                         <tr class="hover:bg-white/[0.02] transition-colors">
                             {{-- 1. Info Suporter & Basis --}}
-                            <td class="py-4 px-5">
+                            <td class="py-4 px-5 whitespace-nowrap min-w-[240px]">
                                 <div class="flex items-center gap-3">
                                     <div class="w-10 h-10 rounded-xl bg-smeck-dark-800 border border-emerald-400/30 overflow-hidden flex items-center justify-center font-black text-sm text-white shrink-0 shadow">
                                         @if($m->profile?->profile_photo_path)
@@ -159,44 +159,69 @@
                                 </div>
                             </td>
 
-                            {{-- 2. KTA NFC & Identitas --}}
-                            <td class="py-4 px-5">
-                                <div class="font-mono text-xs font-bold text-smeck-gold">
-                                    <i class="fa-solid fa-id-badge mr-1 text-[10px]"></i>{{ $m->profile?->nia ?? 'Belum ada NIA' }}
+                            {{-- 2. KTA NFC & Identitas (Format Rapi Anti-Wrap) --}}
+                            <td class="py-4 px-5 whitespace-nowrap min-w-[250px]">
+                                <div class="space-y-1.5">
+                                    {{-- NIA Badge --}}
+                                    <div>
+                                        <span class="inline-flex items-center gap-1.5 px-2.5 py-1 rounded-lg bg-amber-400/10 border border-amber-400/30 text-amber-300 font-mono text-xs font-bold tracking-wider shadow-sm">
+                                            <i class="fa-solid fa-id-badge text-[11px] text-amber-400"></i>
+                                            <span>{{ $m->profile?->nia ?? 'Belum ada NIA' }}</span>
+                                        </span>
+                                    </div>
+
+                                    @if($card)
+                                        {{-- Card Number Box --}}
+                                        <div class="flex items-center gap-2 font-mono text-xs text-white/90">
+                                            <span class="px-2.5 py-1 rounded-lg bg-white/5 border border-white/10 font-bold tracking-wider flex items-center gap-1.5">
+                                                <i class="fa-solid fa-credit-card text-emerald-400 text-[11px]"></i>
+                                                <span>{{ $card->card_number ?? '6032-••••-••••-1950' }}</span>
+                                            </span>
+                                            <span class="px-1.5 py-0.5 rounded text-[9px] font-bold uppercase {{ $card->status === 'lost' ? 'bg-amber-500/20 text-amber-300 border border-amber-500/30' : ($card->status === 'blocked' ? 'bg-red-500/20 text-red-400 border border-red-500/30' : 'bg-emerald-500/20 text-emerald-400 border border-emerald-500/30') }}">
+                                                {{ $card->status === 'lost' ? 'HILANG' : ($card->status === 'blocked' ? 'BLOKIR' : 'AKTIF') }}
+                                            </span>
+                                        </div>
+
+                                        {{-- Vendor & UID --}}
+                                        <div class="flex items-center gap-2 text-[10px] text-white/40 font-mono">
+                                            <span class="px-1.5 py-0.5 rounded bg-white/5 uppercase text-white/60 font-semibold">{{ $card->card_vendor ?? 'E-Money' }}</span>
+                                            <span>•</span>
+                                            <span>UID: <strong class="text-white/70">{{ substr($card->uid_number, 0, 8) }}••</strong></span>
+                                        </div>
+                                    @else
+                                        <div class="inline-flex items-center gap-1.5 px-2.5 py-1 rounded-lg bg-white/5 text-[10px] text-white/40 italic border border-white/5">
+                                            <i class="fa-regular fa-circle-xmark text-amber-400/70 text-[10px]"></i>
+                                            <span>Kartu fisik belum terbit</span>
+                                        </div>
+                                    @endif
                                 </div>
-                                @if($card)
-                                    <div class="font-mono text-[11px] text-white/80 mt-1 flex items-center gap-1.5">
-                                        <i class="fa-solid fa-credit-card text-white/30 text-[10px]"></i>
-                                        <span>{{ $card->card_number ?? '6032-••••-••••-1950' }}</span>
-                                    </div>
-                                    <div class="text-[10px] text-white/40 uppercase mt-0.5 font-mono">
-                                        {{ $card->card_vendor }} • UID: {{ substr($card->uid_number, 0, 8) }}••
-                                    </div>
-                                @else
-                                    <div class="text-[10px] text-white/40 italic mt-1 flex items-center gap-1">
-                                        <i class="fa-regular fa-circle-xmark text-amber-400/60"></i>
-                                        <span>Kartu fisik belum terbit</span>
-                                    </div>
-                                @endif
                             </td>
 
                             {{-- 3. Kontak & Kesiapsiagaan Medis --}}
-                            <td class="py-4 px-5">
-                                <div class="text-white/80 text-xs">
-                                    <i class="fa-solid fa-phone text-white/30 text-[10px] mr-1"></i>
-                                    <span>{{ $m->profile?->phone_number ?? '-' }}</span>
-                                </div>
-                                <div class="text-[10px] text-white/40 mt-1">
-                                    NIK: <span class="font-mono">{{ $m->profile?->nik_ktp ?? '-' }}</span>
-                                </div>
-                                <div class="text-[10px] text-red-400 font-bold mt-0.5 flex items-center gap-1">
-                                    <i class="fa-solid fa-droplet text-red-500 text-[9px]"></i>
-                                    <span>Gol. Darah: {{ $m->profile?->blood_type ?? '-' }}</span>
+                            <td class="py-4 px-5 whitespace-nowrap min-w-[180px]">
+                                <div class="space-y-1">
+                                    <div class="text-white/90 text-xs font-mono font-semibold flex items-center gap-1.5">
+                                        <i class="fa-solid fa-phone text-emerald-400 text-[10px]"></i>
+                                        <span>{{ $m->profile?->phone_number ?? '-' }}</span>
+                                    </div>
+                                    <div class="text-[11px] text-white/50 flex items-center gap-1 font-mono">
+                                        <span class="text-white/30 text-[10px]">NIK:</span>
+                                        <span class="text-white/80 font-medium">{{ $m->profile?->nik_ktp ?? '-' }}</span>
+                                    </div>
+                                    <div class="flex items-center gap-1.5 pt-0.5">
+                                        <span class="px-2 py-0.5 rounded text-[10px] font-bold bg-red-500/15 text-red-400 border border-red-500/20 inline-flex items-center gap-1">
+                                            <i class="fa-solid fa-droplet text-[9px] text-red-500"></i>
+                                            <span>Gol. {{ $m->profile?->blood_type ?? '-' }}</span>
+                                        </span>
+                                        <span class="px-1.5 py-0.5 rounded text-[10px] font-bold bg-white/10 text-white/70">
+                                            Size {{ $m->profile?->shirt_size ?? '-' }}
+                                        </span>
+                                    </div>
                                 </div>
                             </td>
 
                             {{-- 4. Role & Peran --}}
-                            <td class="py-4 px-5 text-center">
+                            <td class="py-4 px-5 text-center whitespace-nowrap">
                                 @if($m->role === 'admin_chapter')
                                     <span class="inline-flex items-center gap-1 px-2.5 py-1 rounded-full text-[10px] font-bold bg-amber-500/20 text-amber-300 border border-amber-500/30">
                                         <i class="fa-solid fa-shield text-[9px]"></i>

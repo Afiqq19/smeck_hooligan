@@ -96,14 +96,14 @@
     {{-- Tabel Anggota & KTA NFC --}}
     <div class="rounded-3xl bg-smeck-dark-900 border border-white/10 overflow-hidden shadow-2xl">
         <div class="overflow-x-auto">
-            <table class="w-full text-left text-xs">
+            <table class="w-full text-left text-xs border-collapse min-w-[1100px]">
                 <thead>
                     <tr class="bg-white/5 border-b border-white/10 text-white/40 uppercase tracking-wider text-[11px]">
-                        <th class="py-4 px-5">Anggota & NIA</th>
-                        <th class="py-4 px-5">Identitas Medis & Kontak</th>
-                        <th class="py-4 px-5">Nomor Kartu KTA</th>
-                        <th class="py-4 px-5 text-center">Status Kartu</th>
-                        <th class="py-4 px-5 text-right">Aksi Manajemen KTA</th>
+                        <th class="py-4 px-5 min-w-[240px] whitespace-nowrap">Anggota & NIA</th>
+                        <th class="py-4 px-5 min-w-[190px] whitespace-nowrap">Identitas Medis & Kontak</th>
+                        <th class="py-4 px-5 min-w-[250px] whitespace-nowrap">Nomor Kartu KTA NFC</th>
+                        <th class="py-4 px-5 text-center min-w-[140px] whitespace-nowrap">Status Kartu</th>
+                        <th class="py-4 px-5 text-right min-w-[180px] whitespace-nowrap">Aksi Manajemen KTA</th>
                     </tr>
                 </thead>
                 <tbody class="divide-y divide-white/5">
@@ -143,7 +143,7 @@
                         @endphp
                         <tr class="hover:bg-white/[0.02] transition-colors">
                             {{-- Info Anggota --}}
-                            <td class="py-4 px-5">
+                            <td class="py-4 px-5 whitespace-nowrap min-w-[240px]">
                                 <div class="flex items-center gap-3">
                                     <div class="w-9 h-9 rounded-xl bg-smeck-dark-800 border border-emerald-400/30 overflow-hidden flex items-center justify-center font-bold text-xs text-white shrink-0 shadow">
                                         @if($m->profile?->profile_photo_path)
@@ -160,45 +160,65 @@
                                             </button>
                                         </div>
                                         <div class="text-[11px] text-white/40 truncate">{{ $m->email }}</div>
-                                        <div class="font-mono text-[10px] text-smeck-gold mt-0.5">
-                                            <i class="fa-solid fa-id-badge text-[9px] mr-1"></i>{{ $m->profile?->nia ?? 'Belum ada NIA' }}
+                                        <div class="mt-1">
+                                            <span class="inline-flex items-center gap-1.5 px-2 py-0.5 rounded-md bg-amber-400/10 border border-amber-400/30 text-amber-300 font-mono text-[11px] font-bold tracking-wider">
+                                                <i class="fa-solid fa-id-badge text-[10px] text-amber-400"></i>
+                                                <span>{{ $m->profile?->nia ?? 'Belum ada NIA' }}</span>
+                                            </span>
                                         </div>
                                     </div>
                                 </div>
                             </td>
 
                             {{-- Identitas & Kontak --}}
-                            <td class="py-4 px-5">
-                                <div class="text-white/80 font-medium">
-                                    <i class="fa-solid fa-phone text-white/30 text-[10px] mr-1.5"></i>{{ $m->profile?->phone_number ?? '-' }}
-                                </div>
-                                <div class="text-white/40 text-[11px] mt-0.5">
-                                    NIK: <span class="font-mono">{{ $m->profile?->nik_ktp ?? '-' }}</span>
-                                </div>
-                                <div class="text-[10px] text-amber-400/90 mt-0.5 flex items-center gap-2">
-                                    <span class="px-1.5 py-0.5 rounded bg-amber-400/10 text-amber-300 font-bold">Gol: {{ $m->profile?->blood_type ?? '-' }}</span>
-                                    <span class="px-1.5 py-0.5 rounded bg-white/10 text-white/70 font-bold">Size: {{ $m->profile?->shirt_size ?? '-' }}</span>
+                            <td class="py-4 px-5 whitespace-nowrap min-w-[190px]">
+                                <div class="space-y-1">
+                                    <div class="text-white/90 text-xs font-mono font-semibold flex items-center gap-1.5">
+                                        <i class="fa-solid fa-phone text-emerald-400 text-[10px]"></i>
+                                        <span>{{ $m->profile?->phone_number ?? '-' }}</span>
+                                    </div>
+                                    <div class="text-[11px] text-white/50 flex items-center gap-1 font-mono">
+                                        <span class="text-white/30 text-[10px]">NIK:</span>
+                                        <span class="text-white/80 font-medium">{{ $m->profile?->nik_ktp ?? '-' }}</span>
+                                    </div>
+                                    <div class="flex items-center gap-1.5 pt-0.5">
+                                        <span class="px-2 py-0.5 rounded text-[10px] font-bold bg-red-500/15 text-red-400 border border-red-500/20 inline-flex items-center gap-1">
+                                            <i class="fa-solid fa-droplet text-[9px] text-red-500"></i>
+                                            <span>Gol. {{ $m->profile?->blood_type ?? '-' }}</span>
+                                        </span>
+                                        <span class="px-1.5 py-0.5 rounded text-[10px] font-bold bg-white/10 text-white/70">
+                                            Size {{ $m->profile?->shirt_size ?? '-' }}
+                                        </span>
+                                    </div>
                                 </div>
                             </td>
 
                             {{-- Kartu KTA NFC --}}
-                            <td class="py-4 px-5">
+                            <td class="py-4 px-5 whitespace-nowrap min-w-[250px]">
                                 @if($card)
-                                    <div class="font-mono font-bold text-sm text-smeck-gold tracking-wide">
-                                        {{ $card->card_number ?? '6032-9800-2024-1950' }}
-                                    </div>
-                                    <div class="text-[10px] text-white/50 uppercase mt-0.5 flex items-center gap-2">
-                                        <span><i class="fa-solid fa-credit-card mr-1 text-white/30"></i>{{ $card->card_vendor }}</span>
-                                        <span>•</span>
-                                        <span class="text-white/40 font-mono text-[9px]">UID: {{ substr($card->uid_number, 0, 8) }}••</span>
-                                    </div>
-                                    <div class="text-[10px] text-white/30">
-                                        Terbit: {{ $card->issued_at ? $card->issued_at->format('d M Y') : '-' }}
+                                    <div class="space-y-1.5">
+                                        <div class="flex items-center gap-2 font-mono text-xs text-white/90">
+                                            <span class="px-2.5 py-1 rounded-lg bg-white/5 border border-white/10 font-bold tracking-wider flex items-center gap-1.5">
+                                                <i class="fa-solid fa-credit-card text-emerald-400 text-[11px]"></i>
+                                                <span>{{ $card->card_number ?? '6032-••••-••••-1950' }}</span>
+                                            </span>
+                                            <span class="px-1.5 py-0.5 rounded text-[9px] font-bold uppercase {{ $card->status === 'lost' ? 'bg-amber-500/20 text-amber-300 border border-amber-500/30' : ($card->status === 'blocked' ? 'bg-red-500/20 text-red-400 border border-red-500/30' : 'bg-emerald-500/20 text-emerald-400 border border-emerald-500/30') }}">
+                                                {{ $card->status === 'lost' ? 'HILANG' : ($card->status === 'blocked' ? 'BLOKIR' : 'AKTIF') }}
+                                            </span>
+                                        </div>
+                                        <div class="flex items-center gap-2 text-[10px] text-white/40 font-mono">
+                                            <span class="px-1.5 py-0.5 rounded bg-white/5 uppercase text-white/60 font-semibold">{{ $card->card_vendor ?? 'E-Money' }}</span>
+                                            <span>•</span>
+                                            <span>UID: <strong class="text-white/70">{{ substr($card->uid_number, 0, 8) }}••</strong></span>
+                                            <span>•</span>
+                                            <span>{{ $card->issued_at ? $card->issued_at->format('d/m/Y') : '-' }}</span>
+                                        </div>
                                     </div>
                                 @else
-                                    <span class="inline-flex items-center gap-1.5 text-white/40 italic">
-                                        <i class="fa-regular fa-circle-xmark"></i> Belum Diterbitkan
-                                    </span>
+                                    <div class="inline-flex items-center gap-1.5 px-2.5 py-1 rounded-lg bg-white/5 text-[10px] text-white/40 italic border border-white/5">
+                                        <i class="fa-regular fa-circle-xmark text-amber-400/70 text-[10px]"></i>
+                                        <span>Kartu fisik belum terbit</span>
+                                    </div>
                                 @endif
                             </td>
 
