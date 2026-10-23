@@ -52,12 +52,20 @@
         </div>
 
         {{-- Active Role Badge Container --}}
+        @php
+            $isSuperAdmin = auth()->user()->role === 'super_admin';
+            $isChapterMode = $isSuperAdmin && request()->is('chapter*');
+        @endphp
         <div class="px-6 py-4 border-b border-white/5 bg-white/[0.02]">
             <div class="flex items-center justify-between">
                 <span class="text-[11px] font-bold uppercase tracking-wider text-white/40">Area Hak Akses</span>
-                @if(auth()->user()->role === 'super_admin')
+                @if($isChapterMode)
+                    <span class="px-2.5 py-0.5 rounded-full text-[10px] font-bold uppercase tracking-wider bg-amber-500/20 text-amber-300 border border-amber-500/30">
+                        <i class="fa-solid fa-users text-[9px] mr-1 text-amber-400"></i> Mode Chapter
+                    </span>
+                @elseif($isSuperAdmin)
                     <span class="px-2.5 py-0.5 rounded-full text-[10px] font-bold uppercase tracking-wider bg-red-500/20 text-red-300 border border-red-500/30">
-                        <i class="fa-solid fa-crown text-[9px] mr-1"></i> Super Admin
+                        <i class="fa-solid fa-crown text-[9px] mr-1"></i> Super Admin (Pusat)
                     </span>
                 @elseif(auth()->user()->role === 'admin_chapter')
                     <span class="px-2.5 py-0.5 rounded-full text-[10px] font-bold uppercase tracking-wider bg-amber-500/20 text-amber-300 border border-amber-500/30">
@@ -72,6 +80,9 @@
             <div class="mt-2 text-xs text-white/70 truncate font-medium">
                 <i class="fa-solid fa-location-dot text-smeck-green-400 mr-1 text-[11px]"></i>
                 {{ auth()->user()->chapter?->name ?? 'Pusat Stadion Teladan' }}
+                @if($isChapterMode)
+                    <span class="text-[10px] text-amber-400/80 font-normal ml-1">(Simulasi)</span>
+                @endif
             </div>
         </div>
 
@@ -141,12 +152,15 @@
             @endif
 
             {{-- ====================================================== --}}
-            {{-- 2. MENU UNTUK ROLE 'admin_chapter' (PENGURUS WILAYAH) --}}
+            {{-- 2. MENU UNTUK ROLE 'admin_chapter' ATAU SUPER ADMIN MODE CHAPTER --}}
             {{-- ====================================================== --}}
-            @if(auth()->user()->role === 'admin_chapter')
+            @if(auth()->user()->role === 'admin_chapter' || $isChapterMode)
                 <div>
-                    <div class="px-3 mb-2 text-[10px] font-bold uppercase tracking-wider text-amber-400">
-                        Pengurus Basis / Chapter
+                    <div class="px-3 mb-2 text-[10px] font-bold uppercase tracking-wider text-amber-400 flex items-center justify-between">
+                        <span>Pengurus Basis / Chapter</span>
+                        @if($isChapterMode)
+                            <span class="px-1.5 py-0.5 rounded text-[9px] bg-amber-500/20 text-amber-300 font-mono">SIMULASI</span>
+                        @endif
                     </div>
                     <nav class="space-y-1">
                         {{-- 1. Dashboard Chapter --}}
@@ -167,28 +181,34 @@
                             <span>Verifikasi Anggota Baru</span>
                         </a>
 
-                        {{-- 3. Scan Presensi NFC --}}
+                        {{-- 4. Scan Presensi NFC --}}
                         <a href="{{ route('chapter.scanner') }}" class="flex items-center gap-3 px-3.5 py-2.5 rounded-xl text-sm font-semibold transition-all {{ request()->routeIs('chapter.scanner*') ? 'bg-amber-600 text-white shadow-lg shadow-amber-700/30' : 'text-white/70 hover:text-white hover:bg-white/5' }}">
                             <i class="fa-solid fa-wifi w-5 text-center text-amber-400 {{ request()->routeIs('chapter.scanner*') ? 'text-white' : '' }}"></i>
                             <span>Scan Presensi NFC</span>
                         </a>
 
-                        {{-- 4. Kas Chapter --}}
+                        {{-- 5. Kas Chapter --}}
                         <a href="{{ route('chapter.dues') }}" class="flex items-center gap-3 px-3.5 py-2.5 rounded-xl text-sm font-semibold transition-all {{ request()->routeIs('chapter.dues*') ? 'bg-amber-600 text-white shadow-lg shadow-amber-700/30' : 'text-white/70 hover:text-white hover:bg-white/5' }}">
                             <i class="fa-solid fa-vault w-5 text-center text-amber-400 {{ request()->routeIs('chapter.dues*') ? 'text-white' : '' }}"></i>
                             <span>Kas Chapter</span>
                         </a>
 
-                        {{-- [Prompt 6] 1. Kuota Tiket Chapter --}}
+                        {{-- 6. Kuota Tiket Chapter --}}
                         <a href="{{ route('chapter.tickets') }}" class="flex items-center gap-3 px-3.5 py-2.5 rounded-xl text-sm font-semibold transition-all {{ request()->routeIs('chapter.tickets*') ? 'bg-amber-600 text-white shadow-lg shadow-amber-700/30' : 'text-white/70 hover:text-white hover:bg-white/5' }}">
                             <i class="fa-solid fa-ticket-simple w-5 text-center text-amber-400 {{ request()->routeIs('chapter.tickets*') ? 'text-white' : '' }}"></i>
                             <span>Kuota Tiket Chapter</span>
                         </a>
 
-                        {{-- [Prompt 6] 2. Dokumentasi Kegiatan --}}
+                        {{-- 7. Dokumentasi Kegiatan --}}
                         <a href="{{ route('chapter.documentations') }}" class="flex items-center gap-3 px-3.5 py-2.5 rounded-xl text-sm font-semibold transition-all {{ request()->routeIs('chapter.documentations*') ? 'bg-amber-600 text-white shadow-lg shadow-amber-700/30' : 'text-white/70 hover:text-white hover:bg-white/5' }}">
                             <i class="fa-solid fa-camera-retro w-5 text-center text-amber-400 {{ request()->routeIs('chapter.documentations*') ? 'text-white' : '' }}"></i>
                             <span>Dokumentasi Kegiatan</span>
+                        </a>
+
+                        {{-- 8. Profil Pengurus Chapter --}}
+                        <a href="{{ route('chapter.profile') }}" class="flex items-center gap-3 px-3.5 py-2.5 rounded-xl text-sm font-semibold transition-all {{ request()->routeIs('chapter.profile*') ? 'bg-amber-600 text-white shadow-lg shadow-amber-700/30' : 'text-white/70 hover:text-white hover:bg-white/5' }}">
+                            <i class="fa-solid fa-user-gear w-5 text-center text-amber-400 {{ request()->routeIs('chapter.profile*') ? 'text-white' : '' }}"></i>
+                            <span>Profil Pengurus Basis</span>
                         </a>
                     </nav>
                 </div>
@@ -197,7 +217,7 @@
             {{-- ====================================================== --}}
             {{-- 3. MENU UNTUK ROLE 'super_admin' (PENGURUS PUSAT) --}}
             {{-- ====================================================== --}}
-            @if(auth()->user()->role === 'super_admin')
+            @if($isSuperAdmin && !$isChapterMode)
                 @php
                     $pendingApprovalsCount = \App\Models\User::whereIn('role', ['member', 'admin_chapter'])->where('status', 'pending_approval')->count();
                 @endphp
@@ -318,12 +338,23 @@
 
         {{-- Sidebar Footer: User Card Mini & Switch Portal if Admin --}}
         <div class="p-4 border-t border-white/10 bg-smeck-dark-950/80">
-            @if(auth()->user()->role === 'super_admin')
+            @if($isSuperAdmin)
                 <div class="mb-3 flex items-center justify-between text-[11px] text-white/50 px-1">
-                    <span>Lihat Mode:</span>
-                    <div class="flex gap-1.5">
-                        <a href="{{ route('chapter.dashboard') }}" class="px-2.5 py-0.5 rounded bg-white/10 hover:bg-amber-600 text-white transition-colors">Chapter</a>
-                        <a href="{{ route('superadmin.dashboard') }}" class="px-2.5 py-0.5 rounded bg-white/10 hover:bg-red-600 text-white transition-colors">Pusat</a>
+                    <span class="font-semibold flex items-center gap-1.5">
+                        <i class="fa-solid fa-arrows-rotate text-[10px] text-amber-400"></i>
+                        <span>Lihat Mode:</span>
+                    </span>
+                    <div class="flex gap-1.5 p-0.5 bg-black/40 rounded-xl border border-white/10">
+                        <a href="{{ route('chapter.dashboard') }}" 
+                           class="px-2.5 py-1 rounded-lg text-[11px] font-bold transition-all flex items-center gap-1.5 {{ $isChapterMode ? 'bg-amber-600 text-white shadow-md shadow-amber-700/50 ring-1 ring-amber-400' : 'text-white/60 hover:text-white hover:bg-white/10' }}">
+                            <i class="fa-solid fa-users text-[10px]"></i>
+                            <span>Chapter</span>
+                        </a>
+                        <a href="{{ route('superadmin.dashboard') }}" 
+                           class="px-2.5 py-1 rounded-lg text-[11px] font-bold transition-all flex items-center gap-1.5 {{ !$isChapterMode ? 'bg-red-600 text-white shadow-md shadow-red-700/50 ring-1 ring-red-400' : 'text-white/60 hover:text-white hover:bg-white/10' }}">
+                            <i class="fa-solid fa-landmark text-[10px]"></i>
+                            <span>Pusat</span>
+                        </a>
                     </div>
                 </div>
             @endif
